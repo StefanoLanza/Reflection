@@ -4,7 +4,6 @@
 
 #include <TinyXML/tinyxml2.h>
 #include <cassert>
-#include <core/stringUtils.h>
 
 namespace Typhoon {
 

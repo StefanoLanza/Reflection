@@ -4,7 +4,6 @@
 
 #include <TinyXML/tinyxml2.h>
 #include <cassert>
-#include <core/stringUtils.h>
 
 using namespace Typhoon;
 
@@ -31,7 +30,7 @@ bool XMLInputArchive::initialize(const char* buffer) {
 }
 
 std::string XMLInputArchive::getErrorDesc() const {
-	return document->ErrorName() + std::string { " ,line: " } + toString(document->ErrorLineNum());
+	return document->ErrorName() + std::string { " ,line: " } + std::to_string(document->ErrorLineNum());
 }
 
 const char* XMLInputArchive::currNodeText() {
