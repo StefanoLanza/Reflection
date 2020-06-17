@@ -1,6 +1,6 @@
 // Example showing reflection and serialization of a C++ object
 
-#include <reflection/include/reflection.h>
+#include <include/reflection.h>
 #include <string>
 
 using namespace Typhoon;

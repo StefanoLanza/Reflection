@@ -1,6 +1,6 @@
 // Example showing reflection and serialization of a builtin types, enums and bitmasks
 
-#include <reflection/include/reflection.h>
+#include <include/reflection.h>
 #include <string>
 
 using namespace Typhoon;

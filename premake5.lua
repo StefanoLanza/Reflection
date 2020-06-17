@@ -59,38 +59,38 @@ project("Core")
 
 project("Reflection")
 	kind "StaticLib"
-	files "reflection/src/**.cpp"
-	files "reflection/src/**.h"
-	files "reflection/include/**.h"
-	includedirs { "./", "reflection/include/", }
+	files "src/**.cpp"
+	files "src/**.h"
+	files "include/**.h"
+	includedirs { "./", "include/", }
 	links({"Core", "TinyXML"})
 
 project("Example1")
 	kind "ConsoleApp"
 	files "examples/example1.cpp"
-	includedirs { "./", }
+	includedirs { "./", "include/", }
 	links({"Reflection", })
 
 project("Example2")
 	kind "ConsoleApp"
 	files "examples/example2.cpp"
-	includedirs { "./", }
+	includedirs { "./", "include/", }
 	links({"Reflection", })
 
 project("Example3")
 	kind "ConsoleApp"
 	files "examples/example3.cpp"
-	includedirs { "./", }
+	includedirs { "./", "include/", }
 	links({"Reflection", })
 
 project("Example4")
 	kind "ConsoleApp"
 	files "examples/example4.cpp"
-	includedirs { "./", }
+	includedirs { "./", "include/", }
 	links({"Reflection", })
 
 project("UnitTest")
 	kind "ConsoleApp"
 	links({"Reflection", })
 	files "test/**.cpp"
-	includedirs { "./", }
+	includedirs { "./", "include/", }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <core/bitMask.h>
-#include <reflection/include/fwdDecl.h>
+#include <include/fwdDecl.h>
 #include <string>
 
 struct ActionFlags : Typhoon::BitMask<uint16_t> {

@@ -2,7 +2,7 @@
 #include <Catch-master/single_include/catch2/catch.hpp>
 
 #include "testClasses.h"
-#include <reflection/include/reflection.h>
+#include <include/reflection.h>
 #include <string>
 
 using namespace Typhoon;

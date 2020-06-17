@@ -1,7 +1,7 @@
 // Example showing reflection and serialization of a struct. Some fields are serialized directly. Some fields are set via a C-style API,
 // which does parameter validation
 
-#include <reflection/include/reflection.h>
+#include <include/reflection.h>
 #include <string>
 
 using namespace Typhoon;

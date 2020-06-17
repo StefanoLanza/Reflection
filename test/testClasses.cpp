@@ -1,7 +1,7 @@
 #include "testClasses.h"
-#include <reflection/include/archive.h>
-#include <reflection/include/readObject.h>
-#include <reflection/include/writeObject.h>
+#include <include/archive.h>
+#include <include/readObject.h>
+#include <include/writeObject.h>
 
 bool operator==(const Coords& a, const Coords& b) {
 	return a.x == b.x && a.y == b.y && a.z == b.z;

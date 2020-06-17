@@ -2,7 +2,7 @@
 // In this case the object is a texture, which is uniquely identified by a file name and contains data loaded from an external file.
 // Only the filename is serialized, the data is loaded on demand
 
-#include <reflection/include/reflection.h>
+#include <include/reflection.h>
 #include <string>
 
 using namespace Typhoon;
