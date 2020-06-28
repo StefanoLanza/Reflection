@@ -14,5 +14,7 @@ class PointerType;
 class ReferenceType;
 class InputArchive;
 class OutputArchive;
+enum class ReflSemantic;
+struct ReflFlags;
 
 } // namespace Typhoon

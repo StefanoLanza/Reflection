@@ -37,7 +37,7 @@ inline const Type* autoRegisterType(TypeDB& typeDB) {
 }
 
 template <typename OBJECT_TYPE, typename FIELD_TYPE>
-inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, size_t offset, uint32_t flags, Semantic semantic, TypeDB& typeDB) {
+inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, size_t offset, uint32_t flags, ReflSemantic semantic, TypeDB& typeDB) {
 	const Type* fieldType = autoRegisterType<FIELD_TYPE>(typeDB);
 	assert(fieldType);
 	return { name, fieldType, offset, flags, semantic };
@@ -95,7 +95,7 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 
 #define FIELD_RENAMED(field, name)                                                                                                    \
 	do {                                                                                                                              \
-		structType.addField(detail::createField(name, &class_::field, offsetof(class_, field), Flags::all, Semantic::none, typeDB_)); \
+		structType.addField(detail::createField(name, &class_::field, offsetof(class_, field), ReflFlags::all, ReflSemantic::none, typeDB_)); \
 	} while (false)
 
 #define FIELD(field) FIELD_RENAMED(field, #field)
@@ -109,17 +109,17 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 	do {                                                                                                                                  \
 		static_assert(isClass);                                                                                                           \
 		structType.addProperty(                                                                                                           \
-		    detail::ClassHelpers<class_>::createRWProperty(name, Flags::all, Semantic::none, &class_::setter, &class_::getter, typeDB_)); \
+		    detail::ClassHelpers<class_>::createRWProperty(name, ReflFlags::all, ReflSemantic::none, &class_::setter, &class_::getter, typeDB_)); \
 	} while (false)
 
 #define GETTER(name, getter)                                                                                                                \
 	do {                                                                                                                                    \
-		structType.addProperty(detail::ClassHelpers<class_>::createROProperty(name, Flags::all, Semantic::none, &class_::getter, typeDB_)); \
+		structType.addProperty(detail::ClassHelpers<class_>::createROProperty(name, ReflFlags::all, ReflSemantic::none, &class_::getter, typeDB_)); \
 	} while (false)
 
 #define SETTER(name, setter)                                                                                                     \
 	do {                                                                                                                         \
-		structType.addProperty(detail::ClassHelpers<class_>::createProperty(name, Flags::all, Semantic::none, setter, typeDB_)); \
+		structType.addProperty(detail::ClassHelpers<class_>::createProperty(name, ReflFlags::all, ReflSemantic::none, setter, typeDB_)); \
 	} while (false)
 
 #define PROPERTY_EX(name, getter, setter, flags, semantic)                                                                                       \
@@ -129,7 +129,7 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 
 #define C_PROPERTY(name, setter, getter)                                                                                                   \
 	do {                                                                                                                                   \
-		structType.addProperty(detail::ClassHelpers<class_>::createRWProperty(name, Flags::all, Semantic::none, setter, getter, typeDB_)); \
+		structType.addProperty(detail::ClassHelpers<class_>::createRWProperty(name, ReflFlags::all, ReflSemantic::none, setter, getter, typeDB_)); \
 	} while (0)
 
 #define C_PROPERTY_EXT(name, setter, getter, flags, semantic)                                                                   \
@@ -142,12 +142,12 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 		structType.addProperty(detail::ClassHelpers<class_>::createProperty(#member, flags, semantic, setter, &class_::member, typeDB_)); \
 	} while (0)
 
-#define C_SETTER(member, setter) C_SETTER_EX(member, setter, Flags::all, Semantic::none)
+#define C_SETTER(member, setter) C_SETTER_EX(member, setter, ReflFlags::all, ReflSemantic::none)
 
 #define C_GETTER(name, getter)                                                                                                 \
 	do {                                                                                                                            \
 		structType.addProperty(                                                                                                     \
-		    detail::ClassHelpers<class_>::createROProperty(name, Flags::view | Flags::writeable, Semantic::none, getter, typeDB_)); \
+		    detail::ClassHelpers<class_>::createROProperty(name, ReflFlags::view | ReflFlags::writeable, ReflSemantic::none, getter, typeDB_)); \
 	} while (0)
 
 #define END_STRUCT()                   \

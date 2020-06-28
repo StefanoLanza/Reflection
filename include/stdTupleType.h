@@ -28,7 +28,7 @@ const Type* registerTuple(TypeDB& typeDB, std::integer_sequence<std::size_t, arg
 	constexpr TypeId  typeId = getTypeId<Tuple>();
 	static StructType structType { typeId, sizeof(Tuple), std::alignment_of_v<Tuple> };
 	for (size_t i = 0; i < std::size(argType) - 1; ++i) {
-		structType.addField(Field { elementName[i], argType[i], argOffset[i], Flags::all, Semantic::none });
+		structType.addField(Field { elementName[i], argType[i], argOffset[i], ReflFlags::all, ReflSemantic::none });
 	}
 
 	typeDB.registerType(&structType);

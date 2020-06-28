@@ -5,7 +5,7 @@
 
 namespace Typhoon {
 
-Property::Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, uint32_t flags, Semantic semantic)
+Property::Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, uint32_t flags, ReflSemantic semantic)
     : setter { std::move(setter) }
     , getter { std::move(getter) }
     , name(name)
@@ -15,13 +15,13 @@ Property::Property(Setter&& setter, Getter&& getter, const char* name, const Typ
 	assert(valueType);
 	// Override flags
 	if (! this->setter) {
-		flags &= ~Flags::writeable;
-		flags &= ~Flags::edit;
+		flags &= ~ReflFlags::writeable;
+		flags &= ~ReflFlags::edit;
 	}
 	if (! this->getter) {
-		flags &= ~Flags::readable;
-		flags &= ~Flags::clonable;
-		flags &= ~Flags::view;
+		flags &= ~ReflFlags::readable;
+		flags &= ~ReflFlags::clonable;
+		flags &= ~ReflFlags::view;
 	}
 }
 
@@ -37,7 +37,7 @@ uint32_t Property::getFlags() const {
 	return flags;
 }
 
-Semantic Property::getSemantic() const {
+ReflSemantic Property::getSemantic() const {
 	return semantic;
 }
 

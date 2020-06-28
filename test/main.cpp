@@ -455,7 +455,7 @@ void registerUserTypes(TypeDB& typeDB) {
 	PROPERTY("lives", getLives, setLives);
 	PROPERTY("name", getName, setName);
 	PROPERTY("position", getPosition, setPosition);
-	PROPERTY_EX("action", getActionFlags, setActionFlags, Flags::all, Semantic::none);
+	PROPERTY_EX("action", getActionFlags, setActionFlags, ReflFlags::all, ReflSemantic::none);
 	PROPERTY("material", getMaterial, setMaterial);
 	END_CLASS();
 

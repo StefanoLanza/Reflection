@@ -4,7 +4,7 @@
 
 namespace Typhoon {
 
-struct Flags {
+struct ReflFlags {
 	using Type = uint32_t;
 	enum : Type {
 		none = 0,

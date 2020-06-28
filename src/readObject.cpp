@@ -23,17 +23,17 @@ namespace Typhoon {
 
 namespace {
 
-bool readObject(void* data, const char* name, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive);
-bool readObject(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive);
-bool readStruct(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive);
-bool readEnum(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive);
-bool readBitMask(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive);
-bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive);
-bool readPointer(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive);
-bool readReference(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive);
-bool readVariant(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive);
+bool readObject(void* data, const char* name, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive);
+bool readObject(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive);
+bool readStruct(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive);
+bool readEnum(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive);
+bool readBitMask(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive);
+bool readContainer(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive);
+bool readPointer(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive);
+bool readReference(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive);
+bool readVariant(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive);
 
-using Reader = bool (*)(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive&);
+using Reader = bool (*)(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive&);
 constexpr Reader perClassreaders[] = {
 	nullptr, // builtins use per-type readers
 	readStruct, readEnum, readBitMask, readContainer, readPointer, readReference, readVariant,
@@ -41,7 +41,7 @@ constexpr Reader perClassreaders[] = {
 
 } // namespace
 
-bool readObject(void* object, TypeId typeId, const char* name, InputArchive& archive, Semantic semantic) {
+bool readObject(void* object, TypeId typeId, const char* name, InputArchive& archive, ReflSemantic semantic) {
 	assert(object);
 	assert(name);
 	bool        res = false;
@@ -52,7 +52,7 @@ bool readObject(void* object, TypeId typeId, const char* name, InputArchive& arc
 	return res;
 }
 
-bool readObject(void* object, TypeId typeId, InputArchive& archive, Semantic semantic) {
+bool readObject(void* object, TypeId typeId, InputArchive& archive, ReflSemantic semantic) {
 	assert(object);
 	bool        res = false;
 	const Type* type = getTypeDB().tryGetTypeInfo(typeId);
@@ -76,7 +76,7 @@ std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementT
 		ArchiveIterator iter;
 		while (archive.iterateChild(iter, "element")) {
 			if (count < arraySize) {
-				readObject(destPtr, *elementTypeInfo, Semantic::none, typeDB, archive);
+				readObject(destPtr, *elementTypeInfo, ReflSemantic::none, typeDB, archive);
 			}
 			else {
 				res = false;
@@ -93,7 +93,7 @@ std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementT
 bool readContainer(void* container, const char* containerName, const ContainerType& type, InputArchive& archive) {
 	bool res = false;
 	if (archive.beginElement(containerName)) {
-		res = readContainer(container, type, Semantic::none, getTypeDB(), archive);
+		res = readContainer(container, type, ReflSemantic::none, getTypeDB(), archive);
 		archive.endElement();
 	}
 	return res;
@@ -101,7 +101,7 @@ bool readContainer(void* container, const char* containerName, const ContainerTy
 
 namespace {
 
-bool readObject(void* data, const char* name, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive) {
+bool readObject(void* data, const char* name, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive) {
 	bool res = false;
 	if (archive.beginElement(name)) {
 		res = readObject(data, type, semantic, typeDB, archive);
@@ -110,7 +110,7 @@ bool readObject(void* data, const char* name, const Type& type, Semantic semanti
 	return res;
 }
 
-bool readObject(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive) {
+bool readObject(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive) {
 	bool res = false;
 	if (const CustomReader customreader = typeDB.getCustomReader(&type); customreader) {
 		customreader(data, archive);
@@ -122,13 +122,13 @@ bool readObject(void* data, const Type& type, Semantic semantic, const TypeDB& t
 	return res;
 }
 
-bool readStruct(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive) {
+bool readStruct(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive) {
 	char        stackMemory[1024];
 	StackBuffer stackBuffer { stackMemory };
 
 	const StructType& structType = static_cast<const StructType&>(type);
 	for (const auto& field : structType.getFields()) {
-		if (field.flags & Flags::readable) {
+		if (field.flags & ReflFlags::readable) {
 			// Each field knows its offset so add that to the base address of the
 			// object being readed to get at the individual field data
 			void* const field_data = advancePointer(data, field.offset);
@@ -137,7 +137,7 @@ bool readStruct(void* data, const Type& type, Semantic semantic, const TypeDB& t
 	}
 
 	for (const auto& property : structType.getProperties()) {
-		if (property->getFlags() & Flags::readable) {
+		if (property->getFlags() & ReflFlags::readable) {
 			if (archive.beginElement(property->getName())) {
 				const Type& valueType = property->getValueType();
 
@@ -165,7 +165,7 @@ bool readStruct(void* data, const Type& type, Semantic semantic, const TypeDB& t
 	return true;
 }
 
-bool readEnum(void* dstData, const Type& type, Semantic /*semantic*/, const TypeDB& /*typeDB*/, InputArchive& archive) {
+bool readEnum(void* dstData, const Type& type, ReflSemantic /*semantic*/, const TypeDB& /*typeDB*/, InputArchive& archive) {
 	const EnumType& enumTypeInfo = static_cast<const EnumType&>(type);
 	bool            res = false;
 	if (const char* name = archive.currNodeText(); name) {
@@ -182,7 +182,7 @@ bool readEnum(void* dstData, const Type& type, Semantic /*semantic*/, const Type
 	return res;
 }
 
-bool readBitMask(void* dstData, const Type& type, Semantic /*semantic*/, const TypeDB& /*typeDB*/, InputArchive& archive) {
+bool readBitMask(void* dstData, const Type& type, ReflSemantic /*semantic*/, const TypeDB& /*typeDB*/, InputArchive& archive) {
 	const BitMaskType& bitMaskTypeInfo = static_cast<const BitMaskType&>(type);
 	assert(bitMaskTypeInfo.size <= sizeof(BitMaskStorageType));
 	bool res = false;
@@ -200,7 +200,7 @@ bool readBitMask(void* dstData, const Type& type, Semantic /*semantic*/, const T
 	return res;
 }
 
-bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive) {
+bool readContainer(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive) {
 	const ContainerType& containerType = static_cast<const ContainerType&>(type);
 	const Type*          key_type = containerType.getKeyType();
 	const Type*          value_type = containerType.getValueType();
@@ -237,7 +237,7 @@ bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB
 						key_type->constructObject(key);
 
 						// read key
-						readObject(key, "key", *key_type, Semantic::none, typeDB, archive);
+						readObject(key, "key", *key_type, ReflSemantic::none, typeDB, archive);
 
 						// Create value using key
 						void* value = iterator->insert(key);
@@ -264,7 +264,7 @@ bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB
 	return true;
 }
 
-bool readPointer(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive) {
+bool readPointer(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive) {
 	const PointerType& pointerTypeInfo = static_cast<const PointerType&>(type);
 	void* const        pointer = pointerTypeInfo.resolvePointer(data);
 	if (pointer) {
@@ -273,12 +273,12 @@ bool readPointer(void* data, const Type& type, Semantic semantic, const TypeDB& 
 	return false;
 }
 
-bool readReference(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive) {
+bool readReference(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive) {
 	const ReferenceType& referenceTypeInfo = static_cast<const ReferenceType&>(type);
 	return readObject(referenceTypeInfo.resolvePointer(data), referenceTypeInfo.getReferencedType(), semantic, typeDB, archive);
 }
 
-bool readVariant(void* data, const Type& /*type*/, Semantic semantic, const TypeDB& typeDB, InputArchive& archive) {
+bool readVariant(void* data, const Type& /*type*/, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive) {
 	Variant*    variant = static_cast<Variant*>(data);
 	const Type& type = typeDB.getTypeInfo(variant->getTypeId());
 	return readObject(variant->getStorage(), type, semantic, typeDB, archive);

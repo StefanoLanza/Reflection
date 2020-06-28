@@ -12,7 +12,7 @@ struct Field {
 	const Type* type;
 	size_t      offset;
 	uint32_t    flags;
-	Semantic    semantic;
+	ReflSemantic    semantic;
 };
 
 } // namespace Typhoon

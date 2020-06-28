@@ -90,7 +90,7 @@ void registerUserTypes(TypeDB& typeDB) {
 	PROPERTY("life", getLife, setLives);
 	PROPERTY("name", getName, setName);
 	PROPERTY("position", getPosition, setPosition);
-	PROPERTY_EX("action", getActionFlags, setActionFlags, Flags::all, Semantic::none);
+	PROPERTY_EX("action", getActionFlags, setActionFlags, ReflFlags::all, ReflSemantic::none);
 	END_CLASS();
 
 	END_REFLECTION();

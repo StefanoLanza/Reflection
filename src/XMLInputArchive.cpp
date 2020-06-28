@@ -5,8 +5,6 @@
 #include <TinyXML/tinyxml2.h>
 #include <cassert>
 
-using namespace Typhoon;
-
 namespace Typhoon {
 
 XMLInputArchive::XMLInputArchive()

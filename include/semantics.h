@@ -2,7 +2,7 @@
 
 namespace Typhoon {
 
-enum class Semantic {
+enum class ReflSemantic {
 	none = 0,
 	color = 1,
 	direction = 2,

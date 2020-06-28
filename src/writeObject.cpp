@@ -70,7 +70,7 @@ bool writeStruct(const void* data, const Type& type, const TypeDB& typeDB, Outpu
 
 	const StructType& structTypeInfo = static_cast<const StructType&>(type);
 	for (const auto& field : structTypeInfo.getFields()) {
-		if (field.flags & Flags::writeable) {
+		if (field.flags & ReflFlags::writeable) {
 			// Each field knows its offset so add that to the base address of the
 			// object being saved to get at the individual field data
 			const void* const field_data = advancePointer(data, field.offset);
@@ -79,7 +79,7 @@ bool writeStruct(const void* data, const Type& type, const TypeDB& typeDB, Outpu
 	}
 
 	for (const auto& property : structTypeInfo.getProperties()) {
-		if (property->getFlags() & Flags::writeable) {
+		if (property->getFlags() & ReflFlags::writeable) {
 			const Type& valueType = property->getValueType();
 
 			// Allocate a temporary for the value
