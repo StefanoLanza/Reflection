@@ -26,9 +26,9 @@ Variant::Variant(Variant&& other) noexcept
 Variant::Variant(const void* data, TypeId typeId, const char* name)
     : typeId { typeId }
     , name { name } {
-	const auto& typeInfo = getTypeInfo();
-	assert(typeInfo.size <= sizeof storage);
-	typeInfo.copyConstructObject(&storage, data);
+	const auto& types = getType();
+	assert(types.size <= sizeof storage);
+	types.copyConstructObject(&storage, data);
 }
 
 Variant::~Variant() //
@@ -39,8 +39,8 @@ Variant::~Variant() //
 Variant& Variant::operator=(const Variant& other) {
 	destruct();
 	if (other.typeId != nullTypeId) {
-		const Type& typeInfo = other.getTypeInfo();
-		typeInfo.copyConstructObject(&storage, &other.storage);
+		const Type& types = other.getType();
+		types.copyConstructObject(&storage, &other.storage);
 	}
 	typeId = other.typeId;
 	name = other.name;
@@ -50,16 +50,16 @@ Variant& Variant::operator=(const Variant& other) {
 Variant& Variant::operator=(Variant&& other) noexcept {
 	destruct();
 	if (other.typeId != nullTypeId) {
-		const Type& typeInfo = other.getTypeInfo();
-		typeInfo.moveConstructObject(&storage, &other.storage);
+		const Type& types = other.getType();
+		types.moveConstructObject(&storage, &other.storage);
 	}
 	typeId = other.typeId;
 	name = std::move(other.name);
 	return *this;
 }
 
-const Type& Variant::getTypeInfo() const {
-	return getTypeDB().getTypeInfo(typeId);
+const Type& Variant::getType() const {
+	return getTypeDB().getType(typeId);
 }
 
 const char* Variant::getName() const {
@@ -68,7 +68,7 @@ const char* Variant::getName() const {
 
 void Variant::destruct() {
 	if (typeId != nullTypeId) {
-		getTypeInfo().destructObject(&storage);
+		getType().destructObject(&storage);
 		typeId = nullTypeId;
 	}
 }
@@ -77,7 +77,7 @@ bool Variant::operator==(const Variant& other) const {
 	if (typeId != other.typeId) {
 		return false;
 	}
-	return getTypeInfo().compareObjects(getStorage(), other.getStorage());
+	return getType().compareObjects(getStorage(), other.getStorage());
 }
 
 bool Variant::operator!=(const Variant& other) const {

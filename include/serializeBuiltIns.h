@@ -16,6 +16,7 @@ bool serialize(unsigned long long& data, InputArchive& archive);
 bool serialize(bool& data, InputArchive& archive);
 bool serialize(float& data, InputArchive& archive);
 bool serialize(double& data, InputArchive& archive);
+bool serialize(const char* data, InputArchive& archive);
 
 bool serialize(bool data, OutputArchive& archive);
 bool serialize(char data, OutputArchive& archive);

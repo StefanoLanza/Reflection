@@ -44,8 +44,8 @@ bool writeBuiltin<std::string>(const void* data, OutputArchive& archive) {
 
 template <class T>
 void createBuiltin(TypeDB& typeDB) {
-	static const BuiltinType typeInfo { getTypeId<T>(), sizeof(T), std::alignment_of_v<T>, detail::buildMethodTable<T>() };
-	typeDB.registerType(&typeInfo, &readBuiltin<T>, &writeBuiltin<T>);
+	static const BuiltinType types { getTypeId<T>(), sizeof(T), std::alignment_of_v<T>, detail::buildMethodTable<T>() };
+	typeDB.registerType(&types, &readBuiltin<T>, &writeBuiltin<T>);
 }
 
 void registerBuiltinTypes(TypeDB& typeDB) {
@@ -65,8 +65,8 @@ void registerBuiltinTypes(TypeDB& typeDB) {
 	createBuiltin<const char*>(typeDB);
 	createBuiltin<std::string>(typeDB);
 
-	static const VariantType variantTypeInfo;
-	typeDB.registerType(&variantTypeInfo);
+	static const VariantType variantType;
+	typeDB.registerType(&variantType);
 }
 
 } // namespace

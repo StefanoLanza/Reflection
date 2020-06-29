@@ -46,7 +46,7 @@ bool readContainer(void* container, const char* containerName, const ContainerTy
 template <class T>
 bool readVector(std::vector<T>& vector, const char* vectorName, InputArchive& archive) {
 	using container_type = std::vector<T>;
-	const Type&                                      valueType = getTypeDB().getTypeInfo<T>();
+	const Type&                                      valueType = getTypeDB().getType<T>();
 	constexpr TypeId                                 typeID = getTypeId<container_type>();
 	const detail::StdVectorContainer<container_type> type { typeID, &valueType };
 	return readContainer(&vector, vectorName, type, archive);

@@ -17,25 +17,25 @@ TypeDB::TypeDB() {
 
 TypeDB::~TypeDB() = default;
 
-void TypeDB::registerType(const Type* newTypeInfo, CustomReader reader, CustomWriter writer) {
-	typeInfo.push_back(newTypeInfo);
+void TypeDB::registerType(const Type* newType, CustomReader reader, CustomWriter writer) {
+	types.push_back(newType);
 	if (reader) {
-		customReaders.emplace(newTypeInfo, reader);
+		customReaders.emplace(newType, reader);
 	}
 	if (writer) {
-		customWriters.emplace(newTypeInfo, writer);
+		customWriters.emplace(newType, writer);
 	}
 }
 
-const Type& TypeDB::getTypeInfo(TypeId typeID) const {
-	auto typeInfo = tryGetTypeInfo(typeID);
-	assert(typeInfo);
-	return *typeInfo;
+const Type& TypeDB::getType(TypeId typeID) const {
+	auto type = tryGetType(typeID);
+	assert(type);
+	return *type;
 }
 
-const Type* TypeDB::tryGetTypeInfo(TypeId typeID) const {
+const Type* TypeDB::tryGetType(TypeId typeID) const {
 	// TODO O(n), optimize
-	for (const auto& type : typeInfo) {
+	for (const auto& type : types) {
 		if (type->typeID == typeID) {
 			return type;
 		}

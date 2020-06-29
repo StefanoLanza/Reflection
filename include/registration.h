@@ -28,7 +28,7 @@ namespace detail {
 
 template <class _Ty>
 inline const Type* autoRegisterType(TypeDB& typeDB) {
-	const Type* type = typeDB.tryGetTypeInfo<_Ty>();
+	const Type* type = typeDB.tryGetType<_Ty>();
 	if (type == nullptr) {
 		type = autoRegisterHelper<_Ty>::autoRegister(typeDB);
 	}
@@ -86,7 +86,7 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 		constexpr bool isClass = true;                                                                                \
 		static_assert(! std::is_same_v<parentClass, class>, #parentClass " and " #class " are the same class");       \
 		static_assert(std::is_base_of_v<parentClass, class>, #parentClass " is not a base class of " #class);         \
-		const StructType& parentType = static_cast<const StructType&>(typeDB_.getTypeInfo<parentClass>());            \
+		const StructType& parentType = static_cast<const StructType&>(typeDB_.getType<parentClass>());            \
 		assert(parentType.subClass == Type::Subclass::Struct);                                                        \
 		static StructType structType { getTypeId<class_>(), sizeof(class_), std::alignment_of_v<class_>, &parentType, \
 			                           detail::buildMethodTable<class_>() };                                          \
@@ -193,9 +193,9 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 #define END_BITMASK()                                                                                                           \
 	}                                                                                                                           \
 	;                                                                                                                           \
-	static const BitMaskType typeInfo { getTypeId<bitMaskStruct_>(), sizeof(bitMaskStruct_::StorageType),                       \
+	static const BitMaskType type { getTypeId<bitMaskStruct_>(), sizeof(bitMaskStruct_::StorageType),                       \
 		                                std::alignment_of_v<bitMaskStruct_::StorageType>, enumerators, _countof(enumerators) }; \
-	typeDB_.registerType(&typeInfo);                                                                                            \
+	typeDB_.registerType(&type);                                                                                            \
 	}                                                                                                                           \
 	while (false)
 

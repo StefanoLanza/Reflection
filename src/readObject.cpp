@@ -45,7 +45,7 @@ bool readObject(void* object, TypeId typeId, const char* name, InputArchive& arc
 	assert(object);
 	assert(name);
 	bool        res = false;
-	const Type* type = getTypeDB().tryGetTypeInfo(typeId);
+	const Type* type = getTypeDB().tryGetType(typeId);
 	if (type) {
 		res = readObject(object, name, *type, semantic, getTypeDB(), archive);
 	}
@@ -55,7 +55,7 @@ bool readObject(void* object, TypeId typeId, const char* name, InputArchive& arc
 bool readObject(void* object, TypeId typeId, InputArchive& archive, ReflSemantic semantic) {
 	assert(object);
 	bool        res = false;
-	const Type* type = getTypeDB().tryGetTypeInfo(typeId);
+	const Type* type = getTypeDB().tryGetType(typeId);
 	if (type) {
 		res = readObject(object, *type, semantic, getTypeDB(), archive);
 	}
@@ -64,8 +64,8 @@ bool readObject(void* object, TypeId typeId, InputArchive& archive, ReflSemantic
 
 std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementTypeId, const char* arrayName, InputArchive& archive) {
 	const auto& typeDB = getTypeDB();
-	const Type* elementTypeInfo = typeDB.tryGetTypeInfo(elementTypeId);
-	if (! elementTypeInfo) {
+	const Type* elementType = typeDB.tryGetType(elementTypeId);
+	if (! elementType) {
 		return { false, 0 };
 	}
 	bool   res = false;
@@ -76,13 +76,13 @@ std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementT
 		ArchiveIterator iter;
 		while (archive.iterateChild(iter, "element")) {
 			if (count < arraySize) {
-				readObject(destPtr, *elementTypeInfo, ReflSemantic::none, typeDB, archive);
+				readObject(destPtr, *elementType, ReflSemantic::none, typeDB, archive);
 			}
 			else {
 				res = false;
 				break;
 			}
-			destPtr = advancePointer(destPtr, elementTypeInfo->size);
+			destPtr = advancePointer(destPtr, elementType->size);
 			++count;
 		}
 		archive.endElement();
@@ -166,13 +166,13 @@ bool readStruct(void* data, const Type& type, ReflSemantic semantic, const TypeD
 }
 
 bool readEnum(void* dstData, const Type& type, ReflSemantic /*semantic*/, const TypeDB& /*typeDB*/, InputArchive& archive) {
-	const EnumType& enumTypeInfo = static_cast<const EnumType&>(type);
+	const EnumType& enumType = static_cast<const EnumType&>(type);
 	bool            res = false;
 	if (const char* name = archive.currNodeText(); name) {
-		const Enumerator* constant = enumTypeInfo.findEnumeratorByName(name);
+		const Enumerator* constant = enumType.findEnumeratorByName(name);
 		if (constant) {
 			// Cast the type to an enum and retrieve the value
-			std::memcpy(dstData, &constant->value, enumTypeInfo.size);
+			std::memcpy(dstData, &constant->value, enumType.size);
 			res = true;
 		}
 	}
@@ -183,12 +183,12 @@ bool readEnum(void* dstData, const Type& type, ReflSemantic /*semantic*/, const 
 }
 
 bool readBitMask(void* dstData, const Type& type, ReflSemantic /*semantic*/, const TypeDB& /*typeDB*/, InputArchive& archive) {
-	const BitMaskType& bitMaskTypeInfo = static_cast<const BitMaskType&>(type);
-	assert(bitMaskTypeInfo.size <= sizeof(BitMaskStorageType));
+	const BitMaskType& bitMaskType = static_cast<const BitMaskType&>(type);
+	assert(bitMaskType.size <= sizeof(BitMaskStorageType));
 	bool res = false;
 	if (const char* maskStr = archive.currNodeText(); maskStr) {
 		BitMaskStorageType bitMask = 0;
-		for (const BitMaskConstant& enumerator : bitMaskTypeInfo.getEnumerators()) {
+		for (const BitMaskConstant& enumerator : bitMaskType.getEnumerators()) {
 			if (strstr(maskStr, enumerator.name)) {
 				bitMask |= enumerator.mask;
 			}
@@ -214,8 +214,8 @@ bool readContainer(void* data, const Type& type, ReflSemantic semantic, const Ty
 			Variant* var = static_cast<Variant*>(const_cast<void*>(iterator->getValue()));
 			// TODO readVar(var, )
 			if (var->getTypeId() != nullTypeId && archive.beginElement(var->getName())) {
-				const Type& varTypeInfo = typeDB.getTypeInfo(var->getTypeId());
-				readObject(const_cast<void*>(var->getStorage()), varTypeInfo, semantic, typeDB, archive);
+				const Type& varType = typeDB.getType(var->getTypeId());
+				readObject(const_cast<void*>(var->getStorage()), varType, semantic, typeDB, archive);
 				archive.endElement();
 			}
 			iterator->gotoNext();
@@ -265,22 +265,22 @@ bool readContainer(void* data, const Type& type, ReflSemantic semantic, const Ty
 }
 
 bool readPointer(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive) {
-	const PointerType& pointerTypeInfo = static_cast<const PointerType&>(type);
-	void* const        pointer = pointerTypeInfo.resolvePointer(data);
+	const PointerType& pointerType = static_cast<const PointerType&>(type);
+	void* const        pointer = pointerType.resolvePointer(data);
 	if (pointer) {
-		return readObject(pointer, pointerTypeInfo.getPointedType(), semantic, typeDB, archive);
+		return readObject(pointer, pointerType.getPointedType(), semantic, typeDB, archive);
 	}
 	return false;
 }
 
 bool readReference(void* data, const Type& type, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive) {
-	const ReferenceType& referenceTypeInfo = static_cast<const ReferenceType&>(type);
-	return readObject(referenceTypeInfo.resolvePointer(data), referenceTypeInfo.getReferencedType(), semantic, typeDB, archive);
+	const ReferenceType& referenceType = static_cast<const ReferenceType&>(type);
+	return readObject(referenceType.resolvePointer(data), referenceType.getReferencedType(), semantic, typeDB, archive);
 }
 
 bool readVariant(void* data, const Type& /*type*/, ReflSemantic semantic, const TypeDB& typeDB, InputArchive& archive) {
 	Variant*    variant = static_cast<Variant*>(data);
-	const Type& type = typeDB.getTypeInfo(variant->getTypeId());
+	const Type& type = typeDB.getType(variant->getTypeId());
 	return readObject(variant->getStorage(), type, semantic, typeDB, archive);
 }
 

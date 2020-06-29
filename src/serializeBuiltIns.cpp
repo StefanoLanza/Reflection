@@ -91,6 +91,11 @@ bool serialize(double& data, InputArchive& archive) {
 	return scan(&data, "%lf", archive);
 }
 
+bool serialize(const char* data, InputArchive& archive) {
+	data = archive.currNodeText();
+	return data != nullptr;
+}
+
 bool serialize(bool data, OutputArchive& archive) {
 	return archive.write(data ? "true" : "false");
 }

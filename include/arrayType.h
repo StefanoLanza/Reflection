@@ -110,9 +110,9 @@ struct autoRegisterHelper<_Ty[N]> {
 		using container_type = _Ty[N];
 		const Type*                                  elementType = autoRegisterType<element_type>(typeDB);
 		constexpr TypeId                             typeID = getTypeId<container_type>();
-		static const ArrayContainer<element_type, N> typeInfo { typeID, elementType };
-		typeDB.registerType(&typeInfo);
-		return &typeInfo;
+		static const ArrayContainer<element_type, N> types { typeID, elementType };
+		typeDB.registerType(&types);
+		return &types;
 	}
 };
 

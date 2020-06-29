@@ -12,12 +12,12 @@ class OutputArchive;
 template <typename T>
 bool writeObject(const T& object, const char* name, OutputArchive& archive) {
 	TypeDB&     typeDB = getTypeDB();
-	const Type* typeInfo = typeDB.tryGetTypeInfo<T>();
-	if (! typeInfo) {
-		typeInfo = detail::autoRegisterHelper<T>::autoRegister(typeDB);
+	const Type* types = typeDB.tryGetType<T>();
+	if (! types) {
+		types = detail::autoRegisterHelper<T>::autoRegister(typeDB);
 	}
-	if (typeInfo) {
-		return writeObject(&object, name, *typeInfo, archive);
+	if (types) {
+		return writeObject(&object, name, *types, archive);
 	}
 	else {
 		return false;

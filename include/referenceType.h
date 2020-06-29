@@ -33,11 +33,11 @@ struct AutoRegisterHelper<_Ty&>
 	{
 		using reference_type = _Ty&;
 		using non_const_type = std::remove_const_t<_Ty>;
-		const Type* valueTypeInfo = AutoRegisterType<non_const_type>(typeDB);
-		assert(valueTypeInfo);
+		const Type* valueType = AutoRegisterType<non_const_type>(typeDB);
+		assert(valueType);
 		constexpr bool isConst = std::is_const_v<_Ty>;
-		static const ReferenceType typeInfo{ getTypeId<reference_type>(), valueTypeInfo, isConst };
-		RegisterTypeInfo(&typeInfo, typeDB);
+		static const ReferenceType type{ getTypeId<reference_type>(), valueType, isConst };
+		RegisterTypeInfo(&type, typeDB);
 		return &typeInfo;
 	}
 };

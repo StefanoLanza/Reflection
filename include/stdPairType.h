@@ -17,11 +17,11 @@ struct autoRegisterHelper<std::pair<first_type, second_type>> {
 		const Type*       firstType = autoRegisterType<first_type>(typeDB);
 		const Type*       secondType = autoRegisterType<second_type>(typeDB);
 		constexpr TypeId  typeId = getTypeId<pair_type>();
-		static StructType typeInfo { typeId, sizeof(pair_type), std::alignment_of_v<pair_type> };
-		typeInfo.addField(Field { "first", firstType, offsetof(pair_type, first), ReflFlags::all, ReflSemantic::none });
-		typeInfo.addField(Field { "second", secondType, offsetof(pair_type, second), ReflFlags::all, ReflSemantic::none });
-		typeDB.registerType(&typeInfo);
-		return &typeInfo;
+		static StructType types { typeId, sizeof(pair_type), std::alignment_of_v<pair_type> };
+		types.addField(Field { "first", firstType, offsetof(pair_type, first), ReflFlags::all, ReflSemantic::none });
+		types.addField(Field { "second", secondType, offsetof(pair_type, second), ReflFlags::all, ReflSemantic::none });
+		typeDB.registerType(&types);
+		return &types;
 	}
 };
 

@@ -32,7 +32,7 @@ void      cloneVariant(void* dstData, const void* srcData, const TypeDB& typeDB)
 
 ErrorCode cloneObject(void* dstObject, const void* srcObject, TypeId typeId) {
 	const TypeDB& typeDB = getTypeDB();
-	const Type*   type = typeDB.tryGetTypeInfo(typeId);
+	const Type*   type = typeDB.tryGetType(typeId);
 	ErrorCode     errorCode;
 	if (type) {
 		if (const CustomCloner customCloner = typeDB.getCustomCloner(type); customCloner) {
@@ -228,8 +228,8 @@ void cloneVariant(void* dstData, const void* srcData, const TypeDB& typeDB) {
 	const Variant* srcVariant = static_cast<const Variant*>(srcData);
 	Variant*       dstVariant = static_cast<Variant*>(dstData);
 	if (srcVariant->getTypeId() == dstVariant->getTypeId()) {
-		const Type& variantDataTypeInfo = typeDB.getTypeInfo(srcVariant->getTypeId());
-		cloneObject(dstVariant->getStorage(), srcVariant->getStorage(), variantDataTypeInfo);
+		const Type& variantDataType = typeDB.getType(srcVariant->getTypeId());
+		cloneObject(dstVariant->getStorage(), srcVariant->getStorage(), variantDataType);
 	}
 }
 

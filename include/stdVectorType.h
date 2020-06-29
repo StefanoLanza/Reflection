@@ -115,9 +115,9 @@ struct autoRegisterHelper<std::vector<_Ty>> {
 		// AutoRegister valueType (it might be a pointer or container etc)
 		const Type*                                     valueType = autoRegisterType<value_type>(typeDB);
 		constexpr TypeId                                typeID = getTypeId<container_type>();
-		static const StdVectorContainer<container_type> typeInfo { typeID, valueType };
-		typeDB.registerType(&typeInfo);
-		return &typeInfo;
+		static const StdVectorContainer<container_type> types { typeID, valueType };
+		typeDB.registerType(&types);
+		return &types;
 	}
 };
 

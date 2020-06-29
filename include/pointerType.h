@@ -34,11 +34,11 @@ struct autoRegisterHelper<_Ty*> {
 	static const Type* autoRegister(TypeDB& typeDB) {
 		using pointer_type = std::add_pointer_t<_Ty*>;
 		using non_const_type = std::remove_const_t<_Ty>;
-		const Type* valueTypeInfo = autoRegisterType<non_const_type>(typeDB);
-		assert(valueTypeInfo);
-		static const RawPointerType typeInfo { getTypeId<pointer_type>(), sizeof(pointer_type), std::alignment_of_v<pointer_type>, valueTypeInfo };
-		typeDB.registerType(&typeInfo);
-		return &typeInfo;
+		const Type* valueType = autoRegisterType<non_const_type>(typeDB);
+		assert(valueType);
+		static const RawPointerType types { getTypeId<pointer_type>(), sizeof(pointer_type), std::alignment_of_v<pointer_type>, valueType };
+		typeDB.registerType(&types);
+		return &types;
 	}
 };
 

@@ -44,12 +44,12 @@ template <class _Ty>
 struct autoRegisterHelper<std::unique_ptr<_Ty>> {
 	static const Type* autoRegister(TypeDB& typeDB) {
 		using pointer_type = std::unique_ptr<_Ty>;
-		const Type* valueTypeInfo = autoRegisterType<_Ty>(typeDB);
-		assert(valueTypeInfo);
-		static const StdUniquePointerType<_Ty> typeInfo { getTypeId<pointer_type>(), sizeof(pointer_type), std::alignment_of_v<pointer_type>,
-			                                              valueTypeInfo };
-		typeDB.registerType(&typeInfo);
-		return &typeInfo;
+		const Type* valueType = autoRegisterType<_Ty>(typeDB);
+		assert(valueType);
+		static const StdUniquePointerType<_Ty> types { getTypeId<pointer_type>(), sizeof(pointer_type), std::alignment_of_v<pointer_type>,
+			                                           valueType };
+		typeDB.registerType(&types);
+		return &types;
 	}
 };
 

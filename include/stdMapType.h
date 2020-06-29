@@ -122,9 +122,9 @@ struct autoRegisterHelper<std::map<_Kty, _Ty>> {
 		const Type*                                  keyType = autoRegisterType<key_type>(typeDB);
 		const Type*                                  mappedType = autoRegisterType<mapped_type>(typeDB);
 		constexpr TypeId                             typeID = getTypeId<container_type>();
-		static const StdMapContainer<container_type> typeInfo { typeID, keyType, mappedType };
-		typeDB.registerType(&typeInfo);
-		return &typeInfo;
+		static const StdMapContainer<container_type> types { typeID, keyType, mappedType };
+		typeDB.registerType(&types);
+		return &types;
 	}
 };
 

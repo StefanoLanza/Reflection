@@ -24,19 +24,19 @@ public:
 	TypeDB();
 	~TypeDB();
 
-	void registerType(const Type* typeInfo, CustomReader reader = nullptr, CustomWriter writer = nullptr);
+	void registerType(const Type* type, CustomReader reader = nullptr, CustomWriter writer = nullptr);
 
-	const Type& getTypeInfo(TypeId typeID) const;
-	const Type* tryGetTypeInfo(TypeId typeID) const;
+	const Type& getType(TypeId typeID) const;
+	const Type* tryGetType(TypeId typeID) const;
 
 	template <class T>
-	const Type& getTypeInfo() const {
-		return *tryGetTypeInfo<T>();
+	const Type& getType() const {
+		return *tryGetType<T>();
 	}
 
 	template <class T>
-	const Type* tryGetTypeInfo() const {
-		return tryGetTypeInfo(getTypeId<T>());
+	const Type* tryGetType() const {
+		return tryGetType(getTypeId<T>());
 	}
 
 	void         setCustomWriter(const Type* type, CustomWriter saver);
@@ -59,7 +59,7 @@ public:
 	void setCustomCloner(CustomCloner cloner);
 
 private:
-	std::vector<const Type*>                      typeInfo;
+	std::vector<const Type*>                      types;
 	std::unordered_map<const Type*, CustomWriter> customWriters;
 	std::unordered_map<const Type*, CustomReader> customReaders;
 	std::unordered_map<const Type*, CustomCloner> customCloners;
@@ -67,19 +67,19 @@ private:
 
 template <typename TYPE>
 void TypeDB::setCustomReader(CustomReader reader) {
-	const Type& type = getTypeInfo<TYPE>();
+	const Type& type = getType<TYPE>();
 	setCustomReader(&type, std::move(reader));
 }
 
 template <typename TYPE>
 void TypeDB::setCustomWriter(CustomWriter writer) {
-	const Type& type = getTypeInfo<TYPE>();
+	const Type& type = getType<TYPE>();
 	setCustomWriter(&type, std::move(writer));
 }
 
 template <typename TYPE>
 void TypeDB::setCustomCloner(CustomCloner cloner) {
-	const Type& type = getTypeInfo<TYPE>();
+	const Type& type = getType<TYPE>();
 	setCustomCloner(&type, std::move(cloner));
 }
 

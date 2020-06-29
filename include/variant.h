@@ -48,7 +48,7 @@ public:
 	bool operator!=(const Variant& other) const;
 
 private:
-	const Type& getTypeInfo() const;
+	const Type& getType() const;
 	void        destruct();
 
 private:
