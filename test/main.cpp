@@ -18,6 +18,16 @@ void compare(const GameObject& o0, const GameObject& o1) {
 	CHECK(o0.getMaterial() == o1.getMaterial());
 }
 
+template <class T>
+bool compareArrays(const T a[], const T b[], int n) {
+	for (int i = 0; i < n; ++i) {
+		if (a[i] != b[i]) {
+			return false;
+		}
+	}
+	return true;
+}
+
 int __cdecl main(int argc, char* argv[]) {
 	TypeDB typeDB;
 	g_typeDB = &typeDB;
@@ -149,6 +159,34 @@ TEST_CASE("BitMask") {
 		ActionFlags cloned;
 		cloneObject(&cloned, flags);
 		REQUIRE(cloned.value == flags.value);
+	}
+}
+
+TEST_CASE("C array") {
+	constexpr size_t size = 64;
+	using Array = int[size];
+	Array array;
+	for (auto& e : array) {
+		e = static_cast<int>(reinterpret_cast<uintptr_t>(&e) & 0xFFFF);
+	}
+
+	SECTION("XML serialization") {
+		const char*      XMLelement = "array";
+		std::string      xmlContent;
+		XMLOutputArchive outArchive;
+		REQUIRE(writeObject(array, XMLelement, outArchive));
+		REQUIRE(outArchive.saveToString(xmlContent));
+
+		XMLInputArchive inArchive;
+		REQUIRE(inArchive.initialize(xmlContent.data()));
+		Array in_array;
+		REQUIRE(readObject(&in_array, XMLelement, inArchive));
+		CHECK(compareArrays(in_array, array, size));
+	}
+	SECTION("Clone") {
+		Array cloned;
+		cloneObject(&cloned, array);
+		CHECK(compareArrays(cloned, array, size));
 	}
 }
 
