@@ -48,6 +48,12 @@ public:
 	virtual bool        readAttribute(const char* name, double& value) = 0;
 	virtual bool        readAttribute(const char* name, const char** str) = 0;
 	virtual const char* currNodeText() = 0;
+
+	template <class T>
+	T readObject(const char* tag, T&& defaultValue);
+
+	template <class T>
+	bool readObject(const char* tag, T& object);
 };
 
 class OutputArchive {
@@ -128,7 +134,7 @@ bool serialize(const T& object, OutputArchive& archive) {
 }
 
 template <class T>
-bool serialize(const char* tag, T& object, InputArchive& archive) {
+bool serialize(const char* tag, const T& object, OutputArchive& archive) {
 	bool res = false;
 	if (archive.beginElement(tag)) {
 		res = serialize(object, archive);
@@ -138,11 +144,18 @@ bool serialize(const char* tag, T& object, InputArchive& archive) {
 }
 
 template <class T>
-bool serialize(const char* tag, const T& object, OutputArchive& archive) {
+T InputArchive::readObject(const char* tag, T&& defaultValue) {
+	T obj = std::move(defaultValue);
+	readObject(tag, obj);
+	return obj;
+}
+
+template <class T>
+bool InputArchive::readObject(const char* tag, T& object) {
 	bool res = false;
-	if (archive.beginElement(tag)) {
-		res = serialize(object, archive);
-		archive.endElement();
+	if (beginElement(tag)) {
+		res = serialize(object, *this);
+		endElement();
 	}
 	return res;
 }
