@@ -12,22 +12,12 @@ namespace {
 
 template <class T>
 void readBuiltin(void* data, InputArchive& archive) {
-	serialize(*static_cast<T*>(data), archive);
+	read(*static_cast<T*>(data), archive);
 }
 
 template <class T>
 bool writeBuiltin(const void* data, OutputArchive& archive) {
-	return serialize(*static_cast<const T*>(data), archive);
-}
-
-template <>
-void readBuiltin<const char*>(void* data, InputArchive& archive) {
-	*static_cast<const char**>(data) = archive.currNodeText();
-}
-
-template <>
-bool writeBuiltin<const char*>(const void* data, OutputArchive& archive) {
-	return archive.write(*static_cast<const char* const*>(data));
+	return write(*static_cast<const T*>(data), archive);
 }
 
 template <>

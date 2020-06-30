@@ -12,3 +12,8 @@
 #ifndef TY_REFLECTION_STD
 #define TY_REFLECTION_STD 1
 #endif
+
+// Set to 1 to enable the namespace alias "refl" for "Typhoon::Reflection"
+#ifndef TY_REFLECTION_ALIAS_NAMESPACE
+#define TY_REFLECTION_ALIAS_NAMESPACE 1
+#endif

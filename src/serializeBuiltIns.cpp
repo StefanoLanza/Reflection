@@ -1,5 +1,5 @@
-#include "serializeBuiltIns.h"
 #include "archive.h"
+#include "serializeBuiltIns.h"
 #include <cassert>
 #include <cstdio>
 
@@ -26,7 +26,7 @@ bool sprintf(T data, const char* fmt, OutputArchive& archive) {
 
 } // namespace
 
-bool serialize(char& data, InputArchive& archive) {
+bool read(char& data, InputArchive& archive) {
 	int  i = 0;
 	bool res = scan(&i, "%d", archive);
 	res = res && (i >= -128 && i <= 127);
@@ -34,7 +34,7 @@ bool serialize(char& data, InputArchive& archive) {
 	return res;
 }
 
-bool serialize(unsigned char& data, InputArchive& archive) {
+bool read(unsigned char& data, InputArchive& archive) {
 	int  i = 0;
 	bool res = scan(&i, "%i", archive);
 	res = res && (i >= 0 && i <= 255);
@@ -42,39 +42,39 @@ bool serialize(unsigned char& data, InputArchive& archive) {
 	return res;
 }
 
-bool serialize(short& data, InputArchive& archive) {
+bool read(short& data, InputArchive& archive) {
 	return scan(&data, "%h", archive);
 }
 
-bool serialize(unsigned short& data, InputArchive& archive) {
+bool read(unsigned short& data, InputArchive& archive) {
 	return scan(&data, "%hu", archive);
 }
 
-bool serialize(int& data, InputArchive& archive) {
+bool read(int& data, InputArchive& archive) {
 	return scan(&data, "%d", archive);
 }
 
-bool serialize(unsigned int& data, InputArchive& archive) {
+bool read(unsigned int& data, InputArchive& archive) {
 	return scan(&data, "%u", archive);
 }
 
-bool serialize(long& data, InputArchive& archive) {
+bool read(long& data, InputArchive& archive) {
 	return scan(&data, "%ld", archive);
 }
 
-bool serialize(unsigned long& data, InputArchive& archive) {
+bool read(unsigned long& data, InputArchive& archive) {
 	return scan(&data, "%lu", archive);
 }
 
-bool serialize(long long& data, InputArchive& archive) {
+bool read(long long& data, InputArchive& archive) {
 	return scan(&data, "%lld", archive);
 }
 
-bool serialize(unsigned long long& data, InputArchive& archive) {
+bool read(unsigned long long& data, InputArchive& archive) {
 	return scan(&data, "%llu", archive);
 }
 
-bool serialize(bool& data, InputArchive& archive) {
+bool read(bool& data, InputArchive& archive) {
 	bool res = false;
 	if (const char* str = archive.currNodeText(); str) {
 		data = (! _stricmp(str, "true")) || (std::atoi(str) != 0);
@@ -83,74 +83,74 @@ bool serialize(bool& data, InputArchive& archive) {
 	return res;
 }
 
-bool serialize(float& data, InputArchive& archive) {
+bool read(float& data, InputArchive& archive) {
 	return scan(&data, "%f", archive);
 }
 
-bool serialize(double& data, InputArchive& archive) {
+bool read(double& data, InputArchive& archive) {
 	return scan(&data, "%lf", archive);
 }
 
-bool serialize(const char* data, InputArchive& archive) {
+bool read(const char*& data, InputArchive& archive) {
 	data = archive.currNodeText();
 	return data != nullptr;
 }
 
-bool serialize(bool data, OutputArchive& archive) {
+bool write(bool data, OutputArchive& archive) {
 	return archive.write(data ? "true" : "false");
 }
 
-bool serialize(char data, OutputArchive& archive) {
+bool write(char data, OutputArchive& archive) {
 	return sprintf(static_cast<int>(data), "%d", archive);
 }
 
-bool serialize(unsigned char data, OutputArchive& archive) {
+bool write(unsigned char data, OutputArchive& archive) {
 	return sprintf(static_cast<int>(data), "%d", archive);
 }
 
-bool serialize(short data, OutputArchive& archive) {
+bool write(short data, OutputArchive& archive) {
 	return sprintf(static_cast<int>(data), "%d", archive);
 }
 
-bool serialize(unsigned short data, OutputArchive& archive) {
+bool write(unsigned short data, OutputArchive& archive) {
 	return sprintf(static_cast<unsigned int>(data), "%u", archive);
 }
 
-bool serialize(int data, OutputArchive& archive) {
+bool write(int data, OutputArchive& archive) {
 	return sprintf(data, "%d", archive);
 }
 
-bool serialize(unsigned int data, OutputArchive& archive) {
+bool write(unsigned int data, OutputArchive& archive) {
 	return sprintf(data, "%u", archive);
 }
 
-bool serialize(long data, OutputArchive& archive) {
+bool write(long data, OutputArchive& archive) {
 	return sprintf(data, "%ld", archive);
 }
 
-bool serialize(unsigned long data, OutputArchive& archive) {
+bool write(unsigned long data, OutputArchive& archive) {
 	return sprintf(data, "%lu", archive);
 }
 
-bool serialize(long long data, OutputArchive& archive) {
+bool write(long long data, OutputArchive& archive) {
 	return sprintf(data, "%lld", archive);
 }
 
-bool serialize(unsigned long long data, OutputArchive& archive) {
+bool write(unsigned long long data, OutputArchive& archive) {
 	return sprintf(data, "%llu", archive);
 }
 
-bool serialize(float data, OutputArchive& archive) {
+bool write(float data, OutputArchive& archive) {
 	return sprintf(data, "%f", archive);
 }
 
-bool serialize(double data, OutputArchive& archive) {
+bool write(double data, OutputArchive& archive) {
 	return sprintf(data, "%lf", archive);
 }
 
-bool serialize(const char* str, OutputArchive& archive) {
+bool write(const char* str, OutputArchive& archive) {
 	assert(str);
 	return archive.write(str);
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection
