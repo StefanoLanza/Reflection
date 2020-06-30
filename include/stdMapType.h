@@ -5,7 +5,7 @@
 #include <cassert>
 #include <map>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 namespace detail {
 

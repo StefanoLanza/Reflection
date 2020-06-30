@@ -3,7 +3,7 @@
 
 #include <cassert>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 TypeDB* gTypeDB = nullptr;
 

@@ -3,8 +3,6 @@
 #include <include/reflection.h>
 #include <string>
 
-using namespace Typhoon;
-
 struct TestFlags : Typhoon::BitMask<uint16_t> {
 	enum : StorageType {
 		visible = 1,
@@ -29,14 +27,14 @@ struct Builtins {
 	TestFlags   flags;
 };
 
-void        registerUserTypes(TypeDB& typeDB);
+void        registerUserTypes(refl::TypeDB& typeDB);
 Builtins    makeBuiltins();
 std::string writeBuiltins(const Builtins& b, const char* XMLelement);
 void        readBuiltins(Builtins& b, const std::string& xmlString, const char* XMLelement);
 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
-	TypeDB typeDB;
-	initReflection(typeDB);
+	refl::TypeDB typeDB;
+	refl::initReflection(typeDB);
 	registerUserTypes(typeDB);
 
 	const char* xmlElement = "builtins";
@@ -47,7 +45,7 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	return 0;
 }
 
-void registerUserTypes(TypeDB& typeDB) {
+void registerUserTypes(refl::TypeDB& typeDB) {
 	BEGIN_REFLECTION(typeDB)
 
 	BEGIN_BITMASK(TestFlags)
@@ -79,7 +77,7 @@ Builtins makeBuiltins() {
 
 std::string writeBuiltins(const Builtins& obj, const char* XMLelement) {
 	std::string      xmlContent;
-	XMLOutputArchive archive;
+	refl::XMLOutputArchive archive;
 	if (archive.beginElement(XMLelement)) {
 		writeObject(obj.i, "i", archive);
 		writeObject(obj.f, "f", archive);
@@ -94,7 +92,7 @@ std::string writeBuiltins(const Builtins& obj, const char* XMLelement) {
 }
 
 void readBuiltins(Builtins& obj, const std::string& xmlContent, const char* XMLelement) {
-	XMLInputArchive archive;
+	refl::XMLInputArchive archive;
 	if (archive.initialize(xmlContent.data())) {
 		if (archive.beginElement(XMLelement)) {
 			readObject(&obj.i, "i", archive);

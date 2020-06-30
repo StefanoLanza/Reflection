@@ -4,7 +4,7 @@
 
 #include <cassert>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 YAMLInputArchive::YAMLInputArchive() {
 }

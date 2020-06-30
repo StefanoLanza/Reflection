@@ -3,7 +3,7 @@
 #include "errorCodes.h"
 #include "typeDB.h"
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class Type;
 class TypeDB;

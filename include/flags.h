@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
-struct ReflFlags {
+struct Flags {
 	using Type = uint32_t;
 	enum : Type {
 		none = 0,

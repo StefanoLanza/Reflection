@@ -3,7 +3,7 @@
 #include "errorCodes.h"
 #include <core/typeId.h>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 ErrorCode cloneObject(void* dstObject, const void* srcObject, TypeId typeId);
 

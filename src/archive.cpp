@@ -1,7 +1,7 @@
 #include "archive.h"
 #include <cassert>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 ArchiveElement::ArchiveElement(InputArchive& archive, const char* tagName)
     : archive(&archive)

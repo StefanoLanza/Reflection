@@ -2,7 +2,7 @@
 
 #include "type.h"
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class VariantType : public Type {
 public:

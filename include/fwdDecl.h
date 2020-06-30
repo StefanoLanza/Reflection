@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class Type;
 class TypeDB;
@@ -14,7 +14,9 @@ class PointerType;
 class ReferenceType;
 class InputArchive;
 class OutputArchive;
-enum class ReflSemantic;
-struct ReflFlags;
+enum class Semantic;
+struct Flags;
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection
+
+namespace refl = Typhoon::Reflection;

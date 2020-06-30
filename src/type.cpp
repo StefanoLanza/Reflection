@@ -1,6 +1,6 @@
 #include "type.h"
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 Type::Type(TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods)
     : typeID(typeId)

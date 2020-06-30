@@ -1,7 +1,7 @@
 #include "referenceType.h"
 #include <cassert>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 ReferenceType::ReferenceType(TypeId typeID, const Type* referencedType, bool bIsConst)
     : Type(typeID, Subclass::Reference, 0, 0, {})

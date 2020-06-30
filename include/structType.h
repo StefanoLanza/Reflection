@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class Type;
 struct Field;

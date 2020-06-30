@@ -3,7 +3,7 @@
 #include "semantics.h"
 #include <cstdint>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class Type;
 
@@ -12,7 +12,7 @@ struct Field {
 	const Type* type;
 	size_t      offset;
 	uint32_t    flags;
-	ReflSemantic    semantic;
+	Semantic    semantic;
 };
 
 } // namespace Typhoon

@@ -5,10 +5,8 @@
 #include <include/reflection.h>
 #include <string>
 
-using namespace Typhoon;
-
-void    registerUserTypes(TypeDB& typeDB);
-TypeDB* g_typeDB = nullptr;
+void    registerUserTypes(refl::TypeDB& typeDB);
+refl::TypeDB* g_typeDB = nullptr;
 
 void compare(const GameObject& o0, const GameObject& o1) {
 	CHECK(o0.getLives() == o1.getLives());
@@ -29,9 +27,9 @@ bool compareArrays(const T a[], const T b[], int n) {
 }
 
 int __cdecl main(int argc, char* argv[]) {
-	TypeDB typeDB;
+	refl::TypeDB typeDB;
 	g_typeDB = &typeDB;
-	initReflection(typeDB);
+	refl::initReflection(typeDB);
 	registerUserTypes(typeDB);
 	return Catch::Session().run(argc, argv);
 }
@@ -46,6 +44,7 @@ TEST_CASE("Primitives") {
 	float         f = 3.14f, f2 = 0.f;
 	double        d = 4234234234., d2 = 0.;
 	bool          b = false, b2 = true;
+	using namespace refl;
 
 	SECTION("XML Serialization") {
 		std::string      xmlContent;
@@ -112,6 +111,7 @@ TEST_CASE("Primitives") {
 }
 
 TEST_CASE("Enum") {
+	using namespace refl;
 	SeasonType season = SeasonType::spring;
 	SECTION("XML Serialization") {
 		const char*      XMLelement = "season";
@@ -137,6 +137,7 @@ TEST_CASE("Enum") {
 }
 
 TEST_CASE("BitMask") {
+	using namespace refl;
 	ActionFlags flags;
 	flags.value = ActionFlags::running | ActionFlags::smiling;
 	SECTION("XML Serialization") {
@@ -163,6 +164,8 @@ TEST_CASE("BitMask") {
 }
 
 TEST_CASE("C array") {
+	using namespace refl;
+
 	constexpr size_t size = 64;
 	using Array = int[size];
 	Array array;
@@ -191,6 +194,7 @@ TEST_CASE("C array") {
 }
 
 TEST_CASE("std::vector") {
+	using namespace refl;
 	using Vector = std::vector<std::string>;
 	const Vector vec { "Stefano", "Claudio", "Cristiana", "Manlio", "Nicoletta", "Enrico", "Oriana", "Marco" };
 	SECTION("XML serialization") {
@@ -214,6 +218,7 @@ TEST_CASE("std::vector") {
 }
 
 TEST_CASE("std::map") {
+	using namespace refl;
 	using Map = std::map<std::string, std::string>;
 	const Map map { { "Lanza", "Stefano" }, { "Biancardi", "Nicoletta" }, { "Moschella", "Enrico" } };
 	SECTION("XML serialization") {
@@ -237,6 +242,7 @@ TEST_CASE("std::map") {
 }
 
 TEST_CASE("std::array") {
+	using namespace refl;
 	using Array = std::array<int, 16>;
 	Array array;
 	for (auto& e : array) {
@@ -264,6 +270,7 @@ TEST_CASE("std::array") {
 }
 
 TEST_CASE("std::pair") {
+	using namespace refl;
 	using Pair = std::pair<bool, std::string>;
 	Pair pair { true, "Stefano" };
 
@@ -288,6 +295,7 @@ TEST_CASE("std::pair") {
 }
 
 TEST_CASE("std::tuple") {
+	using namespace refl;
 	using Tuple = std::tuple<std::string, int, float, Coords>;
 	const Tuple tuple { "Stefano", 40, 1.78f, { 10.f, 20.f, 30.f } };
 
@@ -312,6 +320,7 @@ TEST_CASE("std::tuple") {
 }
 
 TEST_CASE("std::unique_ptr") {
+	using namespace refl;
 	const auto material = std::make_unique<Material>(Material { "material", Color { 255, 0, 0 } });
 
 	SECTION("XML serialization") {
@@ -335,6 +344,7 @@ TEST_CASE("std::unique_ptr") {
 }
 
 TEST_CASE("std::shared_ptr") {
+	using namespace refl;
 	const auto material = std::make_shared<Material>(Material { "material", Color { 255, 0, 0 } });
 
 	SECTION("XML serialization") {
@@ -358,6 +368,8 @@ TEST_CASE("std::shared_ptr") {
 }
 
 TEST_CASE("Class") {
+	using namespace refl;
+
 	ActionFlags actionFlags;
 	actionFlags.value = ActionFlags::running | ActionFlags::smiling;
 	GameObject gameObject;
@@ -390,6 +402,8 @@ TEST_CASE("Class") {
 }
 
 TEST_CASE("Struct") {
+	using namespace refl;
+
 	Fog fog;
 	setDensity(fog, 10.f);
 	setColor(fog, { 1.f, 0.5f, 0.5f });
@@ -423,6 +437,8 @@ TEST_CASE("Struct") {
 #endif
 
 TEST_CASE("Variant") {
+	using namespace refl;
+
 	using VariantArray = std::array<Variant, 2>;
 	const VariantArray variants { Variant { 3.14, "double" }, Variant { 41, "int" } };
 	VariantArray       otherVariants { Variant { 0., "double" }, Variant { 0, "int" } };
@@ -449,7 +465,7 @@ TEST_CASE("Variant") {
 	}
 }
 
-void registerUserTypes(TypeDB& typeDB) {
+void registerUserTypes(refl::TypeDB& typeDB) {
 	BEGIN_REFLECTION(typeDB)
 
 	BEGIN_BITMASK(ActionFlags)
@@ -493,7 +509,7 @@ void registerUserTypes(TypeDB& typeDB) {
 	PROPERTY("lives", getLives, setLives);
 	PROPERTY("name", getName, setName);
 	PROPERTY("position", getPosition, setPosition);
-	PROPERTY_EX("action", getActionFlags, setActionFlags, ReflFlags::all, ReflSemantic::none);
+	PROPERTY_EX("action", getActionFlags, setActionFlags, Flags::all, Semantic::none);
 	PROPERTY("material", getMaterial, setMaterial);
 	END_CLASS();
 

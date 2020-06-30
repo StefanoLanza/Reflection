@@ -2,7 +2,7 @@
 #include <cassert>
 #include <cstring>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 BitMaskType::BitMaskType(TypeId typeID, size_t size, size_t alignment, const BitMaskConstant enumerators[], size_t numEnumerators)
     : Type(typeID, Subclass::BitMask, size, alignment, {})

@@ -5,8 +5,6 @@
 #include <include/reflection.h>
 #include <string>
 
-using namespace Typhoon;
-
 struct TextureData {
 	void*  data = nullptr;
 	size_t size = 0;
@@ -21,14 +19,14 @@ struct Texture {
 };
 
 TextureDataPtr loadTextureFromFile(const std::string& fileName);
-bool           writeTexture(const void* data, OutputArchive& archive);
-void           readTexture(void* data, InputArchive& archive);
-void           registerUserTypes(TypeDB& typeDB);
+bool           writeTexture(const void* data, refl::OutputArchive& archive);
+void           readTexture(void* data, refl::InputArchive& archive);
+void           registerUserTypes(refl::TypeDB& typeDB);
 std::string    writeTextureToXML(const Texture& obj, const char* XMLelement);
 void           readTextureFromXML(Texture& obj, const std::string& xmlString, const char* XMLelement);
 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
-	TypeDB typeDB;
+	refl::TypeDB typeDB;
 	initReflection(typeDB);
 	registerUserTypes(typeDB);
 
@@ -40,7 +38,7 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	return 0;
 }
 
-void registerUserTypes(TypeDB& typeDB) {
+void registerUserTypes(refl::TypeDB& typeDB) {
 	BEGIN_REFLECTION(typeDB)
 
 	BEGIN_STRUCT(Texture);
@@ -53,15 +51,15 @@ void registerUserTypes(TypeDB& typeDB) {
 }
 
 std::string writeTextureToXML(const Texture& obj, const char* XMLelement) {
-	std::string      xmlContent;
-	XMLOutputArchive archive;
+	std::string            xmlContent;
+	refl::XMLOutputArchive archive;
 	writeObject(obj, XMLelement, archive);
 	archive.saveToString(xmlContent);
 	return xmlContent;
 }
 
 void readTextureFromXML(Texture& obj, const std::string& xmlContent, const char* XMLelement) {
-	XMLInputArchive archive;
+	refl::XMLInputArchive archive;
 	if (archive.initialize(xmlContent.data())) {
 		readObject(&obj, XMLelement, archive);
 	}
@@ -73,14 +71,14 @@ TextureDataPtr loadTextureFromFile(const std::string& fileName) {
 	return std::make_shared<TextureData>();
 }
 
-bool writeTexture(const void* data, OutputArchive& archive) {
+bool writeTexture(const void* data, refl::OutputArchive& archive) {
 	const Texture* texture = static_cast<const Texture*>(data);
 	// Only the texture fileName is serialized. Its data is stored externally
 	writeObject(texture->fileName, "fileName", archive);
 	return true;
 }
 
-void readTexture(void* data, InputArchive& archive) {
+void readTexture(void* data, refl::InputArchive& archive) {
 	Texture* texture = static_cast<Texture*>(data);
 	if (readObject(&texture->fileName, "fileName", archive)) {
 		texture->data = loadTextureFromFile(texture->fileName);

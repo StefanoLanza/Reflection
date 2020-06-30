@@ -3,7 +3,7 @@
 #include "type.h"
 #include "typeDB.h"
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class ReferenceType : public Type {
 public:

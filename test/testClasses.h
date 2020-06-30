@@ -39,8 +39,8 @@ struct Material {
 	Color       color { 1.f, 1.f, 1.f };
 };
 
-bool customSaveMaterial(const void* data, Typhoon::OutputArchive& archive);
-void customReadMaterial(void* data, Typhoon::InputArchive& archive);
+bool customSaveMaterial(const void* data, refl::OutputArchive& archive);
+void customReadMaterial(void* data, refl::InputArchive& archive);
 bool operator==(const Material& a, const Material& b);
 
 class GameObject {

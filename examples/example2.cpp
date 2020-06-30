@@ -4,8 +4,6 @@
 #include <include/reflection.h>
 #include <string>
 
-using namespace Typhoon;
-
 struct Coords {
 	float x;
 	float y;
@@ -31,14 +29,14 @@ int getRemainingLives(const GameObject& obj) {
 	return maxLives - obj.lives;
 }
 
-void        registerUserTypes(TypeDB& typeDB);
+void        registerUserTypes(refl::TypeDB& typeDB);
 GameObject  makeGameObject();
 std::string writeGameObjectToXML(const GameObject& obj, const char* XMLelement);
 void        readGameObjectFromXML(GameObject& obj, const std::string& xmlString, const char* XMLelement);
 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
-	TypeDB typeDB;
-	initReflection(typeDB);
+	refl::TypeDB typeDB;
+	refl::initReflection(typeDB);
 	registerUserTypes(typeDB);
 
 	const char* xmlElement = "gameObject";
@@ -49,7 +47,7 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	return 0;
 }
 
-void registerUserTypes(TypeDB& typeDB) {
+void registerUserTypes(refl::TypeDB& typeDB) {
 	BEGIN_REFLECTION(typeDB)
 
 	BEGIN_STRUCT(Coords);
@@ -79,15 +77,15 @@ GameObject makeGameObject() {
 }
 
 std::string writeGameObjectToXML(const GameObject& obj, const char* XMLelement) {
-	std::string      xmlContent;
-	XMLOutputArchive archive;
+	std::string            xmlContent;
+	refl::XMLOutputArchive archive;
 	writeObject(obj, XMLelement, archive);
 	archive.saveToString(xmlContent);
 	return xmlContent;
 }
 
 void readGameObjectFromXML(GameObject& obj, const std::string& xmlContent, const char* XMLelement) {
-	XMLInputArchive archive;
+	refl::XMLInputArchive archive;
 	if (archive.initialize(xmlContent.data())) {
 		readObject(&obj, XMLelement, archive);
 	}

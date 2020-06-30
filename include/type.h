@@ -3,7 +3,7 @@
 #include <core/typeId.h>
 #include <type_traits>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 using Constructor = void (*)(void*);
 using Destructor = void (*)(void*);

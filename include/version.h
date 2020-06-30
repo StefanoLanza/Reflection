@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 #define TY_REFLECTION_MAJOR_VERSION 1
 #define TY_REFLECTION_MINOR_VERSION 0

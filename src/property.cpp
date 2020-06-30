@@ -3,9 +3,9 @@
 #include "type.h"
 #include <cassert>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
-Property::Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, uint32_t flags, ReflSemantic semantic)
+Property::Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, uint32_t flags, Semantic semantic)
     : setter { std::move(setter) }
     , getter { std::move(getter) }
     , name(name)
@@ -15,13 +15,13 @@ Property::Property(Setter&& setter, Getter&& getter, const char* name, const Typ
 	assert(valueType);
 	// Override flags
 	if (! this->setter) {
-		flags &= ~ReflFlags::writeable;
-		flags &= ~ReflFlags::edit;
+		flags &= ~Flags::writeable;
+		flags &= ~Flags::edit;
 	}
 	if (! this->getter) {
-		flags &= ~ReflFlags::readable;
-		flags &= ~ReflFlags::clonable;
-		flags &= ~ReflFlags::view;
+		flags &= ~Flags::readable;
+		flags &= ~Flags::clonable;
+		flags &= ~Flags::view;
 	}
 }
 
@@ -37,7 +37,7 @@ uint32_t Property::getFlags() const {
 	return flags;
 }
 
-ReflSemantic Property::getSemantic() const {
+Semantic Property::getSemantic() const {
 	return semantic;
 }
 

@@ -17,7 +17,7 @@
 #include <core/ptrUtil.h>
 #include <core/stackAlloc.h>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 namespace {
 
@@ -70,7 +70,7 @@ bool writeStruct(const void* data, const Type& type, const TypeDB& typeDB, Outpu
 
 	const StructType& structType = static_cast<const StructType&>(type);
 	for (const auto& field : structType.getFields()) {
-		if (field.flags & ReflFlags::writeable) {
+		if (field.flags & Flags::writeable) {
 			// Each field knows its offset so add that to the base address of the
 			// object being saved to get at the individual field data
 			const void* const field_data = advancePointer(data, field.offset);
@@ -79,7 +79,7 @@ bool writeStruct(const void* data, const Type& type, const TypeDB& typeDB, Outpu
 	}
 
 	for (const auto& property : structType.getProperties()) {
-		if (property->getFlags() & ReflFlags::writeable) {
+		if (property->getFlags() & Flags::writeable) {
 			const Type& valueType = property->getValueType();
 
 			// Allocate a temporary for the value

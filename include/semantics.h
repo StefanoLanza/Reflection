@@ -1,8 +1,8 @@
 #pragma once
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
-enum class ReflSemantic {
+enum class Semantic {
 	none = 0,
 	color = 1,
 	direction = 2,

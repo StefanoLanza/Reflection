@@ -16,7 +16,7 @@
 #include <cassert>
 #include <core/ptrUtil.h>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 namespace {
 ErrorCode cloneObject(void* dstData, const void* srcData, const Type& type);
@@ -82,7 +82,7 @@ ErrorCode cloneObject(void* dstData, const void* srcData, const Type& type) {
 
 void cloneStruct(void* dstData, const void* srcData, const StructType& structType, const TypeDB& typeDB) {
 	for (const auto& field : structType.getFields()) {
-		if (field.flags & ReflFlags::clonable) {
+		if (field.flags & Flags::clonable) {
 			void*       dstFieldData = advancePointer(dstData, field.offset);
 			const void* srcFieldData = advancePointer(srcData, field.offset);
 			cloneObject(dstFieldData, srcFieldData, *field.type);
@@ -90,7 +90,7 @@ void cloneStruct(void* dstData, const void* srcData, const StructType& structTyp
 	}
 
 	for (const auto& property : structType.getProperties()) {
-		if (property->getFlags() & ReflFlags::clonable) {
+		if (property->getFlags() & Flags::clonable) {
 			property->copyValue(dstData, srcData);
 		}
 	}

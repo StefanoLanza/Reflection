@@ -5,7 +5,7 @@
 #include <core/span.h>
 #include <cstring>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 struct Enumerator {
 	const char* name;

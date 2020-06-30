@@ -5,7 +5,7 @@
 #include <core/span.h>
 #include <cstdint>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 using BitMaskStorageType = uint64_t; // largest type that can represent bitmasks
 

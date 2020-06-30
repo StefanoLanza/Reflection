@@ -3,7 +3,7 @@
 #include "type.h"
 #include <memory>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class ReadIterator {
 public:

@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 namespace detail {
 

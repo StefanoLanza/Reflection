@@ -5,7 +5,7 @@
 #include <TinyXML/tinyxml2.h>
 #include <cassert>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 XMLInputArchive::XMLInputArchive()
     : document(std::make_unique<tinyxml2::XMLDocument>())

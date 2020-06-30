@@ -3,7 +3,7 @@
 #include <cassert>
 #include <cstdio>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 namespace {
 

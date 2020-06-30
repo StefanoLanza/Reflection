@@ -1,4 +1,4 @@
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class InputArchive;
 class OutputArchive;
@@ -33,4 +33,4 @@ bool serialize(float data, OutputArchive& archive);
 bool serialize(double data, OutputArchive& archive);
 bool serialize(const char* str, OutputArchive& archive);
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

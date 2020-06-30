@@ -1,7 +1,7 @@
 #include "variant.h"
 #include "typeDB.h"
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 Variant::Variant()
     : typeId {

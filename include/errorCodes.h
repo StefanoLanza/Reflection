@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 enum class ErrorCode {
 	ok,

@@ -9,20 +9,20 @@
 #include <core/typeId.h>
 #include <vector>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class InputArchive;
 
-bool readObject(void* object, TypeId typeId, InputArchive& archive, ReflSemantic semantic = ReflSemantic::none);
-bool readObject(void* object, TypeId typeId, const char* name, InputArchive& archive, ReflSemantic semantic = ReflSemantic::none);
+bool readObject(void* object, TypeId typeId, InputArchive& archive, Semantic semantic = Semantic::none);
+bool readObject(void* object, TypeId typeId, const char* name, InputArchive& archive, Semantic semantic = Semantic::none);
 
 template <typename T>
-bool readObject(T* object, const char* name, InputArchive& archive, ReflSemantic semantic = ReflSemantic::none) {
+bool readObject(T* object, const char* name, InputArchive& archive, Semantic semantic = Semantic::none) {
 	return readObject(object, getTypeId<T>(), name, archive, semantic);
 }
 
 template <typename T>
-bool readObject(T* object, InputArchive& archive, ReflSemantic semantic = ReflSemantic::none) {
+bool readObject(T* object, InputArchive& archive, Semantic semantic = Semantic::none) {
 	return readObject(object, getTypeId<T>(), archive, semantic);
 }
 

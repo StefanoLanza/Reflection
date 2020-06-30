@@ -3,7 +3,7 @@
 #include <core/uncopyable.h>
 #include <string>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class ArchiveIterator {
 public:

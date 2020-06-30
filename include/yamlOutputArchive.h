@@ -7,7 +7,7 @@
 #include "archive.h"
 #include <memory>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class YAMLOutputArchive final : public OutputArchive {
 public:

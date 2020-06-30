@@ -13,8 +13,11 @@
 #include "variant.h"
 #include "writeObject.h"
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 void initReflection(TypeDB& typeDB);
 
 }
+
+// Namespace alias
+namespace refl = Typhoon::Reflection;

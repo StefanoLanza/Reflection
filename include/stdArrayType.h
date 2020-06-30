@@ -4,7 +4,7 @@
 #include "typeDB.h"
 #include <array>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 namespace detail {
 

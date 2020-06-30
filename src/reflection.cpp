@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <string>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 namespace {
 
@@ -75,4 +75,4 @@ void initReflection(TypeDB& typeDB) {
 	registerBuiltinTypes(typeDB);
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

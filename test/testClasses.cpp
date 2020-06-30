@@ -31,15 +31,15 @@ void setColor(Fog& fog, Color c) {
 	fog.color = c;
 }
 
-bool customSaveMaterial(const void* data, Typhoon::OutputArchive& archive) {
+bool customSaveMaterial(const void* data, refl::OutputArchive& archive) {
 	const Material* material = static_cast<const Material*>(data);
-	Typhoon::writeObject(material->name, "name", archive);
-	Typhoon::writeObject(material->color, "color", archive);
+	refl::writeObject(material->name, "name", archive);
+	refl::writeObject(material->color, "color", archive);
 	return true;
 }
 
-void customReadMaterial(void* data, Typhoon::InputArchive& archive) {
+void customReadMaterial(void* data, refl::InputArchive& archive) {
 	Material* material = static_cast<Material*>(data);
-	Typhoon::readObject(&material->name, "name", archive);
-	Typhoon::readObject(&material->color, "color", archive);
+	refl::readObject(&material->name, "name", archive);
+	refl::readObject(&material->color, "color", archive);
 }

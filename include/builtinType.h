@@ -2,7 +2,7 @@
 
 #include "type.h"
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class BuiltinType : public Type {
 public:

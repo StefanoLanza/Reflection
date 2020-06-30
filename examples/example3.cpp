@@ -3,8 +3,6 @@
 #include <include/reflection.h>
 #include <string>
 
-using namespace Typhoon;
-
 struct ActionFlags : Typhoon::BitMask<uint16_t> {
 	enum : StorageType {
 		running = 1,
@@ -53,13 +51,13 @@ private:
 	Coords      position { 0.f, 0.f, 0.f };
 };
 
-void        registerUserTypes(TypeDB& typeDB);
+void        registerUserTypes(refl::TypeDB& typeDB);
 GameObject  makeGameObject();
 std::string writeGameObject(const GameObject& obj, const char* XMLelement);
 void        readGameObject(GameObject& obj, const std::string& xmlString, const char* XMLelement);
 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
-	TypeDB typeDB;
+	refl::TypeDB typeDB;
 	initReflection(typeDB);
 	registerUserTypes(typeDB);
 
@@ -71,7 +69,7 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	return 0;
 }
 
-void registerUserTypes(TypeDB& typeDB) {
+void registerUserTypes(refl::TypeDB& typeDB) {
 	BEGIN_REFLECTION(typeDB)
 
 	BEGIN_BITMASK(ActionFlags)
@@ -90,7 +88,7 @@ void registerUserTypes(TypeDB& typeDB) {
 	PROPERTY("life", getLife, setLives);
 	PROPERTY("name", getName, setName);
 	PROPERTY("position", getPosition, setPosition);
-	PROPERTY_EX("action", getActionFlags, setActionFlags, ReflFlags::all, ReflSemantic::none);
+	PROPERTY_EX("action", getActionFlags, setActionFlags, Flags::all, Semantic::none);
 	END_CLASS();
 
 	END_REFLECTION();
@@ -110,14 +108,14 @@ GameObject makeGameObject() {
 
 std::string writeGameObject(const GameObject& obj, const char* XMLelement) {
 	std::string      xmlContent;
-	XMLOutputArchive archive;
+	refl::XMLOutputArchive archive;
 	writeObject(obj, XMLelement, archive);
 	archive.saveToString(xmlContent);
 	return xmlContent;
 }
 
 void readGameObject(GameObject& obj, const std::string& xmlContent, const char* XMLelement) {
-	XMLInputArchive archive;
+	refl::XMLInputArchive archive;
 	if (archive.initialize(xmlContent.data())) {
 		readObject(&obj, XMLelement, archive);
 	}

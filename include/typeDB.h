@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class InputArchive;
 class OutputArchive;

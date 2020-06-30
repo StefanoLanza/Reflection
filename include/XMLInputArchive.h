@@ -16,7 +16,7 @@ class XMLNode;
 
 } // namespace tinyxml2
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class XMLInputArchive final : public InputArchive {
 public:

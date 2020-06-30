@@ -5,7 +5,7 @@
 #include <string>
 #include <type_traits>
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 class Type;
 

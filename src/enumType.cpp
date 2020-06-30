@@ -1,6 +1,6 @@
 #include "enumType.h"
 
-namespace Typhoon {
+namespace Typhoon::Reflection {
 
 EnumType::EnumType(TypeId typeID, const char* name, size_t size, size_t alignment, const Enumerator enumConstants[], size_t count)
     : Type(typeID, Subclass::Enum, size, alignment, {})
