@@ -1,5 +1,5 @@
 -- Global settings
-local workspacePath = path.join("build/", _ACTION)  -- e.g. build/vs2019
+local workspacePath = path.join("build", _ACTION)  -- e.g. build/vs2019
 
 workspace ("Typhoon-Reflection")
 configurations { "Debug", "Release" }
@@ -47,14 +47,14 @@ filter "configurations:Release*"
 
 project("TinyXML")
 	kind "StaticLib"
-	files "TinyXML/**.cpp"
-	files "TinyXML/**.h"
+	files "external/TinyXML/**.cpp"
+	files "external/TinyXML/**.h"
 	includedirs { "TinyXML", }
 
 project("Core")
 	kind "StaticLib"
-	files "core/**.cpp"
-	files "core/**.h"
+	files "external/core/**.cpp"
+	files "external/core/**.h"
 	includedirs { "./", }
 
 project("Reflection")
@@ -68,29 +68,29 @@ project("Reflection")
 project("Example1")
 	kind "ConsoleApp"
 	files "examples/example1.cpp"
-	includedirs { "./", "include/", }
+	includedirs { ".", "include", "external", }
 	links({"Reflection", })
 
 project("Example2")
 	kind "ConsoleApp"
 	files "examples/example2.cpp"
-	includedirs { "./", "include/", }
+	includedirs { ".", "include", "external", }
 	links({"Reflection", })
 
 project("Example3")
 	kind "ConsoleApp"
 	files "examples/example3.cpp"
-	includedirs { "./", "include/", }
+	includedirs { ".", "include", "external", }
 	links({"Reflection", })
 
 project("Example4")
 	kind "ConsoleApp"
 	files "examples/example4.cpp"
-	includedirs { "./", "include/", }
+	includedirs { ".", "include", "external",  }
 	links({"Reflection", })
 
 project("UnitTest")
 	kind "ConsoleApp"
 	links({"Reflection", })
 	files "test/**.cpp"
-	includedirs { "./", "include/", }
+	includedirs { ".", "include", "external", }
