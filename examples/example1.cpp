@@ -1,6 +1,8 @@
 // Example showing reflection and serialization of a builtin types, enums and bitmasks
 
 #include <include/reflection.h>
+#include <include/version.h>
+#include <iostream>
 #include <string>
 
 struct TestFlags : Typhoon::BitMask<uint16_t> {
@@ -33,6 +35,8 @@ std::string writeBuiltins(const Builtins& b, const char* XMLelement);
 void        readBuiltins(Builtins& b, const std::string& xmlString, const char* XMLelement);
 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
+	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
+
 	refl::TypeDB typeDB;
 	refl::initReflection(typeDB);
 	registerUserTypes(typeDB);
@@ -76,7 +80,7 @@ Builtins makeBuiltins() {
 }
 
 std::string writeBuiltins(const Builtins& obj, const char* XMLelement) {
-	std::string      xmlContent;
+	std::string            xmlContent;
 	refl::XMLOutputArchive archive;
 	if (archive.beginElement(XMLelement)) {
 		writeObject(obj.i, "i", archive);

@@ -2,6 +2,8 @@
 // which does parameter validation
 
 #include <include/reflection.h>
+#include <include/version.h>
+#include <iostream>
 #include <string>
 
 struct Coords {
@@ -35,6 +37,8 @@ std::string writeGameObjectToXML(const GameObject& obj, const char* XMLelement);
 void        readGameObjectFromXML(GameObject& obj, const std::string& xmlString, const char* XMLelement);
 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
+	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
+
 	refl::TypeDB typeDB;
 	refl::initReflection(typeDB);
 	registerUserTypes(typeDB);

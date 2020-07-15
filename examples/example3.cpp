@@ -1,6 +1,8 @@
 // Example showing reflection and serialization of a C++ object
 
 #include <include/reflection.h>
+#include <include/version.h>
+#include <iostream>
 #include <string>
 
 struct ActionFlags : Typhoon::BitMask<uint16_t> {
@@ -57,6 +59,8 @@ std::string writeGameObject(const GameObject& obj, const char* XMLelement);
 void        readGameObject(GameObject& obj, const std::string& xmlString, const char* XMLelement);
 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
+	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
+
 	refl::TypeDB typeDB;
 	initReflection(typeDB);
 	registerUserTypes(typeDB);
@@ -107,7 +111,7 @@ GameObject makeGameObject() {
 }
 
 std::string writeGameObject(const GameObject& obj, const char* XMLelement) {
-	std::string      xmlContent;
+	std::string            xmlContent;
 	refl::XMLOutputArchive archive;
 	writeObject(obj, XMLelement, archive);
 	archive.saveToString(xmlContent);
