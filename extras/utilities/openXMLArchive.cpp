@@ -1,9 +1,9 @@
-#include "XMLUtilities.h"
+#include "openXMLArchive.h"
 #include <cassert>
 #include <file/fileServer.h>
 #include <file/fileUtil.h>
 #include <file/stream.h>
-#include <reflection/include/XMLInputArchive.h>
+#include <include/XMLInputArchive.h>
 
 namespace Typhoon {
 
