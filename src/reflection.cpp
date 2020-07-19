@@ -1,4 +1,6 @@
 #include "../include/reflection.h"
+#include "allocUtils.h"
+#include "allocator.h"
 #include "archive.h"
 #include "builtinType.h"
 #include "serializeBuiltIns.h"
@@ -59,10 +61,53 @@ void registerBuiltinTypes(TypeDB& typeDB) {
 	typeDB.registerType(&variantType);
 }
 
+struct Context {
+	TypeDB*    typeDB;
+	Allocator* allocator;
+};
+
+class DefaultAllocator : public Allocator {
+public:
+	void* alloc(size_t size, size_t /*alignment*/) override {
+		return ::malloc(size);
+	}
+
+	void free(void* ptr, size_t /*size*/) override {
+		::free(ptr);
+	}
+};
+
+TypeDB           typeDB;
+DefaultAllocator defaultAllocator;
+
+Context context { &typeDB, &defaultAllocator };
+
 } // namespace
 
-void initReflection(TypeDB& typeDB) {
-	registerBuiltinTypes(typeDB);
+namespace detail {
+
+void* alloc(size_t size, size_t alignment) {
+	return context.allocator->alloc(size, alignment);
+}
+
+void free(void* ptr, size_t size) {
+	context.allocator->free(ptr, size);
+}
+
+Allocator& getAllocator() {
+	return *context.allocator;
+}
+
+} // namespace detail
+
+TypeDB& initReflection() {
+	return initReflection(defaultAllocator);
+}
+
+TypeDB& initReflection(Allocator& allocator) {
+	context.allocator = &allocator;
+	registerBuiltinTypes(*context.typeDB);
+	return *context.typeDB;
 }
 
 } // namespace Typhoon::Reflection

@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "type.h"
+#include <core/uncopyable.h>
 
 #include <cassert>
 #include <functional>
@@ -19,7 +20,7 @@ using CustomWriter = std::function<bool(const void*, OutputArchive&)>;
 using CustomReader = std::function<void(void*, InputArchive&)>;
 using CustomCloner = std::function<void(void*, const void*)>;
 
-class TypeDB {
+class TypeDB : Uncopyable {
 public:
 	TypeDB();
 	~TypeDB();
@@ -85,4 +86,4 @@ void TypeDB::setCustomCloner(CustomCloner cloner) {
 
 TypeDB& getTypeDB();
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

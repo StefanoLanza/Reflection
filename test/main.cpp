@@ -6,7 +6,6 @@
 #include <string>
 
 void    registerUserTypes(refl::TypeDB& typeDB);
-refl::TypeDB* g_typeDB = nullptr;
 
 void compare(const GameObject& o0, const GameObject& o1) {
 	CHECK(o0.getLives() == o1.getLives());
@@ -27,9 +26,7 @@ bool compareArrays(const T a[], const T b[], int n) {
 }
 
 int __cdecl main(int argc, char* argv[]) {
-	refl::TypeDB typeDB;
-	g_typeDB = &typeDB;
-	refl::initReflection(typeDB);
+	refl::TypeDB& typeDB = refl::initReflection();
 	registerUserTypes(typeDB);
 	return Catch::Session().run(argc, argv);
 }

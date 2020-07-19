@@ -2,6 +2,7 @@
 // In this case the object is a texture, which is uniquely identified by a file name and contains data loaded from an external file.
 // Only the filename is serialized, the data is loaded on demand
 
+#include "customAllocator.h"
 #include <include/reflection.h>
 #include <include/version.h>
 #include <iostream>
@@ -30,8 +31,8 @@ void           readTextureFromXML(Texture& obj, const std::string& xmlString, co
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
 
-	refl::TypeDB typeDB;
-	initReflection(typeDB);
+	CustomAllocator customAllocator;
+	refl::TypeDB&   typeDB = initReflection(customAllocator);
 	registerUserTypes(typeDB);
 
 	const char* xmlElement = "Texture";
@@ -39,6 +40,8 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::string xmlContent = writeTextureToXML(texture, xmlElement);
 	Texture     otherObj;
 	readTextureFromXML(otherObj, xmlContent, xmlElement);
+
+	std::cout << "Total allocated memory " << customAllocator.getTotalAlloc() << " bytes" << std::endl;
 	return 0;
 }
 

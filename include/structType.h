@@ -3,6 +3,7 @@
 #include "type.h"
 #include <core/span.h>
 #include <memory>
+#include <src/stdAllocator.h>
 #include <vector>
 
 namespace Typhoon::Reflection {
@@ -26,9 +27,12 @@ public:
 	span<const PropertyPtr> getProperties() const;
 
 private:
-	const StructType*        parentType;
-	std::vector<PropertyPtr> properties;
-	std::vector<Field>       fields;
+	using Vector = std::vector<PropertyPtr, stdAllocator<PropertyPtr>>;
+	using FieldVector = std::vector<Field, stdAllocator<Field>>;
+
+	const StructType* parentType;
+	Vector            properties;
+	FieldVector       fields;
 };
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

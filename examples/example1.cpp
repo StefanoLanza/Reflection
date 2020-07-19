@@ -37,8 +37,7 @@ void        readBuiltins(Builtins& b, const std::string& xmlString, const char* 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
 
-	refl::TypeDB typeDB;
-	refl::initReflection(typeDB);
+	refl::TypeDB& typeDB = refl::initReflection();
 	registerUserTypes(typeDB);
 
 	const char* xmlElement = "builtins";

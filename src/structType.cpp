@@ -1,12 +1,15 @@
 #include "structType.h"
 #include "field.h"
 #include "property.h"
+#include "allocUtils.h"
 
 namespace Typhoon::Reflection {
 
 StructType::StructType(TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const MethodTable& methods)
     : Type { typeID, Subclass::Struct, size, alignment, methods }
-    , parentType(parentType) {
+    , parentType(parentType)
+    , properties(stdAllocator<PropertyPtr>(detail::getAllocator()))
+    , fields(stdAllocator<Field>(detail::getAllocator())) {
 }
 
 StructType::~StructType() = default;
@@ -45,4 +48,4 @@ span<const StructType::PropertyPtr> StructType::getProperties() const {
 	return { properties.data(), properties.size() };
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

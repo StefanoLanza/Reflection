@@ -62,7 +62,7 @@ project("Reflection")
 	files "src/**.cpp"
 	files "src/**.h"
 	files "include/**.h"
-	includedirs { "./", "include/", }
+	includedirs { ".", "include", "external", }
 	links({"Core", "TinyXML"})
 
 project("Example1")
