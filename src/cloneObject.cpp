@@ -36,7 +36,7 @@ ErrorCode cloneObject(void* dstObject, const void* srcObject, TypeId typeId) {
 	const Type*   type = typeDB.tryGetType(typeId);
 	ErrorCode     errorCode;
 	if (type) {
-		if (const CustomCloner customCloner = typeDB.getCustomCloner(type); customCloner) {
+		if (const CustomCloner& customCloner = type->getCustomCloner(); customCloner) {
 			customCloner(dstObject, srcObject);
 			errorCode = ErrorCode::ok;
 		}

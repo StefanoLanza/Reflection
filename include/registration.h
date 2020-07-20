@@ -48,10 +48,10 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 
 // Macro-based reflection
 
-#define BEGIN_REFLECTION(typeDB)                                   \
+#define BEGIN_REFLECTION()                                         \
 	__pragma(warning(push)) __pragma(warning(disable : 4127)) do { \
 		using namespace refl;                                      \
-		TypeDB& typeDB_ = typeDB;
+		TypeDB& typeDB_ = getTypeDB();
 
 #define END_REFLECTION() \
 	}                    \
@@ -152,16 +152,19 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 		    detail::ClassHelpers<class_>::createROProperty(name, Flags::view | Flags::writeable, Semantic::none, getter, typeDB_)); \
 	} while (0)
 
-#define READER(reader)  \
-	do { \
+#define READER(reader)                       \
+	do {                                     \
+		structType->setCustomReader(reader); \
 	} while (0)
 
-#define WRITER(writer)  \
-	do { \
+#define WRITER(writer)                       \
+	do {                                     \
+		structType->setCustomWriter(writer); \
 	} while (0)
 
-#define CLONER(cloner)  \
-	do { \
+#define CLONER(cloner)                       \
+	do {                                     \
+		structType->setCustomCloner(cloner); \
 	} while (0)
 
 #define END_STRUCT()                  \

@@ -17,8 +17,8 @@ namespace Typhoon::Reflection {
 
 class Allocator;
 
-TypeDB& initReflection(Allocator& allocator);
-TypeDB& initReflection();
+void initReflection(Allocator& allocator);
+void initReflection();
 void deinitReflection();
 
 TypeDB& getTypeDB();

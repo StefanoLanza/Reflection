@@ -55,7 +55,7 @@ namespace {
 
 bool writeObjectImpl(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive) {
 	bool res = false;
-	if (const CustomWriter customWriter = typeDB.getCustomWriter(&type); customWriter) {
+	if (const CustomWriter& customWriter = type.getCustomWriter(); customWriter) {
 		res = customWriter(data, archive);
 	}
 	else {

@@ -5,7 +5,7 @@
 #include <include/reflection.h>
 #include <string>
 
-void    registerUserTypes(refl::TypeDB& typeDB);
+void    registerUserTypes();
 
 void compare(const GameObject& o0, const GameObject& o1) {
 	CHECK(o0.getLives() == o1.getLives());
@@ -26,8 +26,8 @@ bool compareArrays(const T a[], const T b[], int n) {
 }
 
 int __cdecl main(int argc, char* argv[]) {
-	refl::TypeDB& typeDB = refl::initReflection();
-	registerUserTypes(typeDB);
+	refl::initReflection();
+	registerUserTypes();
 	const int res = Catch::Session().run(argc, argv);
 	refl::deinitReflection();
 	return res;
@@ -464,8 +464,8 @@ TEST_CASE("Variant") {
 	}
 }
 
-void registerUserTypes(refl::TypeDB& typeDB) {
-	BEGIN_REFLECTION(typeDB)
+void registerUserTypes() {
+	BEGIN_REFLECTION()
 
 	BEGIN_BITMASK(ActionFlags)
 	BITMASK_VALUE(running)
@@ -500,9 +500,9 @@ void registerUserTypes(refl::TypeDB& typeDB) {
 	BEGIN_STRUCT(Material);
 	FIELD(name);
 	FIELD(color);
+	READER(customReadMaterial);
+	WRITER(customSaveMaterial);
 	END_STRUCT();
-	typeDB.setCustomReader<Material>(customReadMaterial);
-	typeDB.setCustomWriter<Material>(customSaveMaterial);
 
 	BEGIN_CLASS(GameObject);
 	PROPERTY("lives", getLives, setLives);

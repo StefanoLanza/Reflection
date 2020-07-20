@@ -36,8 +36,10 @@ bool writeBuiltin<std::string>(const void* data, OutputArchive& archive) {
 
 template <class T>
 void createBuiltin(TypeDB& typeDB) {
-	const BuiltinType* type = detail::make<BuiltinType>(getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>());
-	typeDB.registerType(type, &readBuiltin<T>, &writeBuiltin<T>);
+	BuiltinType* type = detail::make<BuiltinType>(getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>());
+	type->setCustomReader(&readBuiltin<T>);
+	type->setCustomWriter(&writeBuiltin<T>);
+	typeDB.registerType(type);
 }
 
 void registerBuiltinTypes(TypeDB& typeDB) {
@@ -99,15 +101,14 @@ Allocator& getAllocator() {
 
 } // namespace detail
 
-TypeDB& initReflection() {
-	return initReflection(defaultAllocator);
+void initReflection() {
+	initReflection(defaultAllocator);
 }
 
-TypeDB& initReflection(Allocator& allocator) {
+void initReflection(Allocator& allocator) {
 	context.allocator = &allocator;
 	context.typeDB = detail::make<TypeDB>();
 	registerBuiltinTypes(*context.typeDB);
-	return *context.typeDB;
 }
 
 void deinitReflection() {

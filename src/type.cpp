@@ -62,9 +62,32 @@ void Type::moveObject(void* a, void* b) const {
 	}
 }
 
-bool Type::compareObjects(const void* a, const void* b) const //
-{
+bool Type::compareObjects(const void* a, const void* b) const {
 	return methods.equalityOperator(a, b);
 }
 
-} // namespace Typhoon
+void Type::setCustomWriter(CustomWriter writer) {
+	customWriter = std::move(writer);
+}
+
+const CustomWriter& Type::getCustomWriter() const {
+	return customWriter;
+}
+
+void Type::setCustomReader(CustomReader reader) {
+	customReader = std::move(reader);
+}
+
+const CustomReader& Type::getCustomReader() const {
+	return customReader;
+}
+
+void Type::setCustomCloner(CustomCloner cloner) {
+	customCloner = std::move(cloner);
+}
+
+const CustomCloner& Type::getCustomCloner() const {
+	return customCloner;
+}
+
+} // namespace Typhoon::Reflection

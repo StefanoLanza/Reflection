@@ -1,6 +1,7 @@
 #pragma once
 
 #include <core/typeId.h>
+#include <functional>
 #include <type_traits>
 
 namespace Typhoon::Reflection {
@@ -98,23 +99,37 @@ inline MethodTable buildMethodTable() {
 }
 } // namespace detail
 
+class InputArchive;
+class OutputArchive;
+
+// ? Error codes?
+using CustomWriter = std::function<bool(const void*, OutputArchive&)>;
+using CustomReader = std::function<void(void*, InputArchive&)>;
+using CustomCloner = std::function<void(void*, const void*)>;
+
 class Type {
 public:
 	enum class Subclass { Builtin, Struct, Enum, BitMask, Container, Pointer, Reference, Variant };
 
 	Type(TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods);
 
-	TypeId   getTypeId() const;
-	size_t   getSize() const;
-	size_t   getAlignment() const;
-	Subclass getSubClass() const;
-	void     constructObject(void* object) const;
-	void     destructObject(void* object) const;
-	void     copyConstructObject(void* object, const void* src) const;
-	void     copyObject(void* a, const void* b) const;
-	void     moveConstructObject(void* object, void* src) const;
-	void     moveObject(void* a, void* b) const;
-	bool     compareObjects(const void* a, const void* b) const;
+	TypeId       getTypeId() const;
+	size_t       getSize() const;
+	size_t       getAlignment() const;
+	Subclass     getSubClass() const;
+	void         constructObject(void* object) const;
+	void         destructObject(void* object) const;
+	void         copyConstructObject(void* object, const void* src) const;
+	void         copyObject(void* a, const void* b) const;
+	void         moveConstructObject(void* object, void* src) const;
+	void         moveObject(void* a, void* b) const;
+	bool         compareObjects(const void* a, const void* b) const;
+	void         setCustomWriter(CustomWriter saver);
+	const CustomWriter& getCustomWriter() const;
+	void         setCustomReader(CustomReader loader);
+	const CustomReader& getCustomReader() const;
+	void          setCustomCloner(CustomCloner loader);
+	const CustomCloner& getCustomCloner() const;
 
 	TypeId   typeID;
 	size_t   size;
@@ -122,7 +137,10 @@ public:
 	Subclass subClass;
 
 private:
-	MethodTable methods;
+	MethodTable  methods;
+	CustomWriter customWriter;
+	CustomReader customReader;
+	CustomCloner customCloner;
 };
 
 class TypeDB;

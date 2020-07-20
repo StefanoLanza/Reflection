@@ -112,7 +112,7 @@ bool readObject(void* data, const char* name, const Type& type, Semantic semanti
 
 bool readObject(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive) {
 	bool res = false;
-	if (const CustomReader customreader = typeDB.getCustomReader(&type); customreader) {
+	if (const CustomReader& customreader = type.getCustomReader(); customreader) {
 		customreader(data, archive);
 		res = true; // TODO error code ?
 	}

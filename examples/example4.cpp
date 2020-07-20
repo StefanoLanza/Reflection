@@ -24,7 +24,7 @@ struct Texture {
 TextureDataPtr loadTextureFromFile(const std::string& fileName);
 bool           writeTexture(const void* data, refl::OutputArchive& archive);
 void           readTexture(void* data, refl::InputArchive& archive);
-void           registerUserTypes(refl::TypeDB& typeDB);
+void           registerUserTypes();
 std::string    writeTextureToXML(const Texture& obj, const char* XMLelement);
 void           readTextureFromXML(Texture& obj, const std::string& xmlString, const char* XMLelement);
 
@@ -32,8 +32,8 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
 
 	CustomAllocator customAllocator;
-	refl::TypeDB&   typeDB = initReflection(customAllocator);
-	registerUserTypes(typeDB);
+	initReflection(customAllocator);
+	registerUserTypes();
 
 	const char* xmlElement = "Texture";
 	Texture     texture { "glossy.mat" };
@@ -45,15 +45,13 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	return 0;
 }
 
-void registerUserTypes(refl::TypeDB& typeDB) {
-	BEGIN_REFLECTION(typeDB)
+void registerUserTypes() {
+	BEGIN_REFLECTION()
 
 	BEGIN_STRUCT(Texture);
 	READER(readTexture);
+	WRITER(writeTexture);
 	END_STRUCT();
-	// TODO macros
-	typeDB.setCustomReader<Texture>(readTexture);
-	typeDB.setCustomWriter<Texture>(writeTexture);
 
 	END_REFLECTION();
 }

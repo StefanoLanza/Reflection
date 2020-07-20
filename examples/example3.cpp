@@ -53,7 +53,7 @@ private:
 	Coords      position { 0.f, 0.f, 0.f };
 };
 
-void        registerUserTypes(refl::TypeDB& typeDB);
+void        registerUserTypes();
 GameObject  makeGameObject();
 std::string writeGameObject(const GameObject& obj, const char* XMLelement);
 void        readGameObject(GameObject& obj, const std::string& xmlString, const char* XMLelement);
@@ -61,8 +61,8 @@ void        readGameObject(GameObject& obj, const std::string& xmlString, const 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
 
-	refl::TypeDB& typeDB = refl::initReflection();
-	registerUserTypes(typeDB);
+	refl::initReflection();
+	registerUserTypes();
 
 	const char* xmlElement = "gameObject";
 	GameObject  obj = makeGameObject();
@@ -72,8 +72,8 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	return 0;
 }
 
-void registerUserTypes(refl::TypeDB& typeDB) {
-	BEGIN_REFLECTION(typeDB)
+void registerUserTypes() {
+	BEGIN_REFLECTION()
 
 	BEGIN_BITMASK(ActionFlags)
 	BITMASK_VALUE(running)

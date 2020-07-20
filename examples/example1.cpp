@@ -29,7 +29,7 @@ struct Builtins {
 	TestFlags   flags;
 };
 
-void        registerUserTypes(refl::TypeDB& typeDB);
+void        registerUserTypes();
 Builtins    makeBuiltins();
 std::string writeBuiltins(const Builtins& b, const char* XMLelement);
 void        readBuiltins(Builtins& b, const std::string& xmlString, const char* XMLelement);
@@ -37,8 +37,8 @@ void        readBuiltins(Builtins& b, const std::string& xmlString, const char* 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
 
-	refl::TypeDB& typeDB = refl::initReflection();
-	registerUserTypes(typeDB);
+	refl::initReflection();
+	registerUserTypes();
 
 	const char* xmlElement = "builtins";
 	Builtins    b = makeBuiltins();
@@ -48,8 +48,8 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	return 0;
 }
 
-void registerUserTypes(refl::TypeDB& typeDB) {
-	BEGIN_REFLECTION(typeDB)
+void registerUserTypes() {
+	BEGIN_REFLECTION()
 
 	BEGIN_BITMASK(TestFlags)
 	BITMASK_VALUE(visible)
