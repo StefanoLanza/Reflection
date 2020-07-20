@@ -13,18 +13,18 @@ namespace detail {
 template <class first_type, class second_type>
 struct autoRegisterHelper<std::pair<first_type, second_type>> {
 	static const Type* autoRegister(TypeDB& typeDB) {
-		using pair_type = std::pair<first_type, second_type>;
-		const Type*       firstType = autoRegisterType<first_type>(typeDB);
-		const Type*       secondType = autoRegisterType<second_type>(typeDB);
-		constexpr TypeId  typeId = getTypeId<pair_type>();
-		static StructType types { typeId, sizeof(pair_type), std::alignment_of_v<pair_type> };
-		types.addField(Field { "first", firstType, offsetof(pair_type, first), Flags::all, Semantic::none });
-		types.addField(Field { "second", secondType, offsetof(pair_type, second), Flags::all, Semantic::none });
-		typeDB.registerType(&types);
-		return &types;
+		using PairType = std::pair<first_type, second_type>;
+		const Type*      firstType = autoRegisterType<first_type>(typeDB);
+		const Type*      secondType = autoRegisterType<second_type>(typeDB);
+		constexpr TypeId typeId = getTypeId<PairType>();
+		auto             type = detail::make<StructType>(typeId, sizeof(PairType), alignof(PairType));
+		type->addField(Field { "first", firstType, offsetof(PairType, first), Flags::all, Semantic::none });
+		type->addField(Field { "second", secondType, offsetof(PairType, second), Flags::all, Semantic::none });
+		typeDB.registerType(type);
+		return type;
 	}
 };
 
 } // namespace detail
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

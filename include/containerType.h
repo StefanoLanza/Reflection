@@ -1,6 +1,8 @@
 #pragma once
 
 #include "type.h"
+#include <src/allocUtils.h>
+
 #include <memory>
 
 namespace Typhoon::Reflection {
@@ -49,4 +51,4 @@ private:
 	const Type* valueType;
 };
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

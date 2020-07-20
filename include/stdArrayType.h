@@ -104,11 +104,11 @@ private:
 	using WriteIteratorType = StdArrayWriteIterator<T, L>;
 };
 
-template <class _Ty, size_t N>
-struct autoRegisterHelper<std::array<_Ty, N>> {
+template <class T, size_t N>
+struct autoRegisterHelper<std::array<T, N>> {
 	static const Type* autoRegister(TypeDB& typeDB) {
-		using element_type = _Ty;
-		using container_type = std::array<_Ty, N>;
+		using element_type = T;
+		using container_type = std::array<T, N>;
 		const Type*                                     elementType = autoRegisterType<element_type>(typeDB);
 		constexpr TypeId                                typeID = getTypeId<container_type>();
 		static const StdArrayContainer<element_type, N> types { typeID, elementType };

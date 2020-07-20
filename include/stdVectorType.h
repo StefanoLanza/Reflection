@@ -3,6 +3,7 @@
 #include "containerType.h"
 #include "typeDB.h"
 #include <cassert>
+#include <src/allocUtils.h>
 #include <vector>
 
 namespace Typhoon::Reflection {
@@ -107,20 +108,20 @@ private:
 };
 
 // std::vector specialization
-template <class _Ty>
-struct autoRegisterHelper<std::vector<_Ty>> {
+template <class T>
+struct autoRegisterHelper<std::vector<T>> {
 	static const Type* autoRegister(TypeDB& typeDB) {
-		using value_type = _Ty;
-		using container_type = std::vector<_Ty>;
+		using ValueType = T;
+		using ContainerType = std::vector<T>;
 		// AutoRegister valueType (it might be a pointer or container etc)
-		const Type*                                     valueType = autoRegisterType<value_type>(typeDB);
-		constexpr TypeId                                typeID = getTypeId<container_type>();
-		static const StdVectorContainer<container_type> types { typeID, valueType };
-		typeDB.registerType(&types);
-		return &types;
+		const Type*      valueType = autoRegisterType<ValueType>(typeDB);
+		constexpr TypeId typeID = getTypeId<ContainerType>();
+		auto             type = detail::make<StdVectorContainer<ContainerType>>(typeID, valueType);
+		typeDB.registerType(type);
+		return type;
 	}
 };
 
 } // namespace detail
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

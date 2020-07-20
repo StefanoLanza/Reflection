@@ -41,19 +41,18 @@ inline void* StdSharedPointerType<T>::resolvePointer(void* data) const {
 }
 
 // Specialization for std::shared_ptr
-template <class _Ty>
-struct autoRegisterHelper<std::shared_ptr<_Ty>> {
+template <class T>
+struct autoRegisterHelper<std::shared_ptr<T>> {
 	static const Type* autoRegister(TypeDB& typeDB) {
-		using pointer_type = std::shared_ptr<_Ty>;
-		const Type* valueType = autoRegisterType<_Ty>(typeDB);
+		using PointerType = std::shared_ptr<T>;
+		const Type* valueType = autoRegisterType<T>(typeDB);
 		assert(valueType);
-		static const StdSharedPointerType<_Ty> types { getTypeId<pointer_type>(), sizeof(pointer_type), std::alignment_of_v<pointer_type>,
-			                                           valueType };
-		typeDB.registerType(&types);
-		return &types;
+		auto type = detail::make<StdSharedPointerType<T>>(getTypeId<PointerType>(), sizeof(PointerType), alignof(PointerType), valueType);
+		typeDB.registerType(type);
+		return type;
 	}
 };
 
 } // namespace detail
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

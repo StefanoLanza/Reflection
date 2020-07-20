@@ -113,21 +113,21 @@ private:
 };
 
 // std::map specialization
-template <class _Kty, class _Ty>
-struct autoRegisterHelper<std::map<_Kty, _Ty>> {
+template <class _Kty, class T>
+struct autoRegisterHelper<std::map<_Kty, T>> {
 	static const Type* autoRegister(TypeDB& typeDB) {
 		using key_type = _Kty;
-		using mapped_type = _Ty;
-		using container_type = std::map<_Kty, _Ty>;
-		const Type*                                  keyType = autoRegisterType<key_type>(typeDB);
-		const Type*                                  mappedType = autoRegisterType<mapped_type>(typeDB);
-		constexpr TypeId                             typeID = getTypeId<container_type>();
-		static const StdMapContainer<container_type> types { typeID, keyType, mappedType };
-		typeDB.registerType(&types);
-		return &types;
+		using mapped_type = T;
+		using container_type = std::map<_Kty, T>;
+		const Type*      keyType = autoRegisterType<key_type>(typeDB);
+		const Type*      mappedType = autoRegisterType<mapped_type>(typeDB);
+		constexpr TypeId typeID = getTypeId<container_type>();
+		auto             type = detail::make<StdMapContainer<container_type>>(typeID, keyType, mappedType);
+		typeDB.registerType(type);
+		return type;
 	}
 };
 
 } // namespace detail
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

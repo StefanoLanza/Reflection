@@ -46,4 +46,4 @@ struct AutoRegisterHelper<_Ty&>
 
 #endif
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

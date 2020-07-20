@@ -103,19 +103,19 @@ private:
 };
 
 // C-style array
-template <class _Ty, size_t N>
-struct autoRegisterHelper<_Ty[N]> {
+template <class T, size_t N>
+struct autoRegisterHelper<T[N]> {
 	static const Type* autoRegister(TypeDB& typeDB) {
-		using element_type = _Ty;
-		using container_type = _Ty[N];
-		const Type*                                  elementType = autoRegisterType<element_type>(typeDB);
-		constexpr TypeId                             typeID = getTypeId<container_type>();
-		static const ArrayContainer<element_type, N> typeInfo { typeID, elementType };
-		typeDB.registerType(&typeInfo);
-		return &typeInfo;
+		using ElementType = T;
+		using ContainerType = T[N];
+		const Type*      elementType = autoRegisterType<ElementType>(typeDB);
+		constexpr TypeId typeID = getTypeId<ContainerType>();
+		auto             type = detail::make<ArrayContainer<ElementType, N>>(typeID, elementType);
+		typeDB.registerType(type);
+		return type;
 	}
 };
 
 } // namespace detail
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

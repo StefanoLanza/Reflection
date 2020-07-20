@@ -40,19 +40,18 @@ inline void* StdUniquePointerType<T>::resolvePointer(void* data) const {
 }
 
 // Specialization for std::unique_ptr
-template <class _Ty>
-struct autoRegisterHelper<std::unique_ptr<_Ty>> {
+template <class T>
+struct autoRegisterHelper<std::unique_ptr<T>> {
 	static const Type* autoRegister(TypeDB& typeDB) {
-		using pointer_type = std::unique_ptr<_Ty>;
-		const Type* valueType = autoRegisterType<_Ty>(typeDB);
+		using PointerType = std::unique_ptr<T>;
+		const Type* valueType = autoRegisterType<T>(typeDB);
 		assert(valueType);
-		static const StdUniquePointerType<_Ty> types { getTypeId<pointer_type>(), sizeof(pointer_type), std::alignment_of_v<pointer_type>,
-			                                           valueType };
-		typeDB.registerType(&types);
-		return &types;
+		auto type = detail::make<StdUniquePointerType<T>>(getTypeId<PointerType>(), sizeof(PointerType), std::alignment_of_v<PointerType>, valueType);
+		typeDB.registerType(type);
+		return type;
 	}
 };
 
 } // namespace detail
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

@@ -59,8 +59,7 @@ void registerBuiltinTypes(TypeDB& typeDB) {
 	createBuiltin<const char*>(typeDB);
 	createBuiltin<std::string>(typeDB);
 
-	static const VariantType variantType;
-	typeDB.registerType(&variantType);
+	typeDB.registerType(detail::make<VariantType>());
 }
 
 struct Context {

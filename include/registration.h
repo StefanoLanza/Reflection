@@ -27,11 +27,11 @@ namespace Typhoon::Reflection {
 
 namespace detail {
 
-template <class _Ty>
+template <class T>
 inline const Type* autoRegisterType(TypeDB& typeDB) {
-	const Type* type = typeDB.tryGetType<_Ty>();
+	const Type* type = typeDB.tryGetType<T>();
 	if (type == nullptr) {
-		type = autoRegisterHelper<_Ty>::autoRegister(typeDB);
+		type = autoRegisterHelper<T>::autoRegister(typeDB);
 	}
 	assert(type);
 	return type;

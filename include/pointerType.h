@@ -2,6 +2,7 @@
 
 #include "type.h"
 #include "typeDB.h"
+#include <src/allocUtils.h>
 
 namespace Typhoon::Reflection {
 
@@ -29,19 +30,19 @@ public:
 namespace detail {
 
 // Specialization for raw pointers
-template <class _Ty>
-struct autoRegisterHelper<_Ty*> {
+template <class T>
+struct autoRegisterHelper<T*> {
 	static const Type* autoRegister(TypeDB& typeDB) {
-		using pointer_type = std::add_pointer_t<_Ty*>;
-		using non_const_type = std::remove_const_t<_Ty>;
+		using pointer_type = std::add_pointer_t<T*>;
+		using non_const_type = std::remove_const_t<T>;
 		const Type* valueType = autoRegisterType<non_const_type>(typeDB);
 		assert(valueType);
-		static const RawPointerType types { getTypeId<pointer_type>(), sizeof(pointer_type), std::alignment_of_v<pointer_type>, valueType };
-		typeDB.registerType(&types);
-		return &types;
+		auto type = detail::make<RawPointerType>(getTypeId<pointer_type>(), sizeof(pointer_type), alignof(pointer_type), valueType);
+		typeDB.registerType(type);
+		return type;
 	}
 };
 
 } // namespace detail
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection
