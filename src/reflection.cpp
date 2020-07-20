@@ -36,8 +36,8 @@ bool writeBuiltin<std::string>(const void* data, OutputArchive& archive) {
 
 template <class T>
 void createBuiltin(TypeDB& typeDB) {
-	static const BuiltinType types { getTypeId<T>(), sizeof(T), std::alignment_of_v<T>, detail::buildMethodTable<T>() };
-	typeDB.registerType(&types, &readBuiltin<T>, &writeBuiltin<T>);
+	const BuiltinType* type = detail::make<BuiltinType>(getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>());
+	typeDB.registerType(type, &readBuiltin<T>, &writeBuiltin<T>);
 }
 
 void registerBuiltinTypes(TypeDB& typeDB) {
@@ -77,10 +77,9 @@ public:
 	}
 };
 
-TypeDB           typeDB;
 DefaultAllocator defaultAllocator;
 
-Context context { &typeDB, &defaultAllocator };
+Context context { nullptr, &defaultAllocator };
 
 } // namespace
 
@@ -106,8 +105,28 @@ TypeDB& initReflection() {
 
 TypeDB& initReflection(Allocator& allocator) {
 	context.allocator = &allocator;
+	context.typeDB = detail::make<TypeDB>();
 	registerBuiltinTypes(*context.typeDB);
 	return *context.typeDB;
+}
+
+void deinitReflection() {
+	context.typeDB->~TypeDB();
+	context.allocator->free(context.typeDB, sizeof TypeDB);
+	context.typeDB = nullptr;
+}
+
+TypeDB& getTypeDB() {
+	assert(context.typeDB);
+	return *context.typeDB;
+}
+
+const Type& getType(TypeId typeID) {
+	return context.typeDB->getType(typeID);
+}
+
+const Type* tryGetType(TypeId typeID) {
+	return context.typeDB->tryGetType(typeID);
 }
 
 } // namespace Typhoon::Reflection

@@ -19,6 +19,11 @@ class Allocator;
 
 TypeDB& initReflection(Allocator& allocator);
 TypeDB& initReflection();
+void deinitReflection();
+
+TypeDB& getTypeDB();
+const Type& getType(TypeId typeID);
+const Type* tryGetType(TypeId typeID);
 
 }
 

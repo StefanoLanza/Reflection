@@ -3,6 +3,7 @@
 #include "config.h"
 #include "type.h"
 #include <core/uncopyable.h>
+#include <src/stdAllocator.h>
 
 #include <cassert>
 #include <functional>
@@ -60,10 +61,10 @@ public:
 	void setCustomCloner(CustomCloner cloner);
 
 private:
-	std::vector<const Type*>                      types;
-	std::unordered_map<const Type*, CustomWriter> customWriters;
-	std::unordered_map<const Type*, CustomReader> customReaders;
-	std::unordered_map<const Type*, CustomCloner> customCloners;
+	std::vector<const Type*, stdAllocator<const Type*>> types;
+	std::unordered_map<const Type*, CustomWriter>       customWriters;
+	std::unordered_map<const Type*, CustomReader>       customReaders;
+	std::unordered_map<const Type*, CustomCloner>       customCloners;
 };
 
 template <typename TYPE>
@@ -83,7 +84,5 @@ void TypeDB::setCustomCloner(CustomCloner cloner) {
 	const Type& type = getType<TYPE>();
 	setCustomCloner(&type, std::move(cloner));
 }
-
-TypeDB& getTypeDB();
 
 } // namespace Typhoon::Reflection

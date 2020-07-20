@@ -4,14 +4,16 @@
 #include "semantics.h"
 #include "stdVectorType.h"
 #include "typeDB.h"
+#include <core/typeId.h>
+
 #include <array>
 #include <cassert>
-#include <core/typeId.h>
 #include <vector>
 
 namespace Typhoon::Reflection {
 
 class InputArchive;
+TypeDB& getTypeDB();
 
 bool readObject(void* object, TypeId typeId, InputArchive& archive, Semantic semantic = Semantic::none);
 bool readObject(void* object, TypeId typeId, const char* name, InputArchive& archive, Semantic semantic = Semantic::none);
@@ -52,4 +54,4 @@ bool readVector(std::vector<T>& vector, const char* vectorName, InputArchive& ar
 	return readContainer(&vector, vectorName, type, archive);
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

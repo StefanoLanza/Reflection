@@ -1,4 +1,5 @@
 #include "variant.h"
+#include "reflection.h"
 #include "typeDB.h"
 
 namespace Typhoon::Reflection {
@@ -84,4 +85,4 @@ bool Variant::operator!=(const Variant& other) const {
 	return ! (*this == other);
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

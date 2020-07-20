@@ -9,6 +9,8 @@ class Type;
 class TypeDB;
 class OutputArchive;
 
+TypeDB& getTypeDB();
+
 template <typename T>
 bool writeObject(const T& object, const char* name, OutputArchive& archive) {
 	TypeDB&     typeDB = getTypeDB();
@@ -26,4 +28,4 @@ bool writeObject(const T& object, const char* name, OutputArchive& archive) {
 
 bool writeObject(const void* data, const char* name, const Type& type, OutputArchive& archive);
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

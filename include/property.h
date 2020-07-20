@@ -92,54 +92,53 @@ struct ClassHelpers {
 	}
 
 	template <typename R, typename A>
-	static std::unique_ptr<Property> createRWProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A),
-	                                                  R (*getter)(const C&), TypeDB& typeDB) {
+	static Property createRWProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A), R (*getter)(const C&),
+	                                 TypeDB& typeDB) {
 		static_assert(std::is_same_v<std::decay_t<R>, std::decay_t<A>>);
 		using value_type = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<value_type>(typeDB);
-		return std::make_unique<Property>(makeFreeSetter(setter), makeFreeGetter(getter), name, valueType, flags, semantic);
+		return Property { makeFreeSetter(setter), makeFreeGetter(getter), name, valueType, flags, semantic };
 	}
 
 	template <typename R, typename A>
-	static std::unique_ptr<Property> createRWProperty(const char* name, uint32_t flags, Semantic semantic, void (C::*setter)(A),
-	                                                  R (C::*getter)() const, TypeDB& typeDB) {
+	static Property createRWProperty(const char* name, uint32_t flags, Semantic semantic, void (C::*setter)(A), R (C::*getter)() const,
+	                                 TypeDB& typeDB) {
 		static_assert(std::is_same_v<std::decay_t<R>, std::decay_t<A>>);
 		using value_type = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<value_type>(typeDB);
-		return std::make_unique<Property>(makeMemberSetter(setter), makeMemberGetter(getter), name, valueType, flags, semantic);
+		return Property { makeMemberSetter(setter), makeMemberGetter(getter), name, valueType, flags, semantic };
 	}
 
 	template <typename R>
-	static std::unique_ptr<Property> createROProperty(const char* name, uint32_t flags, Semantic semantic, R (*getter)(const C&), TypeDB& typeDB) {
+	static Property createROProperty(const char* name, uint32_t flags, Semantic semantic, R (*getter)(const C&), TypeDB& typeDB) {
 		using value_type = std::decay_t<R>;
 		const Type* A = autoRegisterType<value_type>(typeDB);
 		assert(A);
-		return std::make_unique<Property>(nullptr, makeFreeGetter(getter), name, A, flags, semantic);
+		return Property { nullptr, makeFreeGetter(getter), name, A, flags, semantic };
 	}
 
 	template <typename A>
-	static std::unique_ptr<Property> createProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A), TypeDB& typeDB) {
+	static Property createProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A), TypeDB& typeDB) {
 		using value_type = std::decay_t<A>;
 		const Type* type = autoRegisterType<value_type>(typeDB);
-		return std::make_unique<Property>(makeFreeSetter(setter), nullptr, name, type, flags, semantic);
+		return Property { makeFreeSetter(setter), nullptr, name, type, flags, semantic };
 	}
 
 	template <typename R>
-	static std::unique_ptr<Property> createROProperty(const char* name, uint32_t flags, Semantic semantic, R (C::*getter)() const, TypeDB& typeDB) {
+	static Property createROProperty(const char* name, uint32_t flags, Semantic semantic, R (C::*getter)() const, TypeDB& typeDB) {
 		using value_type = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<value_type>(typeDB);
-		return std::make_unique<Property>(nullptr, makeMemberGetter(getter), name, valueType, flags, semantic);
+		return Property { nullptr, makeMemberGetter(getter), name, valueType, flags, semantic };
 	}
 
 	template <typename T, typename A>
-	static std::unique_ptr<Property> createProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A), T C::*memberPtr,
-	                                                TypeDB& typeDB) {
+	static Property createProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A), T C::*memberPtr, TypeDB& typeDB) {
 		static_assert(std::is_same_v<T, std::decay_t<A>>);
 		const Type* varType = autoRegisterType<T>(typeDB);
-		return std::make_unique<Property>(makeFreeSetter(setter), makeFieldGetter(memberPtr), name, varType, flags, semantic);
+		return Property { makeFreeSetter(setter), makeFieldGetter(memberPtr), name, varType, flags, semantic };
 	}
 };
 
 } // namespace detail
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

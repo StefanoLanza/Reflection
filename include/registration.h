@@ -152,6 +152,18 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 		    detail::ClassHelpers<class_>::createROProperty(name, Flags::view | Flags::writeable, Semantic::none, getter, typeDB_)); \
 	} while (0)
 
+#define READER(reader)  \
+	do { \
+	} while (0)
+
+#define WRITER(writer)  \
+	do { \
+	} while (0)
+
+#define CLONER(cloner)  \
+	do { \
+	} while (0)
+
 #define END_STRUCT()                  \
 	static_assert(! isClass);         \
 	typeDB_.registerType(structType); \

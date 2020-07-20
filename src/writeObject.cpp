@@ -79,16 +79,16 @@ bool writeStruct(const void* data, const Type& type, const TypeDB& typeDB, Outpu
 	}
 
 	for (const auto& property : structType.getProperties()) {
-		if (property->getFlags() & Flags::writeable) {
-			const Type& valueType = property->getValueType();
+		if (property.getFlags() & Flags::writeable) {
+			const Type& valueType = property.getValueType();
 
 			// Allocate a temporary for the value
 			void* const temporary = stackAlloc(stackBuffer, valueType.getSize(), valueType.getAlignment());
 			if (temporary) {
 				valueType.constructObject(temporary);
 				const void* const self = data;
-				property->getValue(self, temporary);
-				writeObject(temporary, property->getName(), valueType, archive);
+				property.getValue(self, temporary);
+				writeObject(temporary, property.getName(), valueType, archive);
 				valueType.destructObject(temporary);
 			}
 			stackFree(stackBuffer, temporary);

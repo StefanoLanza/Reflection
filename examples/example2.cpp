@@ -39,8 +39,7 @@ void        readGameObjectFromXML(GameObject& obj, const std::string& xmlString,
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
 
-	refl::TypeDB typeDB;
-	refl::initReflection(typeDB);
+	refl::TypeDB& typeDB = refl::initReflection();
 	registerUserTypes(typeDB);
 
 	const char* xmlElement = "gameObject";

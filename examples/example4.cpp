@@ -49,6 +49,7 @@ void registerUserTypes(refl::TypeDB& typeDB) {
 	BEGIN_REFLECTION(typeDB)
 
 	BEGIN_STRUCT(Texture);
+	READER(readTexture);
 	END_STRUCT();
 	// TODO macros
 	typeDB.setCustomReader<Texture>(readTexture);

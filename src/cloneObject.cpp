@@ -9,6 +9,7 @@
 #include "pointerType.h"
 #include "property.h"
 #include "referenceType.h"
+#include "reflection.h"
 #include "structType.h"
 #include "type.h"
 #include "typeDB.h"
@@ -90,8 +91,8 @@ void cloneStruct(void* dstData, const void* srcData, const StructType& structTyp
 	}
 
 	for (const auto& property : structType.getProperties()) {
-		if (property->getFlags() & Flags::clonable) {
-			property->copyValue(dstData, srcData);
+		if (property.getFlags() & Flags::clonable) {
+			property.copyValue(dstData, srcData);
 		}
 	}
 
@@ -235,4 +236,4 @@ void cloneVariant(void* dstData, const void* srcData, const TypeDB& typeDB) {
 
 } // namespace
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

@@ -137,9 +137,9 @@ bool readStruct(void* data, const Type& type, Semantic semantic, const TypeDB& t
 	}
 
 	for (const auto& property : structType.getProperties()) {
-		if (property->getFlags() & Flags::readable) {
-			if (archive.beginElement(property->getName())) {
-				const Type& valueType = property->getValueType();
+		if (property.getFlags() & Flags::readable) {
+			if (archive.beginElement(property.getName())) {
+				const Type& valueType = property.getValueType();
 
 				// Allocate a temporary for the value
 				void* const temporary = stackAlloc(stackBuffer, valueType.getSize(), valueType.getAlignment());
@@ -147,9 +147,9 @@ bool readStruct(void* data, const Type& type, Semantic semantic, const TypeDB& t
 					valueType.constructObject(temporary);
 					void* const self = data;
 					// First set temporary value using getter as readObject might fail or partly fill the data
-					property->getValue(self, temporary);
-					readObject(temporary, valueType, property->getSemantic(), typeDB, archive);
-					property->setValue(self, temporary);
+					property.getValue(self, temporary);
+					readObject(temporary, valueType, property.getSemantic(), typeDB, archive);
+					property.setValue(self, temporary);
 					valueType.destructObject(temporary);
 				}
 				stackFree(stackBuffer, temporary);

@@ -28,7 +28,9 @@ bool compareArrays(const T a[], const T b[], int n) {
 int __cdecl main(int argc, char* argv[]) {
 	refl::TypeDB& typeDB = refl::initReflection();
 	registerUserTypes(typeDB);
-	return Catch::Session().run(argc, argv);
+	const int res = Catch::Session().run(argc, argv);
+	refl::deinitReflection();
+	return res;
 }
 
 TEST_CASE("Primitives") {

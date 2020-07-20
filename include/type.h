@@ -26,61 +26,51 @@ struct MethodTable {
 namespace detail {
 
 template <typename Type>
-inline void defaultConstruct(void* object) {
+inline void defaultConstruct([[maybe_unused]] void* object) {
 	// Use placement new to call the constructor
 	if constexpr (std::is_default_constructible_v<Type>) {
 		new (object) Type;
 	}
-	(void)object;
 }
 
 template <typename Type>
-inline void destruct(void* object) {
+inline void destruct([[maybe_unused]] void* object) {
 	if constexpr (std::is_destructible_v<Type>) {
 		// Explicit call of the destructor
 		static_cast<Type*>(object)->Type::~Type();
 	}
-	(void)object;
 }
 
 template <typename Type>
-inline void copyConstruct(void* object, const void* rhs) {
+inline void copyConstruct([[maybe_unused]] void* object, [[maybe_unused]] const void* rhs) {
 	// Warning: is_copy_constructible_v returns true in some cases like vector<unique_ptr>
 	if constexpr (std::is_copy_constructible_v<Type>) {
 		// Use placement new to call the copy constructor
 		new (object) Type { *static_cast<const Type*>(rhs) };
 	}
-	(void)object;
-	(void)rhs;
 }
 
 template <typename Type>
-inline void copyAssign(void* a, const void* b) {
+inline void copyAssign([[maybe_unused]] void* a, [[maybe_unused]] const void* b) {
 	// Warning: is_copy_assignable_v returns true in some cases like vector<unique_ptr>
 	if constexpr (std::is_copy_assignable_v<Type>) {
 		*static_cast<Type*>(a) = *static_cast<const Type*>(b);
 	}
-	(void)a;
-	(void)b;
 }
 
 template <typename Type>
-inline void moveConstruct(void* object, void* rhs) {
+inline void moveConstruct([[maybe_unused]] void* object, [[maybe_unused]] void* rhs) {
 	if constexpr (std::is_move_constructible_v<Type>) {
 		// Use placement new to call the move constructor
 		new (object) Type { std::move(*static_cast<Type*>(rhs)) };
 	}
-	(void)object;
-	(void)rhs;
 }
 
 template <typename Type>
-inline void moveAssign(void* a, void* b) {
+inline void moveAssign([[maybe_unused]] void* a, [[maybe_unused]] void* b) {
 	if constexpr (std::is_move_assignable_v<Type>) {
 		*static_cast<Type*>(a) = std::move(*static_cast<Type*>(b));
 	}
-	(void)a;
-	(void)b;
 }
 
 // ref: https://stackoverflow.com/questions/6534041/how-to-check-whether-operator-exists
@@ -91,13 +81,11 @@ template <typename T>
 struct has_equal_to<T, decltype(std::declval<T>() == std::declval<T>())> : std::true_type {};
 
 template <typename Type>
-inline bool equalityOperator(const void* a, const void* b) {
+inline bool equalityOperator([[maybe_unused]] const void* a, [[maybe_unused]] const void* b) {
 	if constexpr (has_equal_to<Type>::value) {
 		return *static_cast<const Type*>(a) == *static_cast<const Type*>(b);
 	}
 	else {
-		(void)a;
-		(void)b;
 		return false;
 	}
 }
@@ -141,16 +129,16 @@ class TypeDB;
 
 namespace detail {
 
-template <class _Ty>
+template <class T>
 struct autoRegisterHelper {
 	static const Type* autoRegister(TypeDB&) {
 		return nullptr; // not supported
 	}
 };
 
-template <class _Ty>
+template <class T>
 const Type* autoRegisterType(TypeDB& typeDB);
 
 } // namespace detail
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

@@ -1,18 +1,13 @@
 #include "typeDB.h"
+#include "allocUtils.h"
 #include "structType.h"
 
 #include <cassert>
 
 namespace Typhoon::Reflection {
 
-TypeDB* gTypeDB = nullptr;
-
-TypeDB& getTypeDB() {
-	return *gTypeDB;
-}
-
-TypeDB::TypeDB() {
-	gTypeDB = this;
+TypeDB::TypeDB()
+    : types(stdAllocator<const Type*>(detail::getAllocator())) {
 }
 
 TypeDB::~TypeDB() = default;
@@ -70,4 +65,4 @@ CustomCloner TypeDB::getCustomCloner(const Type* type) const {
 	return it == customCloners.end() ? nullptr : it->second;
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection
