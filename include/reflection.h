@@ -15,13 +15,15 @@
 
 namespace Typhoon::Reflection {
 
+struct Context;
 class Allocator;
 
-void initReflection(Allocator& allocator);
-void initReflection();
+Context& initReflection(Allocator& allocator);
+Context& initReflection();
 void deinitReflection();
 
 TypeDB& getTypeDB();
+Allocator& getAllocator();
 const Type& getType(TypeId typeID);
 const Type* tryGetType(TypeId typeID);
 

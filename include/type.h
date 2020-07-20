@@ -144,18 +144,19 @@ private:
 };
 
 class TypeDB;
+class Allocator;
 
 namespace detail {
 
 template <class T>
 struct autoRegisterHelper {
-	static const Type* autoRegister(TypeDB&) {
+	static const Type* autoRegister(TypeDB&, Allocator&) {
 		return nullptr; // not supported
 	}
 };
 
 template <class T>
-const Type* autoRegisterType(TypeDB& typeDB);
+const Type* autoRegisterType(TypeDB& typeDB, Allocator& allocator);
 
 } // namespace detail
 

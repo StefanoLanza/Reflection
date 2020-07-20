@@ -10,13 +10,14 @@ class TypeDB;
 class OutputArchive;
 
 TypeDB& getTypeDB();
+Allocator& getAllocator();
 
 template <typename T>
 bool writeObject(const T& object, const char* name, OutputArchive& archive) {
 	TypeDB&     typeDB = getTypeDB();
 	const Type* types = typeDB.tryGetType<T>();
 	if (! types) {
-		types = detail::autoRegisterHelper<T>::autoRegister(typeDB);
+		types = detail::autoRegisterHelper<T>::autoRegister(typeDB, getAllocator());
 	}
 	if (types) {
 		return writeObject(&object, name, *types, archive);

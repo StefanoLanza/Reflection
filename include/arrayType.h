@@ -105,12 +105,12 @@ private:
 // C-style array
 template <class T, size_t N>
 struct autoRegisterHelper<T[N]> {
-	static const Type* autoRegister(TypeDB& typeDB) {
+	static const Type* autoRegister(TypeDB& typeDB, Allocator& allocator) {
 		using ElementType = T;
 		using ContainerType = T[N];
-		const Type*      elementType = autoRegisterType<ElementType>(typeDB);
+		const Type*      elementType = autoRegisterType<ElementType>(typeDB, allocator);
 		constexpr TypeId typeID = getTypeId<ContainerType>();
-		auto             type = detail::make<ArrayContainer<ElementType, N>>(typeID, elementType);
+		auto             type = allocator.make<ArrayContainer<ElementType, N>>(typeID, elementType);
 		typeDB.registerType(type);
 		return type;
 	}

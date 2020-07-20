@@ -6,8 +6,8 @@
 
 namespace Typhoon::Reflection {
 
-TypeDB::TypeDB()
-    : types(stdAllocator<const Type*>(detail::getAllocator())) {
+TypeDB::TypeDB(Allocator& allocator)
+    : types(stdAllocator<const Type*>(allocator)) {
 }
 
 TypeDB::~TypeDB() = default;

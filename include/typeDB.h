@@ -12,7 +12,7 @@ namespace Typhoon::Reflection {
 
 class TypeDB : Uncopyable {
 public:
-	TypeDB();
+	TypeDB(Allocator& allocator);
 	~TypeDB();
 
 	void registerType(const Type* type);

@@ -3,7 +3,6 @@
 #include "containerType.h"
 #include "typeDB.h"
 #include <cassert>
-#include <src/allocUtils.h>
 #include <vector>
 
 namespace Typhoon::Reflection {
@@ -110,13 +109,13 @@ private:
 // std::vector specialization
 template <class T>
 struct autoRegisterHelper<std::vector<T>> {
-	static const Type* autoRegister(TypeDB& typeDB) {
+	static const Type* autoRegister(TypeDB& typeDB, Allocator& allocator) {
 		using ValueType = T;
 		using ContainerType = std::vector<T>;
 		// AutoRegister valueType (it might be a pointer or container etc)
-		const Type*      valueType = autoRegisterType<ValueType>(typeDB);
+		const Type*      valueType = autoRegisterType<ValueType>(typeDB, allocator);
 		constexpr TypeId typeID = getTypeId<ContainerType>();
-		auto             type = detail::make<StdVectorContainer<ContainerType>>(typeID, valueType);
+		auto             type = allocator.make<StdVectorContainer<ContainerType>>(typeID, valueType);
 		typeDB.registerType(type);
 		return type;
 	}

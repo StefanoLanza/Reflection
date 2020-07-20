@@ -42,11 +42,11 @@ inline void* StdUniquePointerType<T>::resolvePointer(void* data) const {
 // Specialization for std::unique_ptr
 template <class T>
 struct autoRegisterHelper<std::unique_ptr<T>> {
-	static const Type* autoRegister(TypeDB& typeDB) {
+	static const Type* autoRegister(TypeDB& typeDB, Allocator& allocator) {
 		using PointerType = std::unique_ptr<T>;
-		const Type* valueType = autoRegisterType<T>(typeDB);
+		const Type* valueType = autoRegisterType<T>(typeDB, allocator);
 		assert(valueType);
-		auto type = detail::make<StdUniquePointerType<T>>(getTypeId<PointerType>(), sizeof(PointerType), std::alignment_of_v<PointerType>, valueType);
+		auto type = allocator.make<StdUniquePointerType<T>>(getTypeId<PointerType>(), sizeof(PointerType), std::alignment_of_v<PointerType>, valueType);
 		typeDB.registerType(type);
 		return type;
 	}

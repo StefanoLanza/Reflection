@@ -43,11 +43,11 @@ inline void* StdSharedPointerType<T>::resolvePointer(void* data) const {
 // Specialization for std::shared_ptr
 template <class T>
 struct autoRegisterHelper<std::shared_ptr<T>> {
-	static const Type* autoRegister(TypeDB& typeDB) {
+	static const Type* autoRegister(TypeDB& typeDB, Allocator& allocator) {
 		using PointerType = std::shared_ptr<T>;
-		const Type* valueType = autoRegisterType<T>(typeDB);
+		const Type* valueType = autoRegisterType<T>(typeDB, allocator);
 		assert(valueType);
-		auto type = detail::make<StdSharedPointerType<T>>(getTypeId<PointerType>(), sizeof(PointerType), alignof(PointerType), valueType);
+		auto type = allocator.make<StdSharedPointerType<T>>(getTypeId<PointerType>(), sizeof(PointerType), alignof(PointerType), valueType);
 		typeDB.registerType(type);
 		return type;
 	}

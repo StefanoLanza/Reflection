@@ -29,11 +29,11 @@ namespace detail {
 template <class _Ty>
 struct AutoRegisterHelper<_Ty&>
 {
-	static const Type* autoRegister(TypeDB& typeDB)
+	static const Type* autoRegister(TypeDB& typeDB, Allocator& allocator)
 	{
 		using reference_type = _Ty&;
 		using non_const_type = std::remove_const_t<_Ty>;
-		const Type* valueType = AutoRegisterType<non_const_type>(typeDB);
+		const Type* valueType = AutoRegisterType<non_const_type>(typeDB, allocator);
 		assert(valueType);
 		constexpr bool isConst = std::is_const_v<_Ty>;
 		static const ReferenceType type{ getTypeId<reference_type>(), valueType, isConst };

@@ -106,17 +106,17 @@ private:
 
 template <class T, size_t N>
 struct autoRegisterHelper<std::array<T, N>> {
-	static const Type* autoRegister(TypeDB& typeDB) {
+	static const Type* autoRegister(TypeDB& typeDB, Allocator& allocator) {
 		using element_type = T;
 		using container_type = std::array<T, N>;
-		const Type*                                     elementType = autoRegisterType<element_type>(typeDB);
-		constexpr TypeId                                typeID = getTypeId<container_type>();
-		static const StdArrayContainer<element_type, N> types { typeID, elementType };
-		typeDB.registerType(&types);
-		return &types;
+		const Type*      elementType = autoRegisterType<element_type>(typeDB, allocator);
+		constexpr TypeId typeID = getTypeId<container_type>();
+		auto             type = allocator.make<StdArrayContainer<element_type, N>>(typeID, elementType);
+		typeDB.registerType(type);
+		return type;
 	}
 };
 
 } // namespace detail
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

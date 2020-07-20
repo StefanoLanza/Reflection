@@ -115,14 +115,14 @@ private:
 // std::map specialization
 template <class _Kty, class T>
 struct autoRegisterHelper<std::map<_Kty, T>> {
-	static const Type* autoRegister(TypeDB& typeDB) {
-		using key_type = _Kty;
-		using mapped_type = T;
-		using container_type = std::map<_Kty, T>;
-		const Type*      keyType = autoRegisterType<key_type>(typeDB);
-		const Type*      mappedType = autoRegisterType<mapped_type>(typeDB);
-		constexpr TypeId typeID = getTypeId<container_type>();
-		auto             type = detail::make<StdMapContainer<container_type>>(typeID, keyType, mappedType);
+	static const Type* autoRegister(TypeDB& typeDB, Allocator& allocator) {
+		using KeyType = _Kty;
+		using MappedType = T;
+		using ContainerType = std::map<_Kty, T>;
+		const Type*      keyType = autoRegisterType<KeyType>(typeDB, allocator);
+		const Type*      mappedType = autoRegisterType<MappedType>(typeDB, allocator);
+		constexpr TypeId typeID = getTypeId<ContainerType>();
+		auto             type = allocator.make<StdMapContainer<ContainerType>>(typeID, keyType, mappedType);
 		typeDB.registerType(type);
 		return type;
 	}
