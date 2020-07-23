@@ -2,6 +2,7 @@
 
 #include "config.h"
 
+#include "allocator.h"
 #include "arrayType.h"
 #include "bitMaskType.h"
 #include "containerType.h"
@@ -21,7 +22,6 @@
 #include "stdVectorType.h"
 #include "structType.h"
 #include "typeDB.h"
-#include <src/allocUtils.h>
 
 namespace Typhoon::Reflection {
 
