@@ -83,31 +83,16 @@ Context context { nullptr, &defaultAllocator };
 
 } // namespace
 
-namespace detail {
-
-void* alloc(size_t size, size_t alignment) {
-	return context.allocator->alloc(size, alignment);
+void initReflection() {
+	initReflection(defaultAllocator);
 }
 
-void free(void* ptr, size_t size) {
-	context.allocator->free(ptr, size);
-}
+void initReflection(Allocator& allocator) {
+	assert(! context.typeDB);
 
-Allocator& getAllocator() {
-	return *context.allocator;
-}
-
-} // namespace detail
-
-Context& initReflection() {
-	return initReflection(defaultAllocator);
-}
-
-Context& initReflection(Allocator& allocator) {
 	context.allocator = &allocator;
 	context.typeDB = allocator.make<TypeDB>(std::ref(allocator));
 	registerBuiltinTypes(*context.typeDB, allocator);
-	return context;
 }
 
 void deinitReflection() {

@@ -3,9 +3,7 @@
 #include "pointerType.h"
 #include <memory>
 
-namespace Typhoon::Reflection {
-
-namespace detail {
+namespace Typhoon::Reflection::detail {
 
 template <typename T>
 class StdUniquePointerType final : public PointerType {
@@ -46,12 +44,10 @@ struct autoRegisterHelper<std::unique_ptr<T>> {
 		using PointerType = std::unique_ptr<T>;
 		const Type* valueType = autoRegisterType<T>(typeDB, allocator);
 		assert(valueType);
-		auto type = allocator.make<StdUniquePointerType<T>>(getTypeId<PointerType>(), sizeof(PointerType), std::alignment_of_v<PointerType>, valueType);
+		auto type = allocator.make<StdUniquePointerType<T>>(getTypeId<PointerType>(), sizeof(PointerType), alignof(PointerType), valueType);
 		typeDB.registerType(type);
 		return type;
 	}
 };
 
-} // namespace detail
-
-} // namespace Typhoon::Reflection
+} // namespace Typhoon::Reflection::detail

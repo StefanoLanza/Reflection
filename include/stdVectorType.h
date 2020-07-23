@@ -5,9 +5,7 @@
 #include <cassert>
 #include <vector>
 
-namespace Typhoon::Reflection {
-
-namespace detail {
+namespace Typhoon::Reflection::detail {
 
 template <typename VECTOR_TYPE>
 class StdVectorReadIterator final : public ReadIterator {
@@ -121,6 +119,4 @@ struct autoRegisterHelper<std::vector<T>> {
 	}
 };
 
-} // namespace detail
-
-} // namespace Typhoon::Reflection
+} // namespace Typhoon::Reflection::detail

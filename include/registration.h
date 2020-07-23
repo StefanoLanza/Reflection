@@ -64,24 +64,25 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 	do {                               \
 		using class_ = class;          \
 		constexpr bool isClass = true; \
-		const auto     structType = allocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_));
+		const auto     structType =    \
+		    allocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, {}, std::ref(allocator_));
 
-#define BEGIN_STRUCT(class)                                                                                                                          \
-	do {                                                                                                                                             \
-		using class_ = class;                                                                                                                        \
-		constexpr bool isClass = false;                                                                                                              \
-		const auto     structType =                                                                                                                  \
-		    allocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, detail::buildMethodTable<class_>()); \
-		do {                                                                                                                                         \
+#define BEGIN_STRUCT(class)                                                                                                             \
+	do {                                                                                                                                \
+		using class_ = class;                                                                                                           \
+		constexpr bool isClass = false;                                                                                                 \
+		const auto     structType = allocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+                                                            detail::buildMethodTable<class_>(), std::ref(allocator_));              \
+		do {                                                                                                                            \
 	} while (0)
 
-#define BEGIN_CLASS(class)                                                                                                                           \
-	do {                                                                                                                                             \
-		using class_ = class;                                                                                                                        \
-		constexpr bool isClass = true;                                                                                                               \
-		const auto     structType =                                                                                                                  \
-		    allocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, detail::buildMethodTable<class_>()); \
-		do {                                                                                                                                         \
+#define BEGIN_CLASS(class)                                                                                                              \
+	do {                                                                                                                                \
+		using class_ = class;                                                                                                           \
+		constexpr bool isClass = true;                                                                                                  \
+		const auto     structType = allocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+                                                            detail::buildMethodTable<class_>(), std::ref(allocator_));              \
+		do {                                                                                                                            \
 	} while (0)
 
 #define BEGIN_SUB_CLASS(class, parentClass)                                                                                             \
@@ -93,7 +94,7 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 		const StructType& parentType = static_cast<const StructType&>(typeDB_.getType<parentClass>());                                  \
 		assert(parentType.subClass == Type::Subclass::Struct);                                                                          \
 		const auto structType = allocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), &parentType, \
-		                                                    detail::buildMethodTable<class_>());                                        \
+		                                                    detail::buildMethodTable<class_>(), std::ref(allocator_));                  \
 		do {                                                                                                                            \
 	} while (0)
 
@@ -196,13 +197,13 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 
 #define ENUMERATOR(value) makeEnumerator(#value, enumClass_::value),
 
-#define END_ENUM()                                                                                                                                   \
-	}                                                                                                                                                \
-	;                                                                                                                                                \
-	const auto enumType = allocator_.make<EnumType>(Typhoon::getTypeId<enumClass_>(), enumName, sizeof(enumClass_), std::alignment_of_v<enumClass_>, \
-	                                                enumerators, _countof(enumerators));                                                             \
-	typeDB_.registerType(enumType);                                                                                                                  \
-	}                                                                                                                                                \
+#define END_ENUM()                                                                                                                       \
+	}                                                                                                                                    \
+	;                                                                                                                                    \
+	const auto enumType = allocator_.make<EnumType>(Typhoon::getTypeId<enumClass_>(), enumName, sizeof(enumClass_), alignof(enumClass_), \
+	                                                enumerators, _countof(enumerators));                                                 \
+	typeDB_.registerType(enumType);                                                                                                      \
+	}                                                                                                                                    \
 	while (false)
 
 #define BEGIN_BITMASK(bitMaskStruct)                                                                                  \

@@ -2,7 +2,9 @@
 
 #include "containerType.h"
 #include "typeDB.h"
+
 #include <array>
+#include <cassert>
 
 namespace Typhoon::Reflection {
 

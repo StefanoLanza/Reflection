@@ -45,6 +45,8 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::string xmlContent = writeBuiltins(b, xmlElement);
 	Builtins    ob;
 	readBuiltins(ob, xmlContent, xmlElement);
+
+	refl::deinitReflection();
 	return 0;
 }
 

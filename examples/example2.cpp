@@ -47,6 +47,8 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::string xmlContent = writeGameObjectToXML(obj, xmlElement);
 	GameObject  otherObj;
 	readGameObjectFromXML(otherObj, xmlContent, xmlElement);
+
+	refl::deinitReflection();
 	return 0;
 }
 

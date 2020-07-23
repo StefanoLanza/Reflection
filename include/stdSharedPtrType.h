@@ -4,9 +4,7 @@
 
 #include <memory>
 
-namespace Typhoon::Reflection {
-
-namespace detail {
+namespace Typhoon::Reflection::detail {
 
 template <typename T>
 class StdSharedPointerType final : public PointerType {
@@ -53,6 +51,4 @@ struct autoRegisterHelper<std::shared_ptr<T>> {
 	}
 };
 
-} // namespace detail
-
-} // namespace Typhoon::Reflection
+} // namespace Typhoon::Reflection::detail

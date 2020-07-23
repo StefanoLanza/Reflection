@@ -1,13 +1,12 @@
 #pragma once
 
 #include "flags.h"
+#include "semantics.h"
 #include "structType.h"
 #include "typeDB.h"
 #include <tuple>
 
-namespace Typhoon::Reflection {
-
-namespace detail {
+namespace Typhoon::Reflection::detail {
 
 template <typename Tuple, size_t ElementIndex>
 constexpr size_t getTupleElementOffset() {
@@ -26,7 +25,7 @@ const Type* registerTuple(TypeDB& typeDB, Allocator& allocator, std::integer_seq
 	static_assert(std::size(argType) - 1 <= std::size(elementName));
 
 	constexpr TypeId typeId = getTypeId<Tuple>();
-	auto             tupleType = allocator.make<StructType>(typeId, sizeof(Tuple), alignof(Tuple));
+	auto tupleType = allocator.make<StructType>(typeId, sizeof(Tuple), alignof(Tuple), nullptr, buildMethodTable<Tuple>(), std::ref(allocator));
 	for (size_t i = 0; i < std::size(argType) - 1; ++i) {
 		tupleType->addField(Field { elementName[i], argType[i], argOffset[i], Flags::all, Semantic::none });
 	}
@@ -43,6 +42,4 @@ struct autoRegisterHelper<std::tuple<Args...>> {
 	}
 };
 
-} // namespace detail
-
-} // namespace Typhoon::Reflection
+} // namespace Typhoon::Reflection::detail

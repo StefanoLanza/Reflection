@@ -11,10 +11,11 @@ namespace Typhoon::Reflection {
 class Type;
 struct Field;
 class Property;
+class Allocator;
 
 class StructType : public Type {
 public:
-	StructType(TypeId typeID, size_t size, size_t alignment, const StructType* parentType = nullptr, const MethodTable& methods = {});
+	StructType(TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const MethodTable& methods, Allocator& allocator);
 	~StructType();
 
 	const StructType*    getParentType() const;
