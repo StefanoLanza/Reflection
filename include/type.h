@@ -97,6 +97,7 @@ inline MethodTable buildMethodTable() {
 		defaultConstruct<Type>, destruct<Type>, copyConstruct<Type>, copyAssign<Type>, moveConstruct<Type>, moveAssign<Type>, equalityOperator<Type>,
 	};
 }
+
 } // namespace detail
 
 class InputArchive;
@@ -113,22 +114,22 @@ public:
 
 	Type(TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods);
 
-	TypeId       getTypeId() const;
-	size_t       getSize() const;
-	size_t       getAlignment() const;
-	Subclass     getSubClass() const;
-	void         constructObject(void* object) const;
-	void         destructObject(void* object) const;
-	void         copyConstructObject(void* object, const void* src) const;
-	void         copyObject(void* a, const void* b) const;
-	void         moveConstructObject(void* object, void* src) const;
-	void         moveObject(void* a, void* b) const;
-	bool         compareObjects(const void* a, const void* b) const;
-	void         setCustomWriter(CustomWriter saver);
+	TypeId              getTypeId() const;
+	size_t              getSize() const;
+	size_t              getAlignment() const;
+	Subclass            getSubClass() const;
+	void                constructObject(void* object) const;
+	void                destructObject(void* object) const;
+	void                copyConstructObject(void* object, const void* src) const;
+	void                copyObject(void* a, const void* b) const;
+	void                moveConstructObject(void* object, void* src) const;
+	void                moveObject(void* a, void* b) const;
+	bool                compareObjects(const void* a, const void* b) const;
+	void                setCustomWriter(CustomWriter saver);
 	const CustomWriter& getCustomWriter() const;
-	void         setCustomReader(CustomReader loader);
+	void                setCustomReader(CustomReader loader);
 	const CustomReader& getCustomReader() const;
-	void          setCustomCloner(CustomCloner loader);
+	void                setCustomCloner(CustomCloner loader);
 	const CustomCloner& getCustomCloner() const;
 
 	TypeId   typeID;

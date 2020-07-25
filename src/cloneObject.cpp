@@ -20,6 +20,7 @@
 namespace Typhoon::Reflection {
 
 namespace {
+
 ErrorCode cloneObject(void* dstData, const void* srcData, const Type& type);
 void      cloneBuiltin(void* data, const void* srcData, const BuiltinType& type);
 void      cloneStruct(void* data, const void* srcData, const StructType& structType, const TypeDB& typeDB);
@@ -29,6 +30,7 @@ void      cloneContainer(void* data, const void* srcData, const ContainerType& t
 void      clonePointer(void* data, const void* srcData, const PointerType& type);
 void      cloneReference(void* data, const void* srcData, const ReferenceType& type);
 void      cloneVariant(void* dstData, const void* srcData, const TypeDB& typeDB);
+
 } // namespace
 
 ErrorCode cloneObject(void* dstObject, const void* srcObject, TypeId typeId) {
@@ -51,6 +53,7 @@ ErrorCode cloneObject(void* dstObject, const void* srcObject, TypeId typeId) {
 }
 
 namespace {
+
 ErrorCode cloneObject(void* dstData, const void* srcData, const Type& type) {
 	const TypeDB&        typeDB = getTypeDB();
 	const Type::Subclass subclass = type.subClass;

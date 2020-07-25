@@ -15,12 +15,13 @@ Allocator& getAllocator();
 template <typename T>
 bool writeObject(const T& object, const char* name, OutputArchive& archive) {
 	TypeDB&     typeDB = getTypeDB();
-	const Type* types = typeDB.tryGetType<T>();
-	if (! types) {
-		types = detail::autoRegisterHelper<T>::autoRegister(typeDB, getAllocator());
+	const Type* type = typeDB.tryGetType<T>();
+	if (! type) {
+		// ? Allocate a temporary Type, without registering it ?
+		type = detail::autoRegisterHelper<T>::autoRegister(typeDB, getAllocator());
 	}
-	if (types) {
-		return writeObject(&object, name, *types, archive);
+	if (type) {
+		return writeObject(&object, name, *type, archive);
 	}
 	else {
 		return false;

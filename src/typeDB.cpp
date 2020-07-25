@@ -1,5 +1,4 @@
 #include "typeDB.h"
-#include "allocUtils.h"
 #include "structType.h"
 
 #include <cassert>

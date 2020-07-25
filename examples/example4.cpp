@@ -32,7 +32,7 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
 
 	CustomAllocator customAllocator;
-	initReflection(customAllocator);
+	refl::initReflection(customAllocator);
 	registerUserTypes();
 
 	const char* xmlElement = "Texture";
@@ -42,6 +42,7 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	readTextureFromXML(otherObj, xmlContent, xmlElement);
 
 	std::cout << "Total allocated memory " << customAllocator.getTotalAlloc() << " bytes" << std::endl;
+	refl::deinitReflection();
 	return 0;
 }
 
