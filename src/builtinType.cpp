@@ -6,4 +6,4 @@ BuiltinType::BuiltinType(TypeId typeID, size_t size, size_t alignment, const Met
     : Type(typeID, Subclass::Builtin, size, alignment, methods) {
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

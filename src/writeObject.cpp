@@ -4,7 +4,6 @@
 #include "builtinType.h"
 #include "containerType.h"
 #include "enumType.h"
-#include "field.h"
 #include "flags.h"
 #include "pointerType.h"
 #include "property.h"
@@ -41,7 +40,7 @@ constexpr Writer perClasswriters[] = {
 bool writeObject(const void* data, const char* name, const Type& type, OutputArchive& archive) {
 	assert(data);
 	assert(name);
-	TypeDB& typeDB = getTypeDB();
+	TypeDB& typeDB = detail::getTypeDB();
 
 	bool res = false;
 	if (archive.beginElement(name)) {
@@ -69,14 +68,6 @@ bool writeStruct(const void* data, const Type& type, const TypeDB& typeDB, Outpu
 	StackBuffer stackBuffer { stackMemory };
 
 	const StructType& structType = static_cast<const StructType&>(type);
-	for (const auto& field : structType.getFields()) {
-		if (field.flags & Flags::writeable) {
-			// Each field knows its offset so add that to the base address of the
-			// object being saved to get at the individual field data
-			const void* const field_data = advancePointer(data, field.offset);
-			writeObject(field_data, field.name, *field.type, archive);
-		}
-	}
 
 	for (const auto& property : structType.getProperties()) {
 		if (property.getFlags() & Flags::writeable) {
@@ -206,4 +197,4 @@ bool writeVariant(const void* data, const Type& /*type*/, const TypeDB& typeDB, 
 
 } // namespace
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

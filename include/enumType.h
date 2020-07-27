@@ -37,4 +37,4 @@ private:
 	size_t            numEnumerators;
 };
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

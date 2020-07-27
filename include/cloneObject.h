@@ -12,4 +12,4 @@ ErrorCode cloneObject(T* dstObject, const T& srcObject) {
 	return cloneObject(dstObject, &srcObject, getTypeId<T>());
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

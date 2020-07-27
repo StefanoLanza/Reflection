@@ -13,7 +13,10 @@
 namespace Typhoon::Reflection {
 
 class InputArchive;
+
+namespace detail {
 TypeDB& getTypeDB();
+}
 
 bool readObject(void* object, TypeId typeId, InputArchive& archive, Semantic semantic = Semantic::none);
 bool readObject(void* object, TypeId typeId, const char* name, InputArchive& archive, Semantic semantic = Semantic::none);
@@ -48,7 +51,7 @@ bool readContainer(void* container, const char* containerName, const ContainerTy
 template <class T>
 bool readVector(std::vector<T>& vector, const char* vectorName, InputArchive& archive) {
 	using container_type = std::vector<T>;
-	const Type&                                      valueType = getTypeDB().getType<T>();
+	const Type&                                      valueType = detail::getTypeDB().getType<T>();
 	constexpr TypeId                                 typeID = getTypeId<container_type>();
 	const detail::StdVectorContainer<container_type> type { typeID, &valueType };
 	return readContainer(&vector, vectorName, type, archive);

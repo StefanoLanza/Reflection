@@ -11,4 +11,4 @@ enum class Semantic {
 	orientation = 3,
 };
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

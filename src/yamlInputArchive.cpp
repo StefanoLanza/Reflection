@@ -82,6 +82,6 @@ bool YAMLInputArchive::readAttribute(const char* name, double& value) {
 	return false;
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection
 
 #endif

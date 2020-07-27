@@ -100,6 +100,16 @@ void deinitReflection() {
 	context.typeDB = nullptr;
 }
 
+const Type& getType(TypeId typeID) {
+	return context.typeDB->getType(typeID);
+}
+
+const Type* tryGetType(TypeId typeID) {
+	return context.typeDB->tryGetType(typeID);
+}
+
+namespace detail {
+
 TypeDB& getTypeDB() {
 	assert(context.typeDB);
 	return *context.typeDB;
@@ -110,12 +120,6 @@ Allocator& getAllocator() {
 	return *context.allocator;
 }
 
-const Type& getType(TypeId typeID) {
-	return context.typeDB->getType(typeID);
-}
-
-const Type* tryGetType(TypeId typeID) {
-	return context.typeDB->tryGetType(typeID);
-}
+} // namespace detail
 
 } // namespace Typhoon::Reflection

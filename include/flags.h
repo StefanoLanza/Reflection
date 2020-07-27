@@ -19,4 +19,4 @@ struct Flags {
 	};
 };
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

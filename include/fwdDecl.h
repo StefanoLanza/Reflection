@@ -8,7 +8,6 @@ namespace Typhoon::Reflection {
 class Type;
 class TypeDB;
 class BuiltinType;
-struct Field;
 class StructType;
 class ContainerType;
 class EnumType;

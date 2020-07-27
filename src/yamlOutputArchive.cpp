@@ -70,6 +70,6 @@ bool YAMLOutputArchive::write(const char* text) {
 	return false;
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection
 
 #endif

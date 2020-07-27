@@ -99,6 +99,6 @@ bool XMLOutputArchive::write(const char* text) {
 	return currentNode->InsertEndChild(document->NewText(text)) != nullptr;
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection
 
 #endif

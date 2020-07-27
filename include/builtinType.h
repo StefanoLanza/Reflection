@@ -9,4 +9,4 @@ public:
 	BuiltinType(TypeId typeID, size_t size, size_t alignment, const MethodTable& methods);
 };
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

@@ -60,7 +60,7 @@ Variant& Variant::operator=(Variant&& other) noexcept {
 }
 
 const Type& Variant::getType() const {
-	return getTypeDB().getType(typeId);
+	return detail::getTypeDB().getType(typeId);
 }
 
 const char* Variant::getName() const {

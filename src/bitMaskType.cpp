@@ -33,4 +33,4 @@ BitMaskStorageType BitMaskType::findConstantByName(const char* enumeratorName) c
 	return 0;
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

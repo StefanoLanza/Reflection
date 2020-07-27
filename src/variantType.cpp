@@ -7,4 +7,4 @@ VariantType::VariantType()
     : Type(Typhoon::getTypeId<Variant>(), Subclass::Variant, 0, 0, {}) {
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

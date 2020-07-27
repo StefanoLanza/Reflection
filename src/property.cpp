@@ -63,4 +63,4 @@ void Property::copyValue(void* dstSelf, const void* srcSelf) const {
 	}
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

@@ -34,4 +34,4 @@ WriteTag::operator bool() const {
 	return isValid;
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

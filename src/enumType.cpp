@@ -35,4 +35,4 @@ const Enumerator* EnumType::findEnumeratorByName(const char* constantName) const
 	return nullptr;
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

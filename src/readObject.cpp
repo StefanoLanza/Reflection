@@ -5,7 +5,6 @@
 #include "config.h"
 #include "containerType.h"
 #include "enumType.h"
-#include "field.h"
 #include "flags.h"
 #include "pointerType.h"
 #include "property.h"
@@ -45,9 +44,9 @@ bool readObject(void* object, TypeId typeId, const char* name, InputArchive& arc
 	assert(object);
 	assert(name);
 	bool        res = false;
-	const Type* type = getTypeDB().tryGetType(typeId);
+	const Type* type = detail::getTypeDB().tryGetType(typeId);
 	if (type) {
-		res = readObject(object, name, *type, semantic, getTypeDB(), archive);
+		res = readObject(object, name, *type, semantic, detail::getTypeDB(), archive);
 	}
 	return res;
 }
@@ -55,15 +54,15 @@ bool readObject(void* object, TypeId typeId, const char* name, InputArchive& arc
 bool readObject(void* object, TypeId typeId, InputArchive& archive, Semantic semantic) {
 	assert(object);
 	bool        res = false;
-	const Type* type = getTypeDB().tryGetType(typeId);
+	const Type* type = detail::getTypeDB().tryGetType(typeId);
 	if (type) {
-		res = readObject(object, *type, semantic, getTypeDB(), archive);
+		res = readObject(object, *type, semantic, detail::getTypeDB(), archive);
 	}
 	return res;
 }
 
 std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementTypeId, const char* arrayName, InputArchive& archive) {
-	const auto& typeDB = getTypeDB();
+	const auto& typeDB = detail::getTypeDB();
 	const Type* elementType = typeDB.tryGetType(elementTypeId);
 	if (! elementType) {
 		return { false, 0 };
@@ -93,7 +92,7 @@ std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementT
 bool readContainer(void* container, const char* containerName, const ContainerType& type, InputArchive& archive) {
 	bool res = false;
 	if (archive.beginElement(containerName)) {
-		res = readContainer(container, type, Semantic::none, getTypeDB(), archive);
+		res = readContainer(container, type, Semantic::none, detail::getTypeDB(), archive);
 		archive.endElement();
 	}
 	return res;
@@ -127,14 +126,6 @@ bool readStruct(void* data, const Type& type, Semantic semantic, const TypeDB& t
 	StackBuffer stackBuffer { stackMemory };
 
 	const StructType& structType = static_cast<const StructType&>(type);
-	for (const auto& field : structType.getFields()) {
-		if (field.flags & Flags::readable) {
-			// Each field knows its offset so add that to the base address of the
-			// object being readed to get at the individual field data
-			void* const field_data = advancePointer(data, field.offset);
-			readObject(field_data, field.name, *field.type, field.semantic, typeDB, archive);
-		}
-	}
 
 	for (const auto& property : structType.getProperties()) {
 		if (property.getFlags() & Flags::readable) {
@@ -286,4 +277,4 @@ bool readVariant(void* data, const Type& /*type*/, Semantic semantic, const Type
 
 } // namespace
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

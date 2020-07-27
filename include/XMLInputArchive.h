@@ -47,6 +47,6 @@ private:
 	tinyxml2::XMLNode*                     currentNode; // The node that is currently being processed
 };
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection
 
 #endif

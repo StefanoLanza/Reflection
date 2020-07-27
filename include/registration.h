@@ -7,7 +7,6 @@
 #include "bitMaskType.h"
 #include "containerType.h"
 #include "enumType.h"
-#include "field.h"
 #include "flags.h"
 #include "pointerType.h"
 #include "property.h"
@@ -37,14 +36,6 @@ inline const Type* autoRegisterType(TypeDB& typeDB, Allocator& allocator) {
 	return type;
 }
 
-template <typename OBJECT_TYPE, typename FIELD_TYPE>
-inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, size_t offset, uint32_t flags, Semantic semantic, TypeDB& typeDB,
-                         Allocator& allocator) {
-	const Type* fieldType = autoRegisterType<FIELD_TYPE>(typeDB, allocator);
-	assert(fieldType);
-	return { name, fieldType, offset, flags, semantic };
-}
-
 } // namespace detail
 
 // Macro-based reflection
@@ -52,8 +43,8 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 #define BEGIN_REFLECTION()                                         \
 	__pragma(warning(push)) __pragma(warning(disable : 4127)) do { \
 		using namespace refl;                                      \
-		TypeDB&    typeDB_ = getTypeDB();                          \
-		Allocator& allocator_ = getAllocator();
+		TypeDB&    typeDB_ = detail::getTypeDB();                  \
+		Allocator& allocator_ = detail::getAllocator();
 
 #define END_REFLECTION() \
 	}                    \
@@ -98,16 +89,17 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 		do {                                                                                                                            \
 	} while (0)
 
-#define FIELD_RENAMED(field, name)                                                                                                                 \
-	do {                                                                                                                                           \
-		structType->addField(detail::createField(name, &class_::field, offsetof(class_, field), Flags::all, Semantic::none, typeDB_, allocator_)); \
+#define FIELD_RENAMED(field, name)                                                                                                     \
+	do {                                                                                                                               \
+		structType->addProperty(                                                                                                       \
+		    detail::ClassHelpers<class_>::createFieldProperty(name, Flags::all, Semantic::none, &class_::field, typeDB_, allocator_)); \
 	} while (false)
 
 #define FIELD(field) FIELD_RENAMED(field, #field)
 
-#define FIELD_EXT(field, flags, semantic)                                                                                                 \
-	do {                                                                                                                                  \
-		structType->addField(detail::createField(#field, &class_::field, offsetof(class_, field), flags, semantic, typeDB_, allocator_)); \
+#define FIELD_EXT(field, flags, semantic)                                                                                                       \
+	do {                                                                                                                                        \
+		structType->addProperty(detail::ClassHelpers<class_>::createFieldProperty(name, flags, semantic, &class_::field, typeDB_, allocator_)); \
 	} while (false)
 
 #define PROPERTY(name, getter, setter)                                                                                                             \

@@ -18,26 +18,34 @@ namespace Typhoon::Reflection {
 class Allocator;
 
 /**
- * @brief  Initialize the reflection library with a custom allocator
- * @param allocator custom allocator
-*/
-void initReflection(Allocator& allocator);
-
-/**
  * @brief Initialize the reflection library with the default allocator
  * @return The context object
-*/
+ */
 void initReflection();
 
 /**
- * @brief
-*/
+ * @brief  Initialize the reflection library with a custom allocator
+ * @param allocator custom allocator
+ */
+void initReflection(Allocator& allocator);
+
+/**
+ * @brief Terminate the reflection library
+ */
 void deinitReflection();
 
-TypeDB& getTypeDB();
-Allocator& getAllocator();
-
+/**
+ * @brief
+ * @param typeID
+ * @return
+ */
 const Type& getType(TypeId typeID);
+
+/**
+ * @brief
+ * @param typeID
+ * @return
+ */
 const Type* tryGetType(TypeId typeID);
 
-}
+} // namespace Typhoon::Reflection

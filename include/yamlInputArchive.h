@@ -38,6 +38,6 @@ public:
 private:
 };
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection
 
 #endif

@@ -29,4 +29,4 @@ void* RawPointerType::resolvePointer(void* data) const {
 	return pointer;
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

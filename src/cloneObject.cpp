@@ -4,7 +4,6 @@
 #include "config.h"
 #include "containerType.h"
 #include "enumType.h"
-#include "field.h"
 #include "flags.h"
 #include "pointerType.h"
 #include "property.h"
@@ -34,7 +33,7 @@ void      cloneVariant(void* dstData, const void* srcData, const TypeDB& typeDB)
 } // namespace
 
 ErrorCode cloneObject(void* dstObject, const void* srcObject, TypeId typeId) {
-	const TypeDB& typeDB = getTypeDB();
+	const TypeDB& typeDB = detail::getTypeDB();
 	const Type*   type = typeDB.tryGetType(typeId);
 	ErrorCode     errorCode;
 	if (type) {
@@ -55,7 +54,7 @@ ErrorCode cloneObject(void* dstObject, const void* srcObject, TypeId typeId) {
 namespace {
 
 ErrorCode cloneObject(void* dstData, const void* srcData, const Type& type) {
-	const TypeDB&        typeDB = getTypeDB();
+	const TypeDB&        typeDB = detail::getTypeDB();
 	const Type::Subclass subclass = type.subClass;
 	if (subclass == Type::Subclass::Builtin) {
 		cloneBuiltin(dstData, srcData, static_cast<const BuiltinType&>(type));
@@ -85,14 +84,6 @@ ErrorCode cloneObject(void* dstData, const void* srcData, const Type& type) {
 }
 
 void cloneStruct(void* dstData, const void* srcData, const StructType& structType, const TypeDB& typeDB) {
-	for (const auto& field : structType.getFields()) {
-		if (field.flags & Flags::clonable) {
-			void*       dstFieldData = advancePointer(dstData, field.offset);
-			const void* srcFieldData = advancePointer(srcData, field.offset);
-			cloneObject(dstFieldData, srcFieldData, *field.type);
-		}
-	}
-
 	for (const auto& property : structType.getProperties()) {
 		if (property.getFlags() & Flags::clonable) {
 			property.copyValue(dstData, srcData);

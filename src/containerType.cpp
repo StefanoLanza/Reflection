@@ -8,4 +8,4 @@ ContainerType::ContainerType(TypeId typeID, size_t size, const Type* keyType, co
     , valueType(valueType) {
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

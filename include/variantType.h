@@ -9,4 +9,4 @@ public:
 	VariantType();
 };
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection

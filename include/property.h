@@ -44,7 +44,7 @@ template <class T>
 const Type* autoRegisterType(TypeDB& typeDB);
 
 template <class C>
-struct ClassHelpers {
+class ClassHelpers {
 	template <class R>
 	static Getter makeMemberGetter(R (C::*func)() const) {
 		using T = std::decay_t<R>;
@@ -93,13 +93,14 @@ struct ClassHelpers {
 		return [memberPtr](void* self, const void* value) { (static_cast<C*>(self)->*memberPtr) = *static_cast<const T*>(value); };
 	}
 
+public:
 	template <typename R, typename A>
 	static Property createRWProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A), R (*getter)(const C&),
 	                                 TypeDB& typeDB, Allocator& allocator) {
 		static_assert(std::is_same_v<std::decay_t<R>, std::decay_t<A>>);
 		using value_type = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<value_type>(typeDB, allocator);
-		return Property { makeFreeSetter(setter), makeFreeGetter(getter), name, valueType, flags, semantic };
+		return { makeFreeSetter(setter), makeFreeGetter(getter), name, valueType, flags, semantic };
 	}
 
 	template <typename R, typename A>
@@ -108,7 +109,7 @@ struct ClassHelpers {
 		static_assert(std::is_same_v<std::decay_t<R>, std::decay_t<A>>);
 		using value_type = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<value_type>(typeDB, allocator);
-		return Property { makeMemberSetter(setter), makeMemberGetter(getter), name, valueType, flags, semantic };
+		return { makeMemberSetter(setter), makeMemberGetter(getter), name, valueType, flags, semantic };
 	}
 
 	template <typename R>
@@ -117,14 +118,14 @@ struct ClassHelpers {
 		using value_type = std::decay_t<R>;
 		const Type* A = autoRegisterType<value_type>(typeDB, allocator);
 		assert(A);
-		return Property { nullptr, makeFreeGetter(getter), name, A, flags, semantic };
+		return { nullptr, makeFreeGetter(getter), name, A, flags, semantic };
 	}
 
 	template <typename A>
 	static Property createProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A), TypeDB& typeDB, Allocator& allocator) {
 		using value_type = std::decay_t<A>;
 		const Type* type = autoRegisterType<value_type>(typeDB, allocator);
-		return Property { makeFreeSetter(setter), nullptr, name, type, flags, semantic };
+		return { makeFreeSetter(setter), nullptr, name, type, flags, semantic };
 	}
 
 	template <typename R>
@@ -132,7 +133,7 @@ struct ClassHelpers {
 	                                 Allocator& allocator) {
 		using value_type = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<value_type>(typeDB, allocator);
-		return Property { nullptr, makeMemberGetter(getter), name, valueType, flags, semantic };
+		return { nullptr, makeMemberGetter(getter), name, valueType, flags, semantic };
 	}
 
 	template <typename T, typename A>
@@ -140,7 +141,13 @@ struct ClassHelpers {
 	                               Allocator& allocator) {
 		static_assert(std::is_same_v<T, std::decay_t<A>>);
 		const Type* varType = autoRegisterType<T>(typeDB, allocator);
-		return Property { makeFreeSetter(setter), makeFieldGetter(memberPtr), name, varType, flags, semantic };
+		return { makeFreeSetter(setter), makeFieldGetter(memberPtr), name, varType, flags, semantic };
+	}
+
+	template <typename T>
+	static Property createFieldProperty(const char* name, uint32_t flags, Semantic semantic, T C::*memberPtr, TypeDB& typeDB, Allocator& allocator) {
+		const Type* varType = autoRegisterType<T>(typeDB, allocator);
+		return { makeFieldSetter(memberPtr), makeFieldGetter(memberPtr), name, varType, flags, semantic };
 	}
 };
 

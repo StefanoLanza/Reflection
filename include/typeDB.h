@@ -2,9 +2,9 @@
 
 #include "config.h"
 
+#include "../src/stdAllocator.h"
 #include "type.h"
 #include <core/uncopyable.h>
-#include "../src/stdAllocator.h"
 
 #include <vector>
 
