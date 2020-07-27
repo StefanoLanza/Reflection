@@ -4,9 +4,7 @@
 #include "typeDB.h"
 #include <cassert>
 
-namespace Typhoon::Reflection {
-
-namespace detail {
+namespace Typhoon::Reflection::detail {
 
 template <typename TYPE, size_t LENGTH>
 class ArrayReadIterator : public ReadIterator {
@@ -116,6 +114,4 @@ struct autoRegisterHelper<T[N]> {
 	}
 };
 
-} // namespace detail
-
-} // namespace Typhoon::Reflection
+} // namespace Typhoon::Reflection::detail

@@ -17,3 +17,10 @@
 #ifndef TY_REFLECTION_ALIAS_NAMESPACE
 #define TY_REFLECTION_ALIAS_NAMESPACE 1
 #endif
+
+#if TY_REFLECTION_ALIAS_NAMESPACE
+namespace Typhoon::Reflection {}
+
+// Namespace alias
+namespace refl = Typhoon::Reflection;
+#endif

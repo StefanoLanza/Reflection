@@ -60,12 +60,12 @@ inline Field createField(const char* name, FIELD_TYPE OBJECT_TYPE::* /*field*/, 
 	while (false)        \
 	__pragma(warning(pop))
 
-#define BEGIN_BASE_CLASS(class)        \
-	do {                               \
-		using class_ = class;          \
-		constexpr bool isClass = true; \
-		const auto     structType =    \
-		    allocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, {}, std::ref(allocator_));
+#define BEGIN_BASE_CLASS(class)                                                                                                                     \
+	do {                                                                                                                                            \
+		using class_ = class;                                                                                                                       \
+		constexpr bool isClass = true;                                                                                                              \
+		const auto structType = allocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, MethodTable {}, \
+		                                                    std::ref(allocator_));
 
 #define BEGIN_STRUCT(class)                                                                                                             \
 	do {                                                                                                                                \

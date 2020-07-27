@@ -54,6 +54,9 @@ public:
 
 	template <class T>
 	bool readObject(const char* tag, T& object);
+
+	template <class T>
+	bool readObject(T& object);
 };
 
 class OutputArchive {
@@ -91,7 +94,7 @@ AttributeNamer<T> NameAttribute(T& object, const char* name) {
 	return { name, &object };
 }
 
-#define ATTRIBUTE(x) NameAttribute(x##, #x)
+#define ATTRIBUTE(x) Typhoon::Reflection::NameAttribute(x##, #x)
 
 template <typename T>
 bool operator&(InputArchive& archive, const AttributeNamer<T>& namedAttribute) {
@@ -124,7 +127,7 @@ private:
 
 // Specialized
 template <class T>
-bool serialize(T& object, InputArchive& archive) {
+bool read(T& object, InputArchive& archive) {
 	static_assert(false, "Not implemented");
 }
 
@@ -154,10 +157,15 @@ template <class T>
 bool InputArchive::readObject(const char* tag, T& object) {
 	bool res = false;
 	if (beginElement(tag)) {
-		res = serialize(object, *this);
+		res = read(object, *this);
 		endElement();
 	}
 	return res;
 }
 
-} // namespace Typhoon
+template <class T>
+bool InputArchive::readObject(T& object) {
+	return read(object, *this);
+}
+
+} // namespace Typhoon::Reflection

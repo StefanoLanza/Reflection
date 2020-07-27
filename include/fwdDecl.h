@@ -21,10 +21,6 @@ class InputArchive;
 class OutputArchive;
 class XMLInputArchive;
 class XMLOutputArchive;
+class Variant;
 
 } // namespace Typhoon::Reflection
-
-// Namespace alias
-#if TY_REFLECTION_ALIAS_NAMESPACE
-namespace refl = Typhoon::Reflection;
-#endif

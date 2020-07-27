@@ -41,8 +41,3 @@ const Type& getType(TypeId typeID);
 const Type* tryGetType(TypeId typeID);
 
 }
-
-// Namespace alias
-#if TY_REFLECTION_ALIAS_NAMESPACE
-namespace refl = Typhoon::Reflection;
-#endif

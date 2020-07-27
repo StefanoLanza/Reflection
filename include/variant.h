@@ -1,7 +1,10 @@
 #pragma once
 
-#include <cassert>
+#include "config.h"
+
 #include <core/typeId.h>
+
+#include <cassert>
 #include <string>
 #include <type_traits>
 
@@ -95,4 +98,4 @@ inline bool Variant::tryGet(T* valuePtr) const {
 	return false;
 }
 
-} // namespace Typhoon
+} // namespace Typhoon::Reflection
