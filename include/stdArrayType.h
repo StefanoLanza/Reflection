@@ -1,14 +1,14 @@
 #pragma once
 
 #include "containerType.h"
+#include "context.h"
+#include "scopedAllocator.h"
 #include "typeDB.h"
 
 #include <array>
 #include <cassert>
 
-namespace Typhoon::Reflection {
-
-namespace detail {
+namespace Typhoon::Reflection::detail {
 
 template <typename TYPE, size_t L>
 class StdArrayReadIterator final : public ReadIterator {
@@ -108,17 +108,15 @@ private:
 
 template <class T, size_t N>
 struct autoRegisterHelper<std::array<T, N>> {
-	static const Type* autoRegister(TypeDB& typeDB, Allocator& allocator) {
+	static const Type* autoRegister(Context& context) {
 		using element_type = T;
 		using container_type = std::array<T, N>;
-		const Type*      elementType = autoRegisterType<element_type>(typeDB, allocator);
+		const Type*      elementType = autoRegisterType<element_type>(context);
 		constexpr TypeId typeID = getTypeId<container_type>();
-		auto             type = allocator.make<StdArrayContainer<element_type, N>>(typeID, elementType);
-		typeDB.registerType(type);
+		auto             type = context.scopedAllocator->make<StdArrayContainer<element_type, N>>(typeID, elementType);
+		context.typeDB->registerType(type);
 		return type;
 	}
 };
 
-} // namespace detail
-
-} // namespace Typhoon::Reflection
+} // namespace Typhoon::Reflection::detail

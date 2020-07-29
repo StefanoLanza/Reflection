@@ -62,35 +62,35 @@ project("Reflection")
 	files "src/**.cpp"
 	files "src/**.h"
 	files "include/**.h"
-	includedirs { ".", "include", "external", }
+	includedirs { ".", "include", "src", "external", }
 	links({"Core", "TinyXML"})
 
 project("Example1")
 	kind "ConsoleApp"
 	files "examples/example1.cpp"
-	includedirs { ".", "include", "external", }
+	includedirs { ".", "include", "src", "external", }
 	links({"Reflection", })
 
 project("Example2")
 	kind "ConsoleApp"
 	files "examples/example2.cpp"
-	includedirs { ".", "include", "external", }
+	includedirs { ".", "include", "src", "external", }
 	links({"Reflection", })
 
 project("Example3")
 	kind "ConsoleApp"
 	files "examples/example3.cpp"
-	includedirs { ".", "include", "external", }
+	includedirs { ".", "include", "src", "external", }
 	links({"Reflection", })
 
 project("Example4")
 	kind "ConsoleApp"
 	files "examples/example4.cpp"
-	includedirs { ".", "include", "external",  }
+	includedirs { ".", "include", "src", "external",  }
 	links({"Reflection", })
 
 project("UnitTest")
 	kind "ConsoleApp"
 	links({"Reflection", })
 	files "test/**.cpp"
-	includedirs { ".", "include", "external", }
+	includedirs { ".", "include", "src", "external", }

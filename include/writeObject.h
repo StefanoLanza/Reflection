@@ -1,28 +1,27 @@
 #pragma once
 
+#include "context.h"
 #include "errorCodes.h"
 #include "typeDB.h"
 
 namespace Typhoon::Reflection {
 
 class Type;
-class TypeDB;
 class OutputArchive;
 
 namespace detail {
 
-TypeDB&    getTypeDB();
-Allocator& getAllocator();
+Context& getContext();
 
 } // namespace detail
 
 template <typename T>
 bool writeObject(const T& object, const char* name, OutputArchive& archive) {
-	TypeDB&     typeDB = detail::getTypeDB();
-	const Type* type = typeDB.tryGetType<T>();
+	Context&    context = detail::getContext();
+	const Type* type = context.typeDB->tryGetType<T>();
 	if (! type) {
 		// ? Allocate a temporary Type, without registering it ?
-		type = detail::autoRegisterHelper<T>::autoRegister(typeDB, detail::getAllocator());
+		type = detail::autoRegisterHelper<T>::autoRegister(context);
 	}
 	if (type) {
 		return writeObject(&object, name, *type, archive);

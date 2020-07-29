@@ -1,6 +1,8 @@
 #pragma once
 
 #include "containerType.h"
+#include "context.h"
+#include "scopedAllocator.h"
 #include "typeDB.h"
 #include <cassert>
 #include <vector>
@@ -107,14 +109,14 @@ private:
 // std::vector specialization
 template <class T>
 struct autoRegisterHelper<std::vector<T>> {
-	static const Type* autoRegister(TypeDB& typeDB, Allocator& allocator) {
+	static const Type* autoRegister(Context& context) {
 		using ValueType = T;
 		using ContainerType = std::vector<T>;
 		// AutoRegister valueType (it might be a pointer or container etc)
-		const Type*      valueType = autoRegisterType<ValueType>(typeDB, allocator);
+		const Type*      valueType = autoRegisterType<ValueType>(context);
 		constexpr TypeId typeID = getTypeId<ContainerType>();
-		auto             type = allocator.make<StdVectorContainer<ContainerType>>(typeID, valueType);
-		typeDB.registerType(type);
+		auto             type = context.scopedAllocator->make<StdVectorContainer<ContainerType>>(typeID, valueType);
+		context.typeDB->registerType(type);
 		return type;
 	}
 };

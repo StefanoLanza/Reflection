@@ -1,5 +1,7 @@
 #pragma once
 
+#include "context.h"
+#include "scopedAllocator.h"
 #include "type.h"
 #include "typeDB.h"
 
@@ -31,13 +33,13 @@ namespace detail {
 // Specialization for raw pointers
 template <class T>
 struct autoRegisterHelper<T*> {
-	static const Type* autoRegister(TypeDB& typeDB, Allocator& allocator) {
+	static const Type* autoRegister(Context& context) {
 		using pointer_type = std::add_pointer_t<T*>;
 		using non_const_type = std::remove_const_t<T>;
-		const Type* valueType = autoRegisterType<non_const_type>(typeDB, allocator);
+		const Type* valueType = autoRegisterType<non_const_type>(context);
 		assert(valueType);
-		auto type = allocator.make<RawPointerType>(getTypeId<pointer_type>(), sizeof(pointer_type), alignof(pointer_type), valueType);
-		typeDB.registerType(type);
+		auto type = context.scopedAllocator->make<RawPointerType>(getTypeId<pointer_type>(), sizeof(pointer_type), alignof(pointer_type), valueType);
+		context.typeDB->registerType(type);
 		return type;
 	}
 };

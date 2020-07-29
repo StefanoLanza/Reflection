@@ -40,7 +40,7 @@ constexpr Writer perClasswriters[] = {
 bool writeObject(const void* data, const char* name, const Type& type, OutputArchive& archive) {
 	assert(data);
 	assert(name);
-	TypeDB& typeDB = detail::getTypeDB();
+	TypeDB& typeDB = *detail::getContext().typeDB;
 
 	bool res = false;
 	if (archive.beginElement(name)) {

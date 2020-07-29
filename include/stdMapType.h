@@ -1,13 +1,14 @@
 #pragma once
 
 #include "containerType.h"
+#include "context.h"
+#include "scopedAllocator.h"
 #include "typeDB.h"
+
 #include <cassert>
 #include <map>
 
-namespace Typhoon::Reflection {
-
-namespace detail {
+namespace Typhoon::Reflection::detail {
 
 template <typename MAP_TYPE>
 class StdMapReadIterator final : public ReadIterator {
@@ -115,19 +116,17 @@ private:
 // std::map specialization
 template <class _Kty, class T>
 struct autoRegisterHelper<std::map<_Kty, T>> {
-	static const Type* autoRegister(TypeDB& typeDB, Allocator& allocator) {
+	static const Type* autoRegister(Context& context) {
 		using KeyType = _Kty;
 		using MappedType = T;
 		using ContainerType = std::map<_Kty, T>;
-		const Type*      keyType = autoRegisterType<KeyType>(typeDB, allocator);
-		const Type*      mappedType = autoRegisterType<MappedType>(typeDB, allocator);
+		const Type*      keyType = autoRegisterType<KeyType>(context);
+		const Type*      mappedType = autoRegisterType<MappedType>(context);
 		constexpr TypeId typeID = getTypeId<ContainerType>();
-		auto             type = allocator.make<StdMapContainer<ContainerType>>(typeID, keyType, mappedType);
-		typeDB.registerType(type);
+		auto             type = context.scopedAllocator->make<StdMapContainer<ContainerType>>(typeID, keyType, mappedType);
+		context.typeDB->registerType(type);
 		return type;
 	}
 };
 
-} // namespace detail
-
-} // namespace Typhoon::Reflection
+} // namespace Typhoon::Reflection::detail

@@ -2,17 +2,14 @@
 #include "allocator.h"
 #include "archive.h"
 #include "builtinType.h"
+#include "context.h"
+#include "scopedAllocator.h"
 #include "serializeBuiltIns.h"
 #include "variantType.h"
 #include <cstdint>
 #include <string>
 
 namespace Typhoon::Reflection {
-
-struct Context {
-	TypeDB*    typeDB;
-	Allocator* allocator;
-};
 
 namespace {
 
@@ -39,31 +36,31 @@ bool writeBuiltin<std::string>(const void* data, OutputArchive& archive) {
 }
 
 template <class T>
-void createBuiltin(TypeDB& typeDB, Allocator& allocator) {
-	BuiltinType* type = allocator.make<BuiltinType>(getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>());
+void createBuiltin(Context& context) {
+	BuiltinType* type = context.scopedAllocator->make<BuiltinType>(getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>());
 	type->setCustomReader(&readBuiltin<T>);
 	type->setCustomWriter(&writeBuiltin<T>);
-	typeDB.registerType(type);
+	context.typeDB->registerType(type);
 }
 
-void registerBuiltinTypes(TypeDB& typeDB, Allocator& allocator) {
-	createBuiltin<bool>(typeDB, allocator);
-	createBuiltin<char>(typeDB, allocator);
-	createBuiltin<unsigned char>(typeDB, allocator);
-	createBuiltin<short>(typeDB, allocator);
-	createBuiltin<unsigned short>(typeDB, allocator);
-	createBuiltin<int>(typeDB, allocator);
-	createBuiltin<unsigned int>(typeDB, allocator);
-	createBuiltin<long>(typeDB, allocator);
-	createBuiltin<unsigned long>(typeDB, allocator);
-	createBuiltin<long long>(typeDB, allocator);
-	createBuiltin<unsigned long long>(typeDB, allocator);
-	createBuiltin<float>(typeDB, allocator);
-	createBuiltin<double>(typeDB, allocator);
-	createBuiltin<const char*>(typeDB, allocator);
-	createBuiltin<std::string>(typeDB, allocator);
+void registerBuiltinTypes(Context& context) {
+	createBuiltin<bool>(context);
+	createBuiltin<char>(context);
+	createBuiltin<unsigned char>(context);
+	createBuiltin<short>(context);
+	createBuiltin<unsigned short>(context);
+	createBuiltin<int>(context);
+	createBuiltin<unsigned int>(context);
+	createBuiltin<long>(context);
+	createBuiltin<unsigned long>(context);
+	createBuiltin<long long>(context);
+	createBuiltin<unsigned long long>(context);
+	createBuiltin<float>(context);
+	createBuiltin<double>(context);
+	createBuiltin<const char*>(context);
+	createBuiltin<std::string>(context);
 
-	typeDB.registerType(allocator.make<VariantType>());
+	context.typeDB->registerType(context.scopedAllocator->make<VariantType>());
 }
 
 class DefaultAllocator : public Allocator {
@@ -78,8 +75,7 @@ public:
 };
 
 DefaultAllocator defaultAllocator;
-
-Context context { nullptr, &defaultAllocator };
+Context          context {};
 
 } // namespace
 
@@ -91,13 +87,18 @@ void initReflection(Allocator& allocator) {
 	assert(! context.typeDB);
 
 	context.allocator = &allocator;
-	context.typeDB = allocator.make<TypeDB>(std::ref(allocator));
-	registerBuiltinTypes(*context.typeDB, allocator);
+	context.scopedAllocator = new (allocator.alloc<ScopedAllocator>()) ScopedAllocator(allocator);
+	context.typeDB = context.scopedAllocator->make<TypeDB>(std::ref(allocator));
+	registerBuiltinTypes(context);
 }
 
 void deinitReflection() {
-	context.allocator->destroy(context.typeDB);
+	assert(context.scopedAllocator);
+	context.scopedAllocator->~ScopedAllocator();
+	context.allocator->free(context.scopedAllocator, sizeof(ScopedAllocator));
+	context.scopedAllocator = nullptr;
 	context.typeDB = nullptr;
+	context.allocator = nullptr;
 }
 
 const Type& getType(TypeId typeID) {
@@ -110,14 +111,13 @@ const Type* tryGetType(TypeId typeID) {
 
 namespace detail {
 
+Context& getContext() {
+	return context;
+}
+
 TypeDB& getTypeDB() {
 	assert(context.typeDB);
 	return *context.typeDB;
-}
-
-Allocator& getAllocator() {
-	assert(context.allocator);
-	return *context.allocator;
 }
 
 } // namespace detail

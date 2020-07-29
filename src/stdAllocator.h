@@ -9,8 +9,6 @@ class Allocator;
 template <typename T>
 class stdAllocator {
 public:
-	typedef size_t    size_type;
-	typedef ptrdiff_t difference_type;
 	typedef T*        pointer;
 	typedef const T*  const_pointer;
 	typedef T&        reference;
@@ -34,7 +32,7 @@ public:
 	}
 	stdAllocator& operator=(const stdAllocator&) = delete;
 
-	pointer allocate(size_type size) {
+	pointer allocate(size_t size) {
 		return reinterpret_cast<pointer>(allocator.alloc(size * sizeof(T), alignof(T)));
 	}
 

@@ -144,20 +144,19 @@ private:
 	CustomCloner customCloner;
 };
 
-class TypeDB;
-class Allocator;
+struct Context;
 
 namespace detail {
 
 template <class T>
 struct autoRegisterHelper {
-	static const Type* autoRegister(TypeDB&, Allocator&) {
+	static const Type* autoRegister([[maybe_unused]] Context& context) {
 		return nullptr; // not supported
 	}
 };
 
 template <class T>
-const Type* autoRegisterType(TypeDB& typeDB, Allocator& allocator);
+const Type* autoRegisterType(Context& context);
 
 } // namespace detail
 

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "containerType.h"
+#include "context.h"
+#include "scopedAllocator.h"
 #include "typeDB.h"
 #include <cassert>
 
@@ -103,13 +105,13 @@ private:
 // C-style array
 template <class T, size_t N>
 struct autoRegisterHelper<T[N]> {
-	static const Type* autoRegister(TypeDB& typeDB, Allocator& allocator) {
+	static const Type* autoRegister(Context& context) {
 		using ElementType = T;
 		using ContainerType = T[N];
-		const Type*      elementType = autoRegisterType<ElementType>(typeDB, allocator);
+		const Type*      elementType = autoRegisterType<ElementType>(context);
 		constexpr TypeId typeID = getTypeId<ContainerType>();
-		auto             type = allocator.make<ArrayContainer<ElementType, N>>(typeID, elementType);
-		typeDB.registerType(type);
+		auto             type = context.scopedAllocator->make<ArrayContainer<ElementType, N>>(typeID, elementType);
+		context.typeDB->registerType(type);
 		return type;
 	}
 };
