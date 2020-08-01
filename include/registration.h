@@ -3,7 +3,6 @@
 #include "config.h"
 
 #include "allocator.h"
-#include "arrayType.h"
 #include "bitMaskType.h"
 #include "containerType.h"
 #include "enumType.h"
@@ -12,15 +11,16 @@
 #include "property.h"
 #include "referenceType.h"
 #include "semantics.h"
-#include "stdArrayType.h"
-#include "stdMapType.h"
-#include "stdPairType.h"
-#include "stdSharedPtrType.h"
-#include "stdTupleType.h"
-#include "stdUniquePtrType.h"
-#include "stdVectorType.h"
+#include "src/arrayType.h"
+#include "src/stdArrayType.h"
+#include "src/stdMapType.h"
+#include "src/stdPairType.h"
+#include "src/stdSharedPtrType.h"
+#include "src/stdTupleType.h"
+#include "src/stdUniquePtrType.h"
+#include "src/stdVectorType.h"
+#include "src/typeDB.h"
 #include "structType.h"
-#include "typeDB.h"
 
 namespace Typhoon::Reflection {
 
