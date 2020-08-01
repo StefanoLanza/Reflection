@@ -63,19 +63,8 @@ void registerBuiltinTypes(Context& context) {
 	context.typeDB->registerType(context.scopedAllocator->make<VariantType>());
 }
 
-class DefaultAllocator : public Allocator {
-public:
-	void* alloc(size_t size, size_t /*alignment*/) override {
-		return ::malloc(size);
-	}
-
-	void free(void* ptr, size_t /*size*/) override {
-		::free(ptr);
-	}
-};
-
-DefaultAllocator defaultAllocator;
-Context          context {};
+HeapAllocator defaultAllocator;
+Context       context {};
 
 } // namespace
 
