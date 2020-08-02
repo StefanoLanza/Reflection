@@ -10,7 +10,7 @@ void destructorCall(void* ptr) {
 	static_cast<T*>(ptr)->~T();
 }
 
-using Destructor = 	void (*)(void* ptr);
+using Destructor = void (*)(void* ptr);
 
 class ScopedAllocator {
 public:
@@ -29,8 +29,7 @@ public:
 	}
 
 private:
-
-	void registerObject(void* obj, size_t objSize,Destructor destructor);
+	void registerObject(void* obj, size_t objSize, Destructor destructor);
 
 private:
 	struct Finalizer;

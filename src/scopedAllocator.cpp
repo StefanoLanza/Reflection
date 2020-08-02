@@ -20,7 +20,7 @@ ScopedAllocator::~ScopedAllocator() {
 			f->fn(f->obj);
 		}
 		next = f->next;
-		void* obj = f->obj;
+		void*  obj = f->obj;
 		size_t objSize = f->objSize;
 		allocator.free(f, sizeof(Finalizer));
 		allocator.free(obj, objSize);

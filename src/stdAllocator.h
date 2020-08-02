@@ -9,11 +9,11 @@ class Allocator;
 template <typename T>
 class stdAllocator {
 public:
-	typedef T*        pointer;
-	typedef const T*  const_pointer;
-	typedef T&        reference;
-	typedef const T&  const_reference;
-	typedef T         value_type;
+	typedef T*       pointer;
+	typedef const T* const_pointer;
+	typedef T&       reference;
+	typedef const T& const_reference;
+	typedef T        value_type;
 
 	template <typename U>
 	struct rebind {

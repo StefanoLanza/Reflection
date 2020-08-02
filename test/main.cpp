@@ -5,7 +5,7 @@
 #include <include/reflection.h>
 #include <string>
 
-void    registerUserTypes();
+void registerUserTypes();
 
 void compare(const GameObject& o0, const GameObject& o1) {
 	CHECK(o0.getLives() == o1.getLives());

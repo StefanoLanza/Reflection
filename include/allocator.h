@@ -26,7 +26,7 @@ public:
 class HeapAllocator : public Allocator {
 public:
 	void* alloc(size_t size, size_t alignment) override;
-	void free(void* ptr, size_t size) override;
+	void  free(void* ptr, size_t size) override;
 };
 
 /**

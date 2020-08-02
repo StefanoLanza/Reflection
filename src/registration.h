@@ -3,24 +3,25 @@
 #include "config.h"
 
 #include "allocator.h"
+#include "arrayType.h"
 #include "bitMaskType.h"
 #include "containerType.h"
 #include "enumType.h"
 #include "flags.h"
+#include "makeProperty.h"
 #include "pointerType.h"
 #include "property.h"
 #include "referenceType.h"
 #include "semantics.h"
-#include "src/arrayType.h"
-#include "src/stdArrayType.h"
-#include "src/stdMapType.h"
-#include "src/stdPairType.h"
-#include "src/stdSharedPtrType.h"
-#include "src/stdTupleType.h"
-#include "src/stdUniquePtrType.h"
-#include "src/stdVectorType.h"
-#include "src/typeDB.h"
+#include "stdArrayType.h"
+#include "stdMapType.h"
+#include "stdPairType.h"
+#include "stdSharedPtrType.h"
+#include "stdTupleType.h"
+#include "stdUniquePtrType.h"
+#include "stdVectorType.h"
 #include "structType.h"
+#include "typeDB.h"
 
 namespace Typhoon::Reflection {
 
@@ -94,61 +95,62 @@ Context& getContext();
 		do {                                                                                                                                  \
 	} while (0)
 
-#define FIELD_RENAMED(field, name)                                                                                                             \
-	do {                                                                                                                                       \
-		structType->addProperty(detail::ClassHelpers<class_>::createFieldProperty(name, Flags::all, Semantic::none, &class_::field, context)); \
+#define FIELD_RENAMED(field, name)                                                                                       \
+	do {                                                                                                                 \
+		structType->addProperty(detail::createFieldProperty(name, Flags::all, Semantic::none, &class_::field, context)); \
 	} while (false)
 
 #define FIELD(field) FIELD_RENAMED(field, #field)
 
-#define FIELD_EXT(field, flags, semantic)                                                                                           \
-	do {                                                                                                                            \
-		structType->addProperty(detail::ClassHelpers<class_>::createFieldProperty(name, flags, semantic, &class_::field, context)); \
+#define FIELD_EXT(field, flags, semantic)                                                                     \
+	do {                                                                                                      \
+		structType->addProperty(detail::createFieldProperty(name, flags, semantic, &class_::field, context)); \
 	} while (false)
 
-#define PROPERTY(name, getter, setter)                                                                                                    \
-	do {                                                                                                                                  \
-		static_assert(isClass);                                                                                                           \
-		structType->addProperty(                                                                                                          \
-		    detail::ClassHelpers<class_>::createRWProperty(name, Flags::all, Semantic::none, &class_::setter, &class_::getter, context)); \
-	} while (false)
-
-#define GETTER(name, getter)                                                                                                                 \
+#define PROPERTY(name, getter, setter)                                                                                                       \
 	do {                                                                                                                                     \
-		structType->addProperty(detail::ClassHelpers<class_>::createROProperty(name, Flags::all, Semantic::none, &class_::getter, context)); \
+		static_assert(isClass);                                                                                                              \
+		structType->addProperty(                                                                                                             \
+		    detail::PropertyHelpers<class_>::createRWProperty(name, Flags::all, Semantic::none, &class_::setter, &class_::getter, context)); \
 	} while (false)
 
-#define SETTER(name, setter)                                                                                                      \
+#define GETTER(name, getter)                                                                                                                    \
+	do {                                                                                                                                        \
+		structType->addProperty(detail::PropertyHelpers<class_>::createROProperty(name, Flags::all, Semantic::none, &class_::getter, context)); \
+	} while (false)
+
+#define SETTER(name, setter)                                                                                                         \
+	do {                                                                                                                             \
+		structType->addProperty(detail::PropertyHelpers<class_>::createProperty(name, Flags::all, Semantic::none, setter, context)); \
+	} while (false)
+
+#define PROPERTY_EX(name, getter, setter, flags, semantic)                                                                        \
 	do {                                                                                                                          \
-		structType->addProperty(detail::ClassHelpers<class_>::createProperty(name, Flags::all, Semantic::none, setter, context)); \
+		structType->addProperty(                                                                                                  \
+		    detail::PropertyHelpers<class_>::createRWProperty(name, flags, semantic, &class_::setter, &class_::getter, context)); \
 	} while (false)
 
-#define PROPERTY_EX(name, getter, setter, flags, semantic)                                                                                         \
-	do {                                                                                                                                           \
-		structType->addProperty(detail::ClassHelpers<class_>::createRWProperty(name, flags, semantic, &class_::setter, &class_::getter, context)); \
-	} while (false)
-
-#define C_PROPERTY(name, setter, getter)                                                                                                    \
-	do {                                                                                                                                    \
-		structType->addProperty(detail::ClassHelpers<class_>::createRWProperty(name, Flags::all, Semantic::none, setter, getter, context)); \
+#define C_PROPERTY(name, setter, getter)                                                                                                       \
+	do {                                                                                                                                       \
+		structType->addProperty(detail::PropertyHelpers<class_>::createRWProperty(name, Flags::all, Semantic::none, setter, getter, context)); \
 	} while (0)
 
-#define C_PROPERTY_EXT(name, setter, getter, flags, semantic)                                                                    \
-	do {                                                                                                                         \
-		structType->addProperty(detail::ClassHelpers<class_>::createRWProperty(name, flags, semantic, setter, getter, context)); \
+#define C_PROPERTY_EXT(name, setter, getter, flags, semantic)                                                                       \
+	do {                                                                                                                            \
+		structType->addProperty(detail::PropertyHelpers<class_>::createRWProperty(name, flags, semantic, setter, getter, context)); \
 	} while (0)
 
-#define C_SETTER_EX(member, setter, flags, semantic)                                                                                       \
-	do {                                                                                                                                   \
-		structType->addProperty(detail::ClassHelpers<class_>::createProperty(#member, flags, semantic, setter, &class_::member, context)); \
+#define C_SETTER_EX(member, setter, flags, semantic)                                                                                          \
+	do {                                                                                                                                      \
+		structType->addProperty(detail::PropertyHelpers<class_>::createProperty(#member, flags, semantic, setter, &class_::member, context)); \
 	} while (0)
 
 #define C_SETTER(member, setter) C_SETTER_EX(member, setter, Flags::all, Semantic::none)
 
-#define C_GETTER(name, getter)                                                                                                      \
-	do {                                                                                                                            \
-		structType->addProperty(                                                                                                    \
-		    detail::ClassHelpers<class_>::createROProperty(name, Flags::view | Flags::writeable, Semantic::none, getter, context)); \
+#define C_GETTER(name, getter)                                                                                                         \
+	do {                                                                                                                               \
+		structType->addProperty(                                                                                                       \
+		    detail::PropertyHelpers<class_>::createROProperty(name, Flags::view | Flags::writeable, Semantic::none, getter, context)); \
 	} while (0)
 
 #define READER(reader)                       \

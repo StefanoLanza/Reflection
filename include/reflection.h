@@ -7,11 +7,16 @@
 #include "bitMaskType.h"
 #include "builtinType.h"
 #include "cloneObject.h"
+#include "containerType.h"
+#include "pointerType.h"
 #include "readObject.h"
-#include "registration.h"
 #include "serializeBuiltIns.h"
+#include "structType.h"
 #include "variant.h"
+#include "variantType.h"
 #include "writeObject.h"
+
+#include "../src/registration.h"
 
 namespace Typhoon::Reflection {
 
