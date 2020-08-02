@@ -2,8 +2,8 @@
 
 #include "errorCodes.h"
 #include "semantics.h"
-#include "src/stdVectorType.h"
-#include "src/typeDB.h"
+#include "../src/stdVectorType.h"
+#include "../src/typeDB.h"
 #include <core/typeId.h>
 
 #include <array>

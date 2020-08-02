@@ -1,8 +1,8 @@
 #pragma once
 
 #include "errorCodes.h"
-#include "src/context.h"
-#include "src/typeDB.h"
+#include "../src/context.h"
+#include "../src/typeDB.h"
 
 namespace Typhoon::Reflection {
 

@@ -40,7 +40,7 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 #if _DEBUG
 	refl::initReflection();
 #else
-	char buffer[8192];
+	char                  buffer[8192];
 	refl::LinearAllocator linearAllocator(buffer, std::size(buffer));
 	refl::initReflection(linearAllocator);
 #endif
