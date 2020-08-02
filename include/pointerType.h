@@ -37,7 +37,6 @@ struct autoRegisterHelper<T*> {
 		using pointer_type = std::add_pointer_t<T*>;
 		using non_const_type = std::remove_const_t<T>;
 		const Type* valueType = autoRegisterType<non_const_type>(context);
-		assert(valueType);
 		auto type = context.scopedAllocator->make<RawPointerType>(getTypeId<pointer_type>(), sizeof(pointer_type), alignof(pointer_type), valueType);
 		context.typeDB->registerType(type);
 		return type;

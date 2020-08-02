@@ -12,14 +12,32 @@ Getter makeFieldGetter(T C::*memberPtr) {
 	return [memberPtr](const void* self, void* temporary) {
 		//(void)temporary;
 		// return &(static_cast<const C*>(self)->*memberPtr); // return field address directly
-		*static_cast<T*>(temporary) = (static_cast<const C*>(self)->*memberPtr);
+		if constexpr (std::is_array_v<T>) {
+			// Arrays are not assignable in C++
+			auto& dst = *static_cast<T*>(temporary);
+			auto& src = (static_cast<const C*>(self)->*memberPtr);
+			std::copy(std::begin(src), std::end(src), std::begin(dst));
+		}
+		else {
+			*static_cast<T*>(temporary) = (static_cast<const C*>(self)->*memberPtr);
+		}
 		return temporary;
 	};
 }
 
 template <class C, typename T>
 Setter makeFieldSetter(T C::*memberPtr) {
-	return [memberPtr](void* self, const void* value) { (static_cast<C*>(self)->*memberPtr) = *static_cast<const T*>(value); };
+	return [memberPtr](void* self, const void* value) {
+		if constexpr (std::is_array_v<T>) {
+			// Arrays are not assignable in C++
+			auto& src = *static_cast<const T*>(value);
+			auto& dst = (static_cast<C*>(self)->*memberPtr);
+			std::copy(std::begin(src), std::end(src), std::begin(dst));
+		}
+		else {
+			(static_cast<C*>(self)->*memberPtr) = *static_cast<const T*>(value);
+		}
+	};
 }
 
 template <class C>

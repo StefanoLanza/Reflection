@@ -104,7 +104,7 @@ Context& getContext();
 
 #define FIELD_EXT(field, flags, semantic)                                                                     \
 	do {                                                                                                      \
-		structType->addProperty(detail::createFieldProperty(name, flags, semantic, &class_::field, context)); \
+		structType->addProperty(detail::createFieldProperty(#field, flags, semantic, &class_::field, context)); \
 	} while (false)
 
 #define PROPERTY(name, getter, setter)                                                                                                       \
