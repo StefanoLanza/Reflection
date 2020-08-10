@@ -63,12 +63,9 @@ bool writeObjectImpl(const void* data, const Type& type, const TypeDB& typeDB, O
 	return res;
 }
 
-bool writeStruct(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive) {
-	char        stackMemory[1024];
+void writeStructProperties(const void* data, const StructType& structType, OutputArchive& archive) {
+	char        stackMemory[1024]; // FIXME linear allocator
 	StackBuffer stackBuffer { stackMemory };
-
-	const StructType& structType = static_cast<const StructType&>(type);
-
 	for (const auto& property : structType.getProperties()) {
 		if (property.getFlags() & Flags::writeable) {
 			const Type& valueType = property.getValueType();
@@ -85,11 +82,16 @@ bool writeStruct(const void* data, const Type& type, const TypeDB& typeDB, Outpu
 			stackFree(stackBuffer, temporary);
 		}
 	}
+}
 
-	const StructType* const parentType = structType.getParentType();
-	if (parentType) {
-		writeStruct(data, *parentType, typeDB, archive);
-	}
+bool writeStruct(const void* data, const Type& type, [[maybe_unused]] const TypeDB& typeDB, OutputArchive& archive) {
+	archive.beginObject();
+	const StructType* structType = static_cast<const StructType*>(&type);
+	do {
+		writeStructProperties(data, *structType, archive);
+		structType = structType->getParentType();
+	} while (structType);
+	archive.endObject();
 	return true;
 }
 

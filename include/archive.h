@@ -65,9 +65,11 @@ public:
 
 	virtual bool saveToFile(const char* filename) = 0;
 	virtual bool saveToString(std::string& string) = 0;
+	virtual	std::string_view getString() = 0;
 	virtual bool beginElement(const char* name) = 0;
 	virtual void endElement() = 0;
-
+	virtual	void beginObject() = 0;
+	virtual void endObject() = 0;
 	virtual bool write(const char* data) = 0;
 
 	// Serialization of attributes

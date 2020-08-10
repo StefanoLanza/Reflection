@@ -5,6 +5,11 @@
 #include <iostream>
 #include <string>
 
+#define XML          0
+#define JSON         1
+#define ARCHIVE_TYPE JSON
+//JSON
+
 struct TestFlags : Typhoon::BitMask<uint16_t> {
 	enum : StorageType {
 		visible = 1,
@@ -46,11 +51,11 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 #endif
 	registerUserTypes();
 
-	const char* xmlElement = "builtins";
+	const char* element = "builtins";
 	Builtins    b = makeBuiltins();
-	std::string xmlContent = writeBuiltins(b, xmlElement);
+	std::string archiveContent = writeBuiltins(b, element);
 	Builtins    ob;
-	readBuiltins(ob, xmlContent, xmlElement);
+	readBuiltins(ob, archiveContent, element);
 
 	refl::deinitReflection();
 	return 0;
@@ -86,26 +91,36 @@ Builtins makeBuiltins() {
 	return b;
 }
 
-std::string writeBuiltins(const Builtins& obj, const char* XMLelement) {
-	std::string            xmlContent;
+std::string writeBuiltins(const Builtins& obj, const char* element) {
+	std::string content;
+#if ARCHIVE_TYPE == XML
 	refl::XMLOutputArchive archive;
-	if (archive.beginElement(XMLelement)) {
+#elif ARCHIVE_TYPE == JSON
+	refl::JSONOutputArchive archive;
+#endif
+	if (archive.beginElement(element)) {
+		archive.beginObject();
 		writeObject(obj.i, "i", archive);
 		writeObject(obj.f, "f", archive);
 		writeObject(obj.d, "d", archive);
 		writeObject(obj.str, "str", archive);
 		writeObject(obj.e, "enum", archive);
 		writeObject(obj.flags, "flags", archive);
+		archive.endObject();
 		archive.endElement();
-		archive.saveToString(xmlContent);
+		archive.saveToString(content);
 	}
-	return xmlContent;
+	return content;
 }
 
-void readBuiltins(Builtins& obj, const std::string& xmlContent, const char* XMLelement) {
+void readBuiltins(Builtins& obj, const std::string& content, const char* element) {
+#if ARCHIVE_TYPE == XML
 	refl::XMLInputArchive archive;
-	if (archive.initialize(xmlContent.data())) {
-		if (archive.beginElement(XMLelement)) {
+#elif ARCHIVE_TYPE == JSON
+	refl::JSONInputArchive archive;
+#endif
+	if (archive.initialize(content.data())) {
+		if (archive.beginElement(element)) {
 			readObject(&obj.i, "i", archive);
 			readObject(&obj.f, "f", archive);
 			readObject(&obj.d, "d", archive);

@@ -9,6 +9,11 @@
 #define TY_REFLECTION_YAML 0
 #endif
 
+// Set to 1/0 to enable/disable JSON serialization support
+#ifndef TY_REFLECTION_JSON
+#define TY_REFLECTION_JSON 1
+#endif
+
 #ifndef TY_REFLECTION_STD
 #define TY_REFLECTION_STD 1
 #endif

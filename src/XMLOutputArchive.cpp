@@ -33,6 +33,10 @@ bool XMLOutputArchive::saveToString(std::string& string) {
 	return false;
 }
 
+std::string_view XMLOutputArchive::getString() {
+	return {};
+}
+
 bool XMLOutputArchive::beginElement(const char* name) {
 	auto element = document->NewElement(name);
 	currentNode = currentNode->InsertEndChild(element);
@@ -42,6 +46,12 @@ bool XMLOutputArchive::beginElement(const char* name) {
 void XMLOutputArchive::endElement() {
 	assert(currentNode);
 	currentNode = currentNode->Parent();
+}
+
+void XMLOutputArchive::beginObject() {
+}
+
+void XMLOutputArchive::endObject() {
 }
 
 bool XMLOutputArchive::writeAttribute(const char* name, const char* str) {

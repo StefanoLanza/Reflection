@@ -2,8 +2,6 @@
 
 #include "config.h"
 
-#include "XMLInputArchive.h"
-#include "XMLOutputArchive.h"
 #include "bitMaskType.h"
 #include "builtinType.h"
 #include "cloneObject.h"
@@ -17,6 +15,16 @@
 #include "writeObject.h"
 
 #include "../src/registration.h"
+
+#ifdef TY_REFLECTION_XML
+#include "XMLInputArchive.h"
+#include "XMLOutputArchive.h"
+#endif
+
+#ifdef TY_REFLECTION_JSON
+#include "jsonInputArchive.h"
+#include "jsonOutputArchive.h"
+#endif
 
 namespace Typhoon::Reflection {
 
