@@ -27,14 +27,24 @@ private:
 	void* node;
 };
 
+struct ParseResult {
+	bool        valid;
+	const char* errorMessage;
+	int         line;
+
+	explicit operator bool() const {
+		return valid;
+	}
+};
+
 class InputArchive {
 public:
 	virtual ~InputArchive() = default;
 
-	virtual std::string getErrorDesc() const = 0;
-	virtual bool        beginElement() = 0;
 	virtual bool        beginElement(const char* name) = 0;
 	virtual void        endElement() = 0;
+	virtual bool        beginObject() = 0;
+	virtual void        endObject() = 0;
 	virtual bool        iterateChild(ArchiveIterator&) = 0;
 	virtual bool        iterateChild(ArchiveIterator&, const char* name) = 0;
 	virtual bool        readAttribute(const char* name, bool& value) = 0;
@@ -63,14 +73,14 @@ class OutputArchive {
 public:
 	virtual ~OutputArchive() = default;
 
-	virtual bool saveToFile(const char* filename) = 0;
-	virtual bool saveToString(std::string& string) = 0;
-	virtual	std::string_view getString() = 0;
-	virtual bool beginElement(const char* name) = 0;
-	virtual void endElement() = 0;
-	virtual	void beginObject() = 0;
-	virtual void endObject() = 0;
-	virtual bool write(const char* data) = 0;
+	virtual bool             saveToFile(const char* filename) = 0;
+	virtual bool             saveToString(std::string& string) = 0;
+	virtual std::string_view getString() = 0;
+	virtual bool             beginElement(const char* name) = 0;
+	virtual void             endElement() = 0;
+	virtual void             beginObject() = 0;
+	virtual void             endObject() = 0;
+	virtual bool             write(const char* data) = 0;
 
 	// Serialization of attributes
 	virtual bool writeAttribute(const char* name, bool value) = 0;

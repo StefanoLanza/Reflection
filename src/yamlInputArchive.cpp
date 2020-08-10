@@ -26,10 +26,6 @@ const char* YAMLInputArchive::currNodeText() {
 void YAMLInputArchive::endElement() {
 }
 
-bool YAMLInputArchive::beginElement() {
-	return false;
-}
-
 bool YAMLInputArchive::beginElement(const char* name) {
 	return false;
 }

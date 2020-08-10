@@ -6,7 +6,6 @@
 
 namespace Typhoon::Reflection {
 
-class Type;
 class OutputArchive;
 
 namespace detail {

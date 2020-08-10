@@ -16,7 +16,6 @@ public:
 
 	bool        initialize(const char* buffer);
 	std::string getErrorDesc() const override;
-	bool        beginElement() override;
 	bool        beginElement(const char* name) override;
 	void        endElement() override;
 	bool        iterateChild(ArchiveIterator& it) override;

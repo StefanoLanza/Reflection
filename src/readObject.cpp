@@ -33,7 +33,7 @@ bool readReference(void* data, const Type& type, Semantic semantic, const TypeDB
 bool readVariant(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive);
 
 using Reader = bool (*)(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive&);
-constexpr Reader perClassreaders[] = {
+constexpr Reader perClassReaders[] = {
 	nullptr, // builtins use per-type readers
 	readStruct, readEnum, readBitMask, readContainer, readPointer, readReference, readVariant,
 };
@@ -111,23 +111,20 @@ bool readObject(void* data, const char* name, const Type& type, Semantic semanti
 
 bool readObject(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive) {
 	bool res = false;
-	if (const CustomReader& customreader = type.getCustomReader(); customreader) {
-		customreader(data, archive);
+	if (const CustomReader& customReader = type.getCustomReader(); customReader) {
+		customReader(data, archive);
 		res = true; // TODO error code ?
 	}
 	else {
-		res = perClassreaders[(int)type.subClass](data, type, semantic, typeDB, archive);
+		res = perClassReaders[(int)type.subClass](data, type, semantic, typeDB, archive);
 	}
 	return res;
 }
 
-bool readStruct(void* data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive) {
+void readStructProperties(void* data, const StructType& type, const TypeDB& typeDB, InputArchive& archive) {
 	char        stackMemory[1024];
 	StackBuffer stackBuffer { stackMemory };
-
-	const StructType& structType = static_cast<const StructType&>(type);
-
-	for (const auto& property : structType.getProperties()) {
+	for (const auto& property : type.getProperties()) {
 		if (property.getFlags() & Flags::readable) {
 			if (archive.beginElement(property.getName())) {
 				const Type& valueType = property.getValueType();
@@ -148,11 +145,14 @@ bool readStruct(void* data, const Type& type, Semantic semantic, const TypeDB& t
 			}
 		}
 	}
+}
 
-	const StructType* parentType = structType.getParentType();
-	if (parentType) {
-		readStruct(data, *parentType, semantic, typeDB, archive);
-	}
+bool readStruct(void* data, const Type& type, [[maybe_unused]] Semantic semantic, const TypeDB& typeDB, InputArchive& archive) {
+	const StructType* structType = static_cast<const StructType*>(&type);
+	do {
+		readStructProperties(data, *structType, typeDB, archive);
+		structType = structType->getParentType();
+	} while (structType);
 	return true;
 }
 

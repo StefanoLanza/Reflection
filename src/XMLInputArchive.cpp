@@ -14,21 +14,17 @@ XMLInputArchive::XMLInputArchive()
 
 XMLInputArchive::~XMLInputArchive() = default;
 
-bool XMLInputArchive::initialize(const char* buffer) {
+ParseResult XMLInputArchive::initialize(const char* buffer) {
 	assert(buffer);
 	currentNode = nullptr;
 	const auto error = document->Parse(buffer);
 	if (error == tinyxml2::XML_SUCCESS) {
 		currentNode = document.get();
-		return true;
+		return { true };
 	}
 	else {
-		return false;
+		return { false, document->ErrorName(), document->ErrorLineNum() };
 	}
-}
-
-std::string XMLInputArchive::getErrorDesc() const {
-	return document->ErrorName() + std::string { " ,line: " } + std::to_string(document->ErrorLineNum());
 }
 
 const char* XMLInputArchive::currNodeText() {
@@ -49,15 +45,11 @@ void XMLInputArchive::endElement() {
 	}
 }
 
-bool XMLInputArchive::beginElement() {
-	tinyxml2::XMLElement* const element = currentNode->FirstChildElement();
-	if (! element) {
-		return false;
-	}
-	else {
-		currentNode = element;
-		return true;
-	}
+bool XMLInputArchive::beginObject() {
+	return true;
+}
+
+void XMLInputArchive::endObject() {
 }
 
 bool XMLInputArchive::beginElement(const char* name) {

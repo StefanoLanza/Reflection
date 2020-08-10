@@ -119,7 +119,7 @@ void readBuiltins(Builtins& obj, const std::string& content, const char* element
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONInputArchive archive;
 #endif
-	if (archive.initialize(content.data())) {
+	if (refl::ParseResult res = archive.initialize(content.data()); res) {
 		if (archive.beginElement(element)) {
 			readObject(&obj.i, "i", archive);
 			readObject(&obj.f, "f", archive);
@@ -129,5 +129,8 @@ void readBuiltins(Builtins& obj, const std::string& content, const char* element
 			readObject(&obj.flags, "flags", archive);
 			archive.endElement();
 		}
+	}
+	else {
+		std::cout << res.errorMessage << std::endl;
 	}
 }

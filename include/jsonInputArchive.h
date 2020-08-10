@@ -6,6 +6,8 @@
 
 #include "archive.h"
 #include <memory>
+#include <stack>
+#include <rapidjson-master/include/rapidjson/fwd.h>
 
 namespace Typhoon::Reflection {
 
@@ -14,11 +16,11 @@ public:
 	JSONInputArchive();
 	~JSONInputArchive();
 
-	bool        initialize(const char* buffer);
-	std::string getErrorDesc() const override;
-	bool        beginElement() override;
+	ParseResult initialize(const char* buffer);
 	bool        beginElement(const char* name) override;
 	void        endElement() override;
+	bool        beginObject() override;
+	void        endObject() override;
 	bool        iterateChild(ArchiveIterator& it) override;
 	bool        iterateChild(ArchiveIterator& it, const char* name) override;
 
@@ -36,6 +38,21 @@ public:
 	bool readAttribute(const char* name, const char** str) override;
 
 private:
+	enum class StackState {
+		beforeStart, //!< An object/array is in the stack but it is not yet called by StartObject()/StartArray().
+		started,     //!< An object/array is called by StartObject()/StartArray().
+		closed       //!< An array is closed after read all element, but before EndArray().
+	};
+
+	struct StackItem {
+		const rapidjson::Value* value;
+		StackState              state;
+		rapidjson::SizeType     index; // For array iteration
+	};
+
+	std::unique_ptr<rapidjson::Document> document;
+
+	std::stack<StackItem> stack;
 };
 
 } // namespace Typhoon::Reflection

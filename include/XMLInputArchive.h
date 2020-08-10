@@ -23,11 +23,11 @@ public:
 	XMLInputArchive();
 	~XMLInputArchive();
 
-	bool        initialize(const char* buffer);
-	std::string getErrorDesc() const override;
-	bool        beginElement() override;
+	ParseResult initialize(const char* buffer);
 	bool        beginElement(const char* name) override;
 	void        endElement() override;
+	bool        beginObject() override;
+	void        endObject() override;
 	bool        iterateChild(ArchiveIterator& it) override;
 	bool        iterateChild(ArchiveIterator& it, const char* name) override;
 	const char* currNodeText() override;
