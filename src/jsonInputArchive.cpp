@@ -32,7 +32,7 @@ const char* JSONInputArchive::currNodeText() {
 bool JSONInputArchive::beginElement(const char* name) {
 	assert(! stack.empty());
 	const StackItem& top = stack.top();
-	if (top.value->IsObject() && top.state == StackState::started) {
+	if (top.value->IsObject()) { // && top.state == StackState::started) {
 		auto memberItr = top.value->FindMember(name);
 		if (memberItr != top.value->MemberEnd()) {
 			stack.push({ &memberItr->value, StackState::beforeStart, 0 });
@@ -53,7 +53,7 @@ void JSONInputArchive::endElement() {
 
 bool JSONInputArchive::beginObject() {
 	StackItem& top = stack.top();
-	if (top.value->IsObject() && top.state == StackState::beforeStart) {
+	if (top.value->IsObject()) { // && top.state == StackState::beforeStart) {
 		top.state = StackState::started;
 		return true;
 	}
@@ -64,7 +64,18 @@ bool JSONInputArchive::beginObject() {
 
 void JSONInputArchive::endObject() {
 	[[maybe_unused]] const StackItem& top = stack.top();
-	assert(top.value->IsObject() && top.state == StackState::started);
+	assert(top.value->IsObject());// && top.state == StackState::started);
+	stack.pop();
+}
+
+bool JSONInputArchive::beginArray() {
+	StackItem& top = stack.top();
+	return top.value->IsArray();
+}
+
+void JSONInputArchive::endArray() {
+	[[maybe_unused]] const StackItem& top = stack.top();
+	assert(top.value->IsArray()); // && top.state == StackState::started);
 	stack.pop();
 }
 

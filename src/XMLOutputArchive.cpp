@@ -12,9 +12,13 @@ XMLOutputArchive::XMLOutputArchive()
 	// Insert declaration "xml version=\"1.0\" encoding=\"UTF-8\""
 	document->LinkEndChild(document->NewDeclaration());
 	currentNode = document.get();
+	beginElement("root");
 }
 
-XMLOutputArchive::~XMLOutputArchive() = default;
+XMLOutputArchive::~XMLOutputArchive() {
+	endElement();
+	assert(typeStack.empty());
+}
 
 bool XMLOutputArchive::saveToFile(const char* fileName) {
 	assert(fileName);
@@ -38,6 +42,9 @@ std::string_view XMLOutputArchive::getString() {
 }
 
 bool XMLOutputArchive::beginElement(const char* name) {
+	/*if (! typeStack.empty() && typeStack.top() == Type::array) {
+		beginElement("element");
+	}*/
 	auto element = document->NewElement(name);
 	currentNode = currentNode->InsertEndChild(element);
 	return true;
@@ -46,12 +53,37 @@ bool XMLOutputArchive::beginElement(const char* name) {
 void XMLOutputArchive::endElement() {
 	assert(currentNode);
 	currentNode = currentNode->Parent();
+	/*if (! typeStack.empty() && typeStack.top() == Type::array) {
+		endElement();
+	}*/
 }
 
-void XMLOutputArchive::beginObject() {
+bool XMLOutputArchive::beginObject() {
+	if (! typeStack.empty() && typeStack.top() == Type::array) {
+		beginElement("element");
+	}
+	typeStack.push(Type::object);
+	writeAttribute("type", "object");
+	return true;
 }
 
 void XMLOutputArchive::endObject() {
+	assert(typeStack.top() == Type::object);
+	typeStack.pop();
+	if (! typeStack.empty() && typeStack.top() == Type::array) {
+		endElement();
+	}
+}
+
+bool XMLOutputArchive::beginArray() {
+	typeStack.push(Type::array);
+	writeAttribute("type", "array");
+	return true;
+}
+
+void XMLOutputArchive::endArray() {
+	assert(typeStack.top() == Type::array);
+	typeStack.pop();
 }
 
 bool XMLOutputArchive::writeAttribute(const char* name, const char* str) {

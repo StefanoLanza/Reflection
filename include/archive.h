@@ -45,6 +45,8 @@ public:
 	virtual void        endElement() = 0;
 	virtual bool        beginObject() = 0;
 	virtual void        endObject() = 0;
+	virtual bool        beginArray() = 0;
+	virtual void        endArray() = 0;
 	virtual bool        iterateChild(ArchiveIterator&) = 0;
 	virtual bool        iterateChild(ArchiveIterator&, const char* name) = 0;
 	virtual bool        readAttribute(const char* name, bool& value) = 0;
@@ -78,8 +80,10 @@ public:
 	virtual std::string_view getString() = 0;
 	virtual bool             beginElement(const char* name) = 0;
 	virtual void             endElement() = 0;
-	virtual void             beginObject() = 0;
+	virtual bool             beginObject() = 0;
 	virtual void             endObject() = 0;
+	virtual bool             beginArray() = 0;
+	virtual void             endArray() = 0;
 	virtual bool             write(const char* data) = 0;
 
 	// Serialization of attributes

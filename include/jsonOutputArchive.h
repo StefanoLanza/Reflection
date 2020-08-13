@@ -21,8 +21,10 @@ public:
 	std::string_view getString() override;
 	bool beginElement(const char* name) override;
 	void endElement() override;
-	void beginObject() override;
+	bool beginObject() override;
 	void endObject() override;
+	bool beginArray() override;
+	void endArray() override;
 	bool writeAttribute(const char* name, bool value) override;
 	bool writeAttribute(const char* name, char value) override;
 	bool writeAttribute(const char* name, unsigned char value) override;

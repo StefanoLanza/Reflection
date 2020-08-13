@@ -12,7 +12,9 @@ XMLInputArchive::XMLInputArchive()
     , currentNode(nullptr) {
 }
 
-XMLInputArchive::~XMLInputArchive() = default;
+XMLInputArchive::~XMLInputArchive() {
+	assert(typeStack.empty());
+}
 
 ParseResult XMLInputArchive::initialize(const char* buffer) {
 	assert(buffer);
@@ -46,10 +48,23 @@ void XMLInputArchive::endElement() {
 }
 
 bool XMLInputArchive::beginObject() {
+	typeStack.push(Type::object);
 	return true;
 }
 
 void XMLInputArchive::endObject() {
+	assert(typeStack.top() == Type::object);
+	typeStack.pop();
+}
+
+bool XMLInputArchive::beginArray() {
+	typeStack.push(Type::array);
+	return true;
+}
+
+void XMLInputArchive::endArray() {
+	assert(typeStack.top() == Type::array);
+	typeStack.pop();
 }
 
 bool XMLInputArchive::beginElement(const char* name) {

@@ -5,6 +5,10 @@
 #include <iostream>
 #include <string>
 
+#define XML          0
+#define JSON         1
+#define ARCHIVE_TYPE JSON
+
 struct ActionFlags : Typhoon::BitMask<uint16_t> {
 	enum : StorageType {
 		running = 1,
@@ -64,11 +68,11 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	refl::initReflection();
 	registerUserTypes();
 
-	const char* xmlElement = "gameObject";
+	const char* element = "gameObject";
 	GameObject  obj = makeGameObject();
-	std::string xmlContent = writeGameObject(obj, xmlElement);
+	std::string archiveContent = writeGameObject(obj, element);
 	GameObject  otherObj;
-	readGameObject(otherObj, xmlContent, xmlElement);
+	readGameObject(otherObj, archiveContent, element);
 	refl::deinitReflection();
 	return 0;
 }
@@ -110,17 +114,25 @@ GameObject makeGameObject() {
 	return obj;
 }
 
-std::string writeGameObject(const GameObject& obj, const char* XMLelement) {
-	std::string            xmlContent;
+std::string writeGameObject(const GameObject& obj, const char* element) {
+	std::string            archiveContent;
+#if ARCHIVE_TYPE == XML
 	refl::XMLOutputArchive archive;
-	writeObject(obj, XMLelement, archive);
-	archive.saveToString(xmlContent);
-	return xmlContent;
+#elif ARCHIVE_TYPE == JSON
+	refl::JSONOutputArchive archive;
+#endif
+	writeObject(obj, element, archive);
+	archive.saveToString(archiveContent);
+	return archiveContent;
 }
 
-void readGameObject(GameObject& obj, const std::string& xmlContent, const char* XMLelement) {
+void readGameObject(GameObject& obj, const std::string& archiveContent, const char* element) {
+#if ARCHIVE_TYPE == XML
 	refl::XMLInputArchive archive;
-	if (archive.initialize(xmlContent.data())) {
-		readObject(&obj, XMLelement, archive);
+#elif ARCHIVE_TYPE == JSON
+	refl::JSONInputArchive archive;
+#endif
+	if (archive.initialize(archiveContent.data())) {
+		readObject(&obj, element, archive);
 	}
 }

@@ -6,6 +6,7 @@
 
 #include "archive.h"
 #include <memory>
+#include <stack>
 
 // External classes
 namespace tinyxml2 {
@@ -28,6 +29,8 @@ public:
 	void        endElement() override;
 	bool        beginObject() override;
 	void        endObject() override;
+	bool        beginArray() override;
+	void        endArray() override;
 	bool        iterateChild(ArchiveIterator& it) override;
 	bool        iterateChild(ArchiveIterator& it, const char* name) override;
 	const char* currNodeText() override;
@@ -45,6 +48,12 @@ public:
 private:
 	std::unique_ptr<tinyxml2::XMLDocument> document;    // The tinyxml document object
 	tinyxml2::XMLNode*                     currentNode; // The node that is currently being processed
+
+	enum class Type {
+		array,
+		object
+	};
+	std::stack<Type> typeStack;
 };
 
 } // namespace Typhoon::Reflection

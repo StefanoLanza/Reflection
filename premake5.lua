@@ -89,6 +89,12 @@ project("Example4")
 	includedirs { ".", "include", "external",  }
 	links({"Reflection", })
 
+project("Example5")
+	kind "ConsoleApp"
+	files "examples/example5.cpp"
+	includedirs { ".", "include", "external",  }
+	links({"Reflection", })
+
 project("UnitTest")
 	kind "ConsoleApp"
 	links({"Reflection", })

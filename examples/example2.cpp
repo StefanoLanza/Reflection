@@ -6,6 +6,10 @@
 #include <iostream>
 #include <string>
 
+#define XML          0
+#define JSON         1
+#define ARCHIVE_TYPE JSON
+
 struct Coords {
 	float x;
 	float y;
@@ -33,8 +37,8 @@ int getRemainingLives(const GameObject& obj) {
 
 void        registerUserTypes();
 GameObject  makeGameObject();
-std::string writeGameObjectToXML(const GameObject& obj, const char* XMLelement);
-void        readGameObjectFromXML(GameObject& obj, const std::string& xmlString, const char* XMLelement);
+std::string writeGameObject(const GameObject& obj, const char* XMLelement);
+void        readGameObject(GameObject& obj, const std::string& xmlString, const char* XMLelement);
 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
@@ -42,11 +46,11 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	refl::initReflection();
 	registerUserTypes();
 
-	const char* xmlElement = "gameObject";
+	const char* element = "gameObject";
 	GameObject  obj = makeGameObject();
-	std::string xmlContent = writeGameObjectToXML(obj, xmlElement);
+	std::string archiveContent = writeGameObject(obj, element);
 	GameObject  otherObj;
-	readGameObjectFromXML(otherObj, xmlContent, xmlElement);
+	readGameObject(otherObj, archiveContent, element);
 
 	refl::deinitReflection();
 	return 0;
@@ -81,17 +85,25 @@ GameObject makeGameObject() {
 	return obj;
 }
 
-std::string writeGameObjectToXML(const GameObject& obj, const char* XMLelement) {
-	std::string            xmlContent;
+std::string writeGameObject(const GameObject& obj, const char* element) {
+	std::string            content;
+#if ARCHIVE_TYPE == XML
 	refl::XMLOutputArchive archive;
-	writeObject(obj, XMLelement, archive);
-	archive.saveToString(xmlContent);
-	return xmlContent;
+#elif ARCHIVE_TYPE == JSON
+	refl::JSONOutputArchive archive;
+#endif
+	writeObject(obj, element, archive);
+	archive.saveToString(content);
+	return content;
 }
 
-void readGameObjectFromXML(GameObject& obj, const std::string& xmlContent, const char* XMLelement) {
+void readGameObject(GameObject& obj, const std::string& archiveContent, const char* element) {
+#if ARCHIVE_TYPE == XML
 	refl::XMLInputArchive archive;
-	if (archive.initialize(xmlContent.data())) {
-		readObject(&obj, XMLelement, archive);
+#elif ARCHIVE_TYPE == JSON
+	refl::JSONInputArchive archive;
+#endif
+	if (archive.initialize(archiveContent.data())) {
+		readObject(&obj, element, archive);
 	}
 }

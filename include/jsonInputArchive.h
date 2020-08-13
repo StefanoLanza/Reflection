@@ -6,8 +6,8 @@
 
 #include "archive.h"
 #include <memory>
-#include <stack>
 #include <rapidjson-master/include/rapidjson/fwd.h>
+#include <stack>
 
 namespace Typhoon::Reflection {
 
@@ -21,6 +21,8 @@ public:
 	void        endElement() override;
 	bool        beginObject() override;
 	void        endObject() override;
+	bool        beginArray() override;
+	void        endArray() override;
 	bool        iterateChild(ArchiveIterator& it) override;
 	bool        iterateChild(ArchiveIterator& it, const char* name) override;
 

@@ -85,14 +85,16 @@ void writeStructProperties(const void* data, const StructType& structType, Outpu
 }
 
 bool writeStruct(const void* data, const Type& type, [[maybe_unused]] const TypeDB& typeDB, OutputArchive& archive) {
-	archive.beginObject();
-	const StructType* structType = static_cast<const StructType*>(&type);
-	do {
-		writeStructProperties(data, *structType, archive);
-		structType = structType->getParentType();
-	} while (structType);
-	archive.endObject();
-	return true;
+	if (archive.beginObject()) {
+		const StructType* structType = static_cast<const StructType*>(&type);
+		do {
+			writeStructProperties(data, *structType, archive);
+			structType = structType->getParentType();
+		} while (structType);
+		archive.endObject();
+		return true;
+	}
+	return false;
 }
 
 bool writeEnum(const void* data, const Type& type, const TypeDB& /*typeDB*/, OutputArchive& archive) {
@@ -140,29 +142,37 @@ bool writeContainer(const void* data, const Type& type, const TypeDB& typeDB, Ou
 	const Type*          valueType = containerType.getValueType();
 	constexpr TypeId     variant_typeID = getTypeId<Variant>();
 
-	ReadIterator* iterator = containerType.newReadIterator(tmp, sizeof(tmp), data);
+	if (! archive.beginArray()) {
+		return false;
+	}
+
+	ReadIterator* iterator = containerType.newReadIterator(tmp, sizeof(tmp), data); // TODO scoped allocator instead
 	while (iterator->isValid()) {
+#if 0
 		const char* elementName = "element";
 		if (valueType->typeID == variant_typeID) {
 			// a variant is already written inside an element that has the var name
 			elementName = nullptr;
 		}
+#endif
 
 		if (keyType) {
 			// write key and value
-			// TODO broken, not generic enough, doesn't work with vars etc.
-			if (archive.beginElement(elementName)) {
+			// TODO broken, not generic enough, doesn't work with vars etc.			// if (archive.beginElement(elementName)) {
+			if (archive.beginObject()) {
 				writeObject(iterator->getKey(), "key", *keyType, archive);
 				writeObject(iterator->getValue(), "value", *valueType, archive);
-				archive.endElement();
+				archive.endObject();
+				//	archive.endElement();
+				//}
 			}
 		}
 		else {
 			// Write value
-			if (elementName) {
+			/*if (elementName) {
 				writeObject(iterator->getValue(), elementName, *valueType, archive);
 			}
-			else {
+			else*/ {
 				writeObjectImpl(iterator->getValue(), *valueType, typeDB, archive);
 			}
 		}
@@ -170,7 +180,8 @@ bool writeContainer(const void* data, const Type& type, const TypeDB& typeDB, Ou
 		iterator->gotoNext();
 	}
 
-	containerType.deleteIterator(iterator);
+	containerType.deleteIterator(iterator); // TODO scoped allocator
+	archive.endArray();
 	return true;
 }
 

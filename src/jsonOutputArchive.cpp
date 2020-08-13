@@ -40,19 +40,26 @@ std::string_view JSONOutputArchive::getString() {
 }
 
 bool JSONOutputArchive::beginElement(const char* name) {
-	writer->Key(name, static_cast<SizeType>(strlen(name)));
-	return true;
+	return writer->Key(name, static_cast<SizeType>(strlen(name)));
 }
 
 void JSONOutputArchive::endElement() {
 }
 
-void JSONOutputArchive::beginObject() {
-	writer->StartObject();
+bool JSONOutputArchive::beginObject() {
+	return writer->StartObject();
 }
 
 void JSONOutputArchive::endObject() {
 	writer->EndObject();
+}
+
+bool JSONOutputArchive::beginArray() {
+	return writer->StartArray();
+}
+
+void JSONOutputArchive::endArray() {
+	writer->EndArray();
 }
 
 bool JSONOutputArchive::writeAttribute(const char* name, const char* str) {
@@ -96,8 +103,7 @@ bool JSONOutputArchive::writeAttribute(const char* name, double value) {
 }
 
 bool JSONOutputArchive::write(const char* text) {
-	writer->String(text, static_cast<SizeType>(strlen(text)));
-	return true;
+	return writer->String(text, static_cast<SizeType>(strlen(text)));
 }
 
 } // namespace Typhoon::Reflection
