@@ -16,7 +16,6 @@ JSONOutputArchive::JSONOutputArchive()
     : stream(std::make_unique<StringBuffer>())
     , writer(std::make_unique<PrettyWriter<StringBuffer>>(*stream))
     , saved(false) {
-	writer->StartObject();
 }
 
 JSONOutputArchive::~JSONOutputArchive() {
@@ -28,7 +27,7 @@ bool JSONOutputArchive::saveToFile(const char* fileName) {
 
 bool JSONOutputArchive::saveToString(std::string& string) {
 	if (! saved) {
-		writer->EndObject();
+		//writer->EndObject();
 		saved = true;
 	}
 	string = stream->GetString(); // TODO string_view
@@ -39,7 +38,16 @@ std::string_view JSONOutputArchive::getString() {
 	return { stream->GetString(), stream->GetSize() };
 }
 
+void JSONOutputArchive::beginRoot() {
+	writer->StartObject();
+}
+
+void JSONOutputArchive::endRoot() {
+	writer->EndObject();
+}
+
 bool JSONOutputArchive::beginElement(const char* name) {
+	assert(name);
 	return writer->Key(name, static_cast<SizeType>(strlen(name)));
 }
 

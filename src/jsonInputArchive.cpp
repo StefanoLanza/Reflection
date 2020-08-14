@@ -19,7 +19,7 @@ JSONInputArchive::~JSONInputArchive() = default;
 ParseResult JSONInputArchive::initialize(const char* buffer) {
 	const rapidjson::ParseResult result = document->Parse(buffer);
 	if (! result.IsError()) {
-		stack.push({ document.get(), StackState::beforeStart, 0 });
+		stack.push({ document.get(), 0 });
 	}
 	return { ! result.IsError(), GetParseError_En(result.Code()), static_cast<int>(result.Offset()) };
 }
@@ -32,29 +32,28 @@ const char* JSONInputArchive::currNodeText() {
 bool JSONInputArchive::beginElement(const char* name) {
 	assert(! stack.empty());
 	const StackItem& top = stack.top();
-	if (top.value->IsObject()) { // && top.state == StackState::started) {
-		auto memberItr = top.value->FindMember(name);
+	if (top.value->IsObject()) {
+		auto memberItr = name ? top.value->FindMember(name) : top.value->MemberBegin();
 		if (memberItr != top.value->MemberEnd()) {
-			stack.push({ &memberItr->value, StackState::beforeStart, 0 });
+			stack.push({ &memberItr->value, 0 });
+			return true;
 		}
 		else {
 			return false;
 		}
 	}
-	return true;
+	return false;
 }
 
 void JSONInputArchive::endElement() {
 	stack.pop();
-	// TODO array
 }
 
 // TODO beginObject(name). This operates on the stack. value(name) returns a string to be parsed
 
 bool JSONInputArchive::beginObject() {
 	StackItem& top = stack.top();
-	if (top.value->IsObject()) { // && top.state == StackState::beforeStart) {
-		top.state = StackState::started;
+	if (top.value->IsObject()) {
 		return true;
 	}
 	else {
@@ -64,7 +63,7 @@ bool JSONInputArchive::beginObject() {
 
 void JSONInputArchive::endObject() {
 	[[maybe_unused]] const StackItem& top = stack.top();
-	assert(top.value->IsObject());// && top.state == StackState::started);
+	assert(top.value->IsObject());
 	stack.pop();
 }
 
@@ -75,7 +74,7 @@ bool JSONInputArchive::beginArray() {
 
 void JSONInputArchive::endArray() {
 	[[maybe_unused]] const StackItem& top = stack.top();
-	assert(top.value->IsArray()); // && top.state == StackState::started);
+	assert(top.value->IsArray());
 	stack.pop();
 }
 

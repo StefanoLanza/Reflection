@@ -22,6 +22,7 @@ ParseResult XMLInputArchive::initialize(const char* buffer) {
 	const auto error = document->Parse(buffer);
 	if (error == tinyxml2::XML_SUCCESS) {
 		currentNode = document.get();
+		beginElement("root"); // might fail
 		return { true };
 	}
 	else {
@@ -68,7 +69,6 @@ void XMLInputArchive::endArray() {
 }
 
 bool XMLInputArchive::beginElement(const char* name) {
-	assert(name);
 	if (! currentNode) {
 		return false;
 	}

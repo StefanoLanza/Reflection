@@ -226,16 +226,12 @@ bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB
 					void* const key = std::align(key_type->alignment, key_type->size, buffer, space);
 					if (key) {
 						key_type->constructObject(key);
-
 						// read key
 						readObject(key, "key", *key_type, Semantic::none, typeDB, archive);
-
 						// Create value using key
 						void* value = iterator->insert(key);
-
 						// Destruct key
 						key_type->destructObject(key);
-
 						readObject(value, "value", *value_type, semantic, typeDB, archive);
 					}
 					else {

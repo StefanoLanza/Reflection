@@ -12,11 +12,9 @@ XMLOutputArchive::XMLOutputArchive()
 	// Insert declaration "xml version=\"1.0\" encoding=\"UTF-8\""
 	document->LinkEndChild(document->NewDeclaration());
 	currentNode = document.get();
-	beginElement("root");
 }
 
 XMLOutputArchive::~XMLOutputArchive() {
-	endElement();
 	assert(typeStack.empty());
 }
 
@@ -41,10 +39,17 @@ std::string_view XMLOutputArchive::getString() {
 	return {};
 }
 
+void XMLOutputArchive::beginRoot() {
+	beginElement("root");
+}
+
+void XMLOutputArchive::endRoot() {
+	endElement();
+}
+
 bool XMLOutputArchive::beginElement(const char* name) {
-	/*if (! typeStack.empty() && typeStack.top() == Type::array) {
-		beginElement("element");
-	}*/
+	beginArrayElement();
+	assert(name);
 	auto element = document->NewElement(name);
 	currentNode = currentNode->InsertEndChild(element);
 	return true;
@@ -53,15 +58,11 @@ bool XMLOutputArchive::beginElement(const char* name) {
 void XMLOutputArchive::endElement() {
 	assert(currentNode);
 	currentNode = currentNode->Parent();
-	/*if (! typeStack.empty() && typeStack.top() == Type::array) {
-		endElement();
-	}*/
+	endArrayElement();
 }
 
 bool XMLOutputArchive::beginObject() {
-	if (! typeStack.empty() && typeStack.top() == Type::array) {
-		beginElement("element");
-	}
+	beginArrayElement();
 	typeStack.push(Type::object);
 	writeAttribute("type", "object");
 	return true;
@@ -70,9 +71,7 @@ bool XMLOutputArchive::beginObject() {
 void XMLOutputArchive::endObject() {
 	assert(typeStack.top() == Type::object);
 	typeStack.pop();
-	if (! typeStack.empty() && typeStack.top() == Type::array) {
-		endElement();
-	}
+	endArrayElement();
 }
 
 bool XMLOutputArchive::beginArray() {
@@ -138,7 +137,24 @@ bool XMLOutputArchive::writeAttribute(const char* name, double value) {
 }
 
 bool XMLOutputArchive::write(const char* text) {
-	return currentNode->InsertEndChild(document->NewText(text)) != nullptr;
+	beginArrayElement(); // insert "element" node for array
+	bool res = currentNode->InsertEndChild(document->NewText(text)) != nullptr;
+	endArrayElement();
+	return res;
+}
+
+void XMLOutputArchive::beginArrayElement() {
+	if (! typeStack.empty() && typeStack.top() == Type::array) {
+		auto element = document->NewElement("element");
+		currentNode = currentNode->InsertEndChild(element);
+	}
+}
+
+void XMLOutputArchive::endArrayElement() {
+	if (! typeStack.empty() && typeStack.top() == Type::array) {
+		assert(currentNode);
+		currentNode = currentNode->Parent();
+	}
 }
 
 } // namespace Typhoon::Reflection

@@ -11,6 +11,7 @@
 #define JSON         1
 #define ARCHIVE_TYPE XML
 //JSON
+// JSON
 
 struct Person {
 	std::string name;
@@ -18,7 +19,7 @@ struct Person {
 };
 
 // Needed for std::map
-bool operator == (const Person& a, const Person& b) {
+bool operator==(const Person& a, const Person& b) {
 	return a.name == b.name && a.age == b.age;
 }
 
@@ -28,7 +29,7 @@ struct City {
 };
 
 // Needed for std::map
-bool operator == (const City& a, const City& b) {
+bool operator==(const City& a, const City& b) {
 	return a.name == b.name && a.country == b.country;
 }
 
@@ -38,9 +39,9 @@ using CityVector = std::vector<City>;
 
 void        registerUserTypes();
 PersonMap   buildPersonMap();
-CityVector buildCities();
+CityVector  buildCities();
 std::string writeToArchive(const PersonMap& obj, const CityVector& cities, const char* name, const char* citiesName);
-void readFromArchive(PersonMap& obj, CityVector& cities, const std::string& archiveContent, const char* name, const char* citiesName);
+void        readFromArchive(PersonMap& obj, CityVector& cities, const std::string& archiveContent, const char* name, const char* citiesName);
 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
@@ -49,14 +50,14 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	refl::initReflection(customAllocator);
 	registerUserTypes();
 
-	PersonMap persons = buildPersonMap();
+	PersonMap  persons = buildPersonMap();
 	CityVector cities = buildCities();
 
 	const char* name = "Persons";
 	const char* citiesName = "Cities";
 	std::string archiveContent = writeToArchive(persons, cities, name, citiesName);
 	PersonMap   otherPersons;
-	CityVector otherCities;
+	CityVector  otherCities;
 	readFromArchive(otherPersons, otherCities, archiveContent, name, citiesName);
 
 	std::cout << "Total allocated memory " << customAllocator.getTotalAlloc() << " bytes" << std::endl;
@@ -87,17 +88,18 @@ PersonId nextId() {
 
 PersonMap buildPersonMap() {
 	PersonMap persons;
-	persons.emplace(nextId(), Person{"Stefano", 41});
-	persons.emplace(nextId(), Person{"Enrico", 12});
-	persons.emplace(nextId(), Person{"Oriana", 7});
+	persons.emplace(nextId(), Person { "Stefano", 41 });
+	persons.emplace(nextId(), Person { "Enrico", 12 });
+	persons.emplace(nextId(), Person { "Oriana", 7 });
 	return persons;
 }
 
 CityVector buildCities() {
 	CityVector cities;
-	cities.push_back(City{"Mantova", "Italy"});
-	cities.push_back(City{"Barcelona", "Spain"});
-	cities.push_back(City{"Dublin", "Ireland"});
+	cities.push_back(City { "Mantova", "Italy" });
+	cities.push_back(City { "Barcelona", "Spain" });
+	cities.push_back(City { "Dublin", "Ireland" });
+	cities.push_back(City { "Cambridge", "UK" });
 	return cities;
 }
 
@@ -108,8 +110,10 @@ std::string writeToArchive(const PersonMap& obj, const CityVector& cities, const
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
+	archive.beginRoot();
 	writeObject(obj, name, archive);
 	writeObject(cities, citiesName, archive);
+	archive.endRoot();
 	archive.saveToString(archiveContent);
 	return archiveContent;
 }
@@ -121,8 +125,8 @@ void readFromArchive(PersonMap& obj, CityVector& cities, const std::string& arch
 	refl::JSONInputArchive  archive;
 #endif
 	if (archive.initialize(archiveContent.data())) { // TODO root
+		//archive.be
 		readObject(&obj, name, archive);
 		readObject(&cities, citiesName, archive);
-
 	}
 }

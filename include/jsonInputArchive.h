@@ -40,21 +40,13 @@ public:
 	bool readAttribute(const char* name, const char** str) override;
 
 private:
-	enum class StackState {
-		beforeStart, //!< An object/array is in the stack but it is not yet called by StartObject()/StartArray().
-		started,     //!< An object/array is called by StartObject()/StartArray().
-		closed       //!< An array is closed after read all element, but before EndArray().
-	};
-
 	struct StackItem {
 		const rapidjson::Value* value;
-		StackState              state;
 		rapidjson::SizeType     index; // For array iteration
 	};
 
 	std::unique_ptr<rapidjson::Document> document;
-
-	std::stack<StackItem> stack;
+	std::stack<StackItem>                stack;
 };
 
 } // namespace Typhoon::Reflection

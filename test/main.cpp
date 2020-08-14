@@ -168,8 +168,10 @@ TEST_CASE("C array") {
 	constexpr size_t size = 64;
 	using Array = int[size];
 	Array array;
-	for (auto& e : array) {
-		e = static_cast<int>(reinterpret_cast<uintptr_t>(&e) & 0xFFFF);
+	int i = 1;
+	for (int& e : array) {
+		e = (i * (i + 1)) / 2; // triangular number
+		++i;
 	}
 
 	SECTION("XML serialization") {
@@ -229,9 +231,9 @@ TEST_CASE("std::map") {
 
 		XMLInputArchive inArchive;
 		REQUIRE(inArchive.initialize(xmlContent.data()));
-		Map in_map;
-		REQUIRE(readObject(&in_map, XMLelement, inArchive));
-		CHECK(in_map == map);
+		Map inMap;
+		REQUIRE(readObject(&inMap, XMLelement, inArchive));
+		CHECK(inMap == map);
 	}
 	SECTION("Clone") {
 		Map cloned;

@@ -27,6 +27,8 @@ public:
 	bool             saveToFile(const char* filename) override;
 	bool             saveToString(std::string& string) override;
 	std::string_view getString() override;
+	void             beginRoot() override;
+	void             endRoot() override;
 	bool             beginElement(const char* name) override;
 	void             endElement() override;
 	bool             beginObject() override;
@@ -44,6 +46,10 @@ public:
 	bool             writeAttribute(const char* name, double value) override;
 	bool             writeAttribute(const char* name, const char* str) override;
 	bool             write(const char* text) override;
+
+private:
+	void beginArrayElement();
+	void endArrayElement();
 
 private:
 	enum class Type { array, object };
