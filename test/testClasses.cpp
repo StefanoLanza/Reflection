@@ -33,13 +33,17 @@ void setColor(Fog& fog, Color c) {
 
 bool customSaveMaterial(const void* data, refl::OutputArchive& archive) {
 	const Material* material = static_cast<const Material*>(data);
+	archive.beginObject();
 	refl::writeObject(material->name, "name", archive);
 	refl::writeObject(material->color, "color", archive);
+	archive.endObject();
 	return true;
 }
 
 void customReadMaterial(void* data, refl::InputArchive& archive) {
 	Material* material = static_cast<Material*>(data);
+	archive.beginObject();
 	refl::readObject(&material->name, "name", archive);
 	refl::readObject(&material->color, "color", archive);
+	archive.endObject();
 }

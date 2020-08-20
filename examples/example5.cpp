@@ -9,9 +9,7 @@
 
 #define XML          0
 #define JSON         1
-#define ARCHIVE_TYPE XML
-//JSON
-// JSON
+#define ARCHIVE_TYPE JSON
 
 struct Person {
 	std::string name;
@@ -124,8 +122,7 @@ void readFromArchive(PersonMap& obj, CityVector& cities, const std::string& arch
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONInputArchive  archive;
 #endif
-	if (archive.initialize(archiveContent.data())) { // TODO root
-		//archive.be
+	if (archive.initialize(archiveContent.data())) {
 		readObject(&obj, name, archive);
 		readObject(&cities, citiesName, archive);
 	}

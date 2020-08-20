@@ -8,23 +8,29 @@ namespace Typhoon::Reflection {
 class ArchiveIterator {
 public:
 	ArchiveIterator()
-	    : node(nullptr) {
-	}
-	explicit ArchiveIterator(void* node)
-	    : node(node) {
-	}
-	explicit operator bool() const {
-		return node != nullptr;
+	    : node(nullptr)
+	    , index(static_cast<size_t>(-1)) {
 	}
 	void* getNode() const {
 		return node;
 	}
-	void reset(void* node_ = nullptr) {
+	size_t getIndex() const {
+		return index;
+	}
+	void reset() {
+		node = nullptr;
+		index = static_cast<size_t>(-1);
+	}
+	void reset(void* node_) {
 		node = node_;
+	}
+	void reset(size_t index_) {
+		index = index_;
 	}
 
 private:
-	void* node;
+	void*  node;
+	size_t index;
 };
 
 struct ParseResult {
@@ -48,7 +54,7 @@ public:
 	virtual bool        beginArray() = 0;
 	virtual void        endArray() = 0;
 	virtual bool        iterateChild(ArchiveIterator&) = 0;
-	virtual bool        iterateChild(ArchiveIterator&, const char* name) = 0;
+	//virtual bool        iterateChild(ArchiveIterator&, const char* name) = 0; // TODO remove?
 	virtual bool        readAttribute(const char* name, bool& value) = 0;
 	virtual bool        readAttribute(const char* name, char& value) = 0;
 	virtual bool        readAttribute(const char* name, short& value) = 0;

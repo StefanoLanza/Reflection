@@ -73,7 +73,7 @@ std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementT
 	if (archive.beginElement(arrayName)) {
 		res = true;
 		ArchiveIterator iter;
-		while (archive.iterateChild(iter, "element")) {
+		while (archive.iterateChild(iter)) {
 			if (count < arraySize) {
 				readObject(destPtr, *elementType, Semantic::none, typeDB, archive);
 			}
@@ -215,12 +215,12 @@ bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB
 	}
 	else {
 		char                 stackMem[512];
-		WriteIterator* const iterator = containerType.newWriteIterator(tmp, sizeof(tmp), data);
+		WriteIterator* const containerIterator = containerType.newWriteIterator(tmp, sizeof(tmp), data);
 		ArchiveIterator      archiveIterator;
 		while (archive.iterateChild(archiveIterator)) {
-			if (iterator->isValid()) {
+			if (containerIterator->isValid()) {
 				if (key_type) {
-					// Construct a temporary for the key
+					// Construct a temporary for the key TODO stack allocator
 					size_t      space = sizeof(stackMem);
 					void*       buffer = stackMem;
 					void* const key = std::align(key_type->alignment, key_type->size, buffer, space);
@@ -229,7 +229,7 @@ bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB
 						// read key
 						readObject(key, "key", *key_type, Semantic::none, typeDB, archive);
 						// Create value using key
-						void* value = iterator->insert(key);
+						void* value = containerIterator->insert(key);
 						// Destruct key
 						key_type->destructObject(key);
 						readObject(value, "value", *value_type, semantic, typeDB, archive);
@@ -238,7 +238,7 @@ bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB
 					}
 				}
 				else {
-					readObject(iterator->pushBack(), *value_type, semantic, typeDB, archive);
+					readObject(containerIterator->pushBack(), *value_type, semantic, typeDB, archive);
 				}
 			}
 			else {
@@ -246,7 +246,7 @@ bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB
 			}
 		}
 
-		containerType.deleteIterator(iterator);
+		containerType.deleteIterator(containerIterator);
 	}
 	return true;
 }

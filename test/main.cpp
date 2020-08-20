@@ -16,8 +16,8 @@ void compare(const GameObject& o0, const GameObject& o1) {
 }
 
 template <class T>
-bool compareArrays(const T a[], const T b[], int n) {
-	for (int i = 0; i < n; ++i) {
+bool compareArrays(const T a[], const T b[], size_t n) {
+	for (size_t i = 0; i < n; ++i) {
 		if (a[i] != b[i]) {
 			return false;
 		}
@@ -45,48 +45,60 @@ TEST_CASE("Primitives") {
 	bool          b = false, b2 = true;
 	using namespace refl;
 
+	auto write = [&](OutputArchive& archive) {
+		archive.beginRoot();
+		REQUIRE(writeObject(c, "c", archive));
+		REQUIRE(writeObject(uc, "uc", archive));
+		REQUIRE(writeObject(i, "i", archive));
+		REQUIRE(writeObject(ui, "ui", archive));
+		REQUIRE(writeObject(l, "l", archive));
+		REQUIRE(writeObject(ul, "ul", archive));
+		REQUIRE(writeObject(f, "f", archive));
+		REQUIRE(writeObject(d, "d", archive));
+		REQUIRE(writeObject(b, "b", archive));
+		archive.endRoot();
+		std::string content;
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
+
+	auto read = [&](InputArchive& archive) {
+		REQUIRE(readObject(&c2, "c", archive));
+		REQUIRE(readObject(&uc2, "uc", archive));
+		REQUIRE(readObject(&i2, "i", archive));
+		REQUIRE(readObject(&ui2, "ui", archive));
+		REQUIRE(readObject(&l2, "l", archive));
+		REQUIRE(readObject(&ul2, "ul", archive));
+		REQUIRE(readObject(&f2, "f", archive));
+		REQUIRE(readObject(&d2, "d", archive));
+		REQUIRE(readObject(&b2, "b", archive));
+		CHECK(c == c2);
+		CHECK(uc == uc2);
+		CHECK(i == i2);
+		CHECK(ui == ui2);
+		CHECK(l == l2);
+		CHECK(ul == ul2);
+		CHECK(f == f2);
+		CHECK(d == d2);
+		CHECK(b == b2);
+	};
+
 	SECTION("XML Serialization") {
-		std::string      xmlContent;
 		XMLOutputArchive outArchive;
-		{
-			REQUIRE(outArchive.beginElement("root"));
-			REQUIRE(writeObject(c, "c", outArchive));
-			REQUIRE(writeObject(uc, "uc", outArchive));
-			REQUIRE(writeObject(i, "i", outArchive));
-			REQUIRE(writeObject(ui, "ui", outArchive));
-			REQUIRE(writeObject(l, "l", outArchive));
-			REQUIRE(writeObject(ul, "ul", outArchive));
-			REQUIRE(writeObject(f, "f", outArchive));
-			REQUIRE(writeObject(d, "d", outArchive));
-			REQUIRE(writeObject(b, "b", outArchive));
-			outArchive.endElement();
-			REQUIRE(outArchive.saveToString(xmlContent));
-		}
-		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
-		{
-			inArchive.beginElement("root");
-			REQUIRE(readObject(&c2, "c", inArchive));
-			REQUIRE(readObject(&uc2, "uc", inArchive));
-			REQUIRE(readObject(&i2, "i", inArchive));
-			REQUIRE(readObject(&ui2, "ui", inArchive));
-			REQUIRE(readObject(&l2, "l", inArchive));
-			REQUIRE(readObject(&ul2, "ul", inArchive));
-			REQUIRE(readObject(&f2, "f", inArchive));
-			REQUIRE(readObject(&d2, "d", inArchive));
-			REQUIRE(readObject(&b2, "b", inArchive));
-			CHECK(c == c2);
-			CHECK(uc == uc2);
-			CHECK(i == i2);
-			CHECK(ui == ui2);
-			CHECK(l == l2);
-			CHECK(ul == ul2);
-			CHECK(f == f2);
-			CHECK(d == d2);
-			CHECK(b == b2);
-			inArchive.endElement();
-		}
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
 	}
+
+	SECTION("JSON Serialization") {
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+
 	SECTION("Clone") {
 		cloneObject(&c2, c);
 		CHECK(c2 == c);
@@ -111,23 +123,40 @@ TEST_CASE("Primitives") {
 
 TEST_CASE("Enum") {
 	using namespace refl;
-	SeasonType season = SeasonType::spring;
+	SeasonType  season = SeasonType::spring;
+	const char* elementName = "season";
+
+	auto write = [&](OutputArchive& archive) {
+		archive.beginRoot();
+		std::string content;
+		REQUIRE(writeObject(season, elementName, archive));
+		archive.endRoot();
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
+
+	auto read = [&](InputArchive& archive) {
+		SeasonType readSeason;
+		REQUIRE(readObject(&readSeason, elementName, archive));
+		CHECK(readSeason == season);
+	};
+
 	SECTION("XML Serialization") {
-		const char*      XMLelement = "season";
-		std::string      xmlContent;
 		XMLOutputArchive outArchive;
-		{
-			REQUIRE(writeObject(season, XMLelement, outArchive));
-			REQUIRE(outArchive.saveToString(xmlContent));
-		}
-		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
-		{
-			SeasonType readSeason;
-			REQUIRE(readObject(&readSeason, XMLelement, inArchive));
-			CHECK(readSeason == season);
-		}
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
 	}
+
+	SECTION("JSON Serialization") {
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+
 	SECTION("Clone") {
 		SeasonType cloned;
 		REQUIRE(ErrorCode::ok == cloneObject(&cloned, season));
@@ -139,22 +168,39 @@ TEST_CASE("BitMask") {
 	using namespace refl;
 	ActionFlags flags;
 	flags.value = ActionFlags::running | ActionFlags::smiling;
+	const char* elementName = "flags";
+
+	auto write = [&](OutputArchive& archive) {
+		archive.beginRoot();
+		REQUIRE(writeObject(flags, elementName, archive));
+		archive.endRoot();
+		std::string content;
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
+
+	auto read = [&](InputArchive& archive) {
+		ActionFlags readFlags;
+		REQUIRE(readObject(&readFlags, elementName, archive));
+		CHECK(readFlags == flags);
+	};
+
 	SECTION("XML Serialization") {
-		const char*      XMLelement = "flags";
-		std::string      xmlContent;
 		XMLOutputArchive outArchive;
-		{
-			REQUIRE(writeObject(flags, XMLelement, outArchive));
-			REQUIRE(outArchive.saveToString(xmlContent));
-		}
-		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
-		{
-			ActionFlags readFlags;
-			REQUIRE(readObject(&readFlags, XMLelement, inArchive));
-			CHECK(readFlags == flags);
-		}
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
 	}
+
+	SECTION("JSON Serialization") {
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+
 	SECTION("Clone") {
 		ActionFlags cloned;
 		cloneObject(&cloned, flags);
@@ -168,25 +214,45 @@ TEST_CASE("C array") {
 	constexpr size_t size = 64;
 	using Array = int[size];
 	Array array;
-	int i = 1;
+	int   i = 1;
 	for (int& e : array) {
 		e = (i * (i + 1)) / 2; // triangular number
 		++i;
 	}
 
-	SECTION("XML serialization") {
-		const char*      XMLelement = "array";
-		std::string      xmlContent;
-		XMLOutputArchive outArchive;
-		REQUIRE(writeObject(array, XMLelement, outArchive));
-		REQUIRE(outArchive.saveToString(xmlContent));
+	const char* elementName = "array";
 
-		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
+	auto write = [&](OutputArchive& archive) {
+		archive.beginRoot();
+		REQUIRE(writeObject(array, elementName, archive));
+		std::string content;
+		archive.endRoot();
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
+
+	auto read = [&](InputArchive& archive) {
 		Array in_array;
-		REQUIRE(readObject(&in_array, XMLelement, inArchive));
+		REQUIRE(readObject(&in_array, elementName, archive));
 		CHECK(compareArrays(in_array, array, size));
+	};
+
+	SECTION("XML serialization") {
+		XMLOutputArchive outArchive;
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
 	}
+
+	SECTION("JSON serialization") {
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+
 	SECTION("Clone") {
 		Array cloned;
 		cloneObject(&cloned, array);
@@ -198,19 +264,41 @@ TEST_CASE("std::vector") {
 	using namespace refl;
 	using Vector = std::vector<std::string>;
 	const Vector vec { "Stefano", "Claudio", "Cristiana", "Manlio", "Nicoletta", "Enrico", "Oriana", "Marco" };
+	const char*  elementName = "vector";
+
+	auto write = [&](OutputArchive& archive) {
+		archive.beginRoot();
+		REQUIRE(writeObject(vec, elementName, archive));
+		archive.endRoot();
+		std::string content;
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
+
+	auto read = [&](InputArchive& archive) {
+		Vector in_vec;
+		REQUIRE(readObject(&in_vec, elementName, archive));
+		CHECK(in_vec == vec);
+	};
+
 	SECTION("XML serialization") {
-		const char*      XMLelement = "vector";
 		std::string      xmlContent;
 		XMLOutputArchive outArchive;
-		REQUIRE(writeObject(vec, XMLelement, outArchive));
-		REQUIRE(outArchive.saveToString(xmlContent));
-
-		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
-		Vector in_vec;
-		REQUIRE(readObject(&in_vec, XMLelement, inArchive));
-		CHECK(in_vec == vec);
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
 	}
+
+	SECTION("JSON serialization") {
+		std::string       xmlContent;
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+
 	SECTION("Clone") {
 		Vector cloned;
 		cloneObject(&cloned, vec);
@@ -221,20 +309,40 @@ TEST_CASE("std::vector") {
 TEST_CASE("std::map") {
 	using namespace refl;
 	using Map = std::map<std::string, std::string>;
-	const Map map { { "Lanza", "Stefano" }, { "Biancardi", "Nicoletta" }, { "Moschella", "Enrico" } };
-	SECTION("XML serialization") {
-		const char*      XMLelement = "map";
-		std::string      xmlContent;
-		XMLOutputArchive outArchive;
-		REQUIRE(writeObject(map, XMLelement, outArchive));
-		REQUIRE(outArchive.saveToString(xmlContent));
+	const Map   map { { "Lanza", "Stefano" }, { "Biancardi", "Nicoletta" }, { "Moschella", "Enrico" } };
+	const char* elementName = "map";
 
-		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
+	auto write = [&](OutputArchive& archive) {
+		archive.beginRoot();
+		REQUIRE(writeObject(map, elementName, archive));
+		archive.endRoot();
+		std::string content;
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
+
+	auto read = [&](InputArchive& archive) {
 		Map inMap;
-		REQUIRE(readObject(&inMap, XMLelement, inArchive));
+		REQUIRE(readObject(&inMap, elementName, archive));
 		CHECK(inMap == map);
+	};
+
+	SECTION("XML serialization") {
+		XMLOutputArchive outArchive;
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
 	}
+
+	SECTION("JSON serialization") {
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+
 	SECTION("Clone") {
 		Map cloned;
 		cloneObject(&cloned, map);
@@ -250,19 +358,39 @@ TEST_CASE("std::array") {
 		e = static_cast<int>(reinterpret_cast<uintptr_t>(&e) & 0xFFFF);
 	}
 
-	SECTION("XML serialization") {
-		const char*      XMLelement = "array";
-		std::string      xmlContent;
-		XMLOutputArchive outArchive;
-		REQUIRE(writeObject(array, XMLelement, outArchive));
-		REQUIRE(outArchive.saveToString(xmlContent));
+	const char* elementName = "array";
 
-		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
+	auto write = [&](OutputArchive& archive) {
+		archive.beginRoot();
+		REQUIRE(writeObject(array, elementName, archive));
+		archive.endRoot();
+		std::string content;
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
+
+	auto read = [&](InputArchive& archive) {
 		Array in_array;
-		REQUIRE(readObject(&in_array, XMLelement, inArchive));
+		REQUIRE(readObject(&in_array, elementName, archive));
 		CHECK(in_array == array);
+	};
+
+	SECTION("XML serialization") {
+		XMLOutputArchive outArchive;
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
 	}
+
+	SECTION("JSON serialization") {
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+
 	SECTION("Clone") {
 		Array cloned;
 		cloneObject(&cloned, array);
@@ -273,21 +401,40 @@ TEST_CASE("std::array") {
 TEST_CASE("std::pair") {
 	using namespace refl;
 	using Pair = std::pair<bool, std::string>;
-	Pair pair { true, "Stefano" };
+	const Pair  pair { true, "Stefano" };
+	const char* elementName = "pair";
+
+	auto write = [&](OutputArchive& archive) {
+		archive.beginRoot();
+		REQUIRE(writeObject(pair, elementName, archive));
+		archive.endRoot();
+		std::string content;
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
+
+	auto read = [&](InputArchive& archive) {
+		Pair inPair;
+		REQUIRE(readObject(&inPair, elementName, archive));
+		CHECK(inPair == pair);
+	};
 
 	SECTION("XML serialization") {
-		const char*      XMLelement = "pair";
-		std::string      xmlContent;
 		XMLOutputArchive outArchive;
-		REQUIRE(writeObject(pair, XMLelement, outArchive));
-		REQUIRE(outArchive.saveToString(xmlContent));
-
-		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
-		Pair inPair;
-		REQUIRE(readObject(&inPair, XMLelement, inArchive));
-		CHECK(inPair == pair);
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
 	}
+
+	SECTION("JSON serialization") {
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+
 	SECTION("Clone") {
 		Pair cloned;
 		cloneObject(&cloned, pair);
@@ -300,19 +447,39 @@ TEST_CASE("std::tuple") {
 	using Tuple = std::tuple<std::string, int, float, Coords>;
 	const Tuple tuple { "Stefano", 40, 1.78f, { 10.f, 20.f, 30.f } };
 
-	SECTION("XML serialization") {
-		const char*      XMLelement = "tuple";
-		std::string      xmlContent;
-		XMLOutputArchive outArchive;
-		REQUIRE(writeObject(tuple, XMLelement, outArchive));
-		REQUIRE(outArchive.saveToString(xmlContent));
+	const char* elementName = "tuple";
 
-		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
+	auto write = [&](OutputArchive& archive) {
+		archive.beginRoot();
+		REQUIRE(writeObject(tuple, elementName, archive));
+		archive.endRoot();
+		std::string content;
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
+
+	auto read = [&](InputArchive& archive) {
 		Tuple inTuple;
-		REQUIRE(readObject(&inTuple, XMLelement, inArchive));
+		REQUIRE(readObject(&inTuple, elementName, archive));
 		CHECK(inTuple == tuple);
+	};
+
+	SECTION("XML serialization") {
+		XMLOutputArchive outArchive;
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
 	}
+
+	SECTION("JSON serialization") {
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+
 	SECTION("Clone") {
 		Tuple cloned;
 		cloneObject(&cloned, tuple);
@@ -322,21 +489,40 @@ TEST_CASE("std::tuple") {
 
 TEST_CASE("std::unique_ptr") {
 	using namespace refl;
-	const auto material = std::make_unique<Material>(Material { "material", Color { 255, 0, 0 } });
+	const auto  material = std::make_unique<Material>(Material { "material", Color { 255, 0, 0 } });
+	const char* elementName = "material";
+
+	auto write = [&](OutputArchive& archive) {
+		archive.beginRoot();
+		REQUIRE(writeObject(material, elementName, archive));
+		archive.endRoot();
+		std::string content;
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
+
+	auto read = [&](InputArchive& archive) {
+		auto inMaterial = std::make_unique<Material>();
+		REQUIRE(readObject(&inMaterial, elementName, archive));
+		CHECK(*inMaterial == *material);
+	};
 
 	SECTION("XML serialization") {
-		const char*      XMLelement = "material";
-		std::string      xmlContent;
 		XMLOutputArchive outArchive;
-		REQUIRE(writeObject(material, XMLelement, outArchive));
-		REQUIRE(outArchive.saveToString(xmlContent));
-
-		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
-		auto inMaterial = std::make_unique<Material>();
-		REQUIRE(readObject(&inMaterial, XMLelement, inArchive));
-		CHECK(*inMaterial == *material);
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
 	}
+
+	SECTION("JSON serialization") {
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+
 	SECTION("Clone") {
 		auto clonedMaterial = std::make_unique<Material>();
 		cloneObject(&clonedMaterial, material);
@@ -346,21 +532,40 @@ TEST_CASE("std::unique_ptr") {
 
 TEST_CASE("std::shared_ptr") {
 	using namespace refl;
-	const auto material = std::make_shared<Material>(Material { "material", Color { 255, 0, 0 } });
+	const auto  material = std::make_shared<Material>(Material { "material", Color { 255, 0, 0 } });
+	const char* elementName = "material";
+
+	auto write = [&](OutputArchive& archive) {
+		archive.beginRoot();
+		REQUIRE(writeObject(material, elementName, archive));
+		archive.endRoot();
+		std::string content;
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
+
+	auto read = [&](InputArchive& archive) {
+		auto inMaterial = std::make_unique<Material>();
+		REQUIRE(readObject(&inMaterial, elementName, archive));
+		CHECK(*inMaterial == *material);
+	};
 
 	SECTION("XML serialization") {
-		const char*      XMLelement = "material";
-		std::string      xmlContent;
 		XMLOutputArchive outArchive;
-		REQUIRE(writeObject(material, XMLelement, outArchive));
-		REQUIRE(outArchive.saveToString(xmlContent));
-
-		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
-		auto inMaterial = std::make_shared<Material>();
-		REQUIRE(readObject(&inMaterial, XMLelement, inArchive));
-		CHECK(*inMaterial == *material);
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
 	}
+
+	SECTION("JSON serialization") {
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+
 	SECTION("Clone") {
 		auto clonedMaterial = std::make_shared<Material>();
 		cloneObject(&clonedMaterial, material);
@@ -380,21 +585,39 @@ TEST_CASE("Class") {
 	gameObject.setPosition({ 0.f, 1.f, 2.f });
 	gameObject.setMaterial(Material { "glossy", Color { 255, 255, 127 } });
 
-	SECTION("XML Serialization") {
-		const char*      XMLelement = "gameObject";
-		std::string      xmlContent;
-		XMLOutputArchive outArchive;
+	const char* elementName = "gameObject";
 
-		CHECK(writeObject(gameObject, XMLelement, outArchive));
-		outArchive.saveToString(xmlContent);
+	auto write = [&](OutputArchive& archive) {
+		archive.beginRoot();
+		CHECK(writeObject(gameObject, elementName, archive));
+		archive.endRoot();
+		std::string content;
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
 
-		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
+	auto read = [&](InputArchive& archive) {
 		GameObject inObject;
-		REQUIRE(readObject(&inObject, XMLelement, inArchive));
-
+		REQUIRE(readObject(&inObject, elementName, archive));
 		compare(inObject, gameObject);
+	};
+
+	SECTION("XML serialization") {
+		XMLOutputArchive outArchive;
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
 	}
+
+	SECTION("JSON serialization") {
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+
 	SECTION("Clone") {
 		GameObject clonedObject;
 		cloneObject(&clonedObject, gameObject);
@@ -409,20 +632,39 @@ TEST_CASE("Struct") {
 	setDensity(fog, 10.f);
 	setColor(fog, { 1.f, 0.5f, 0.5f });
 
-	SECTION("XML Serialization") {
-		const char*      XMLelement = "fog";
-		std::string      xmlContent;
-		XMLOutputArchive outArchive;
+	const char* elementName = "fog";
 
-		CHECK(writeObject(fog, XMLelement, outArchive));
-		outArchive.saveToString(xmlContent);
+	auto write = [&](OutputArchive& archive) {
+		archive.beginRoot();
+		CHECK(writeObject(fog, elementName, archive));
+		archive.endRoot();
+		std::string content;
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
 
-		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
+	auto read = [&](InputArchive& archive) {
 		Fog inFog;
-		REQUIRE(readObject(&inFog, XMLelement, inArchive));
+		REQUIRE(readObject(&inFog, elementName, archive));
 		REQUIRE(fog == inFog);
+	};
+
+	SECTION("XML serialization") {
+		XMLOutputArchive outArchive;
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
 	}
+
+	SECTION("JSON serialization") {
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+
 	SECTION("Clone") {
 		Fog clonedFog;
 		cloneObject(&clonedFog, fog);

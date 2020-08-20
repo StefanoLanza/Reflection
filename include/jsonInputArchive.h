@@ -24,7 +24,7 @@ public:
 	bool        beginArray() override;
 	void        endArray() override;
 	bool        iterateChild(ArchiveIterator& it) override;
-	bool        iterateChild(ArchiveIterator& it, const char* name) override;
+	//bool        iterateChild(ArchiveIterator& it, const char* name) override;
 
 	const char* currNodeText() override;
 

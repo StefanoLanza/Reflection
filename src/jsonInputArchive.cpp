@@ -50,7 +50,6 @@ void JSONInputArchive::endElement() {
 }
 
 // TODO beginObject(name). This operates on the stack. value(name) returns a string to be parsed
-
 bool JSONInputArchive::beginObject() {
 	StackItem& top = stack.top();
 	if (top.value->IsObject()) {
@@ -68,7 +67,7 @@ void JSONInputArchive::endObject() {
 }
 
 bool JSONInputArchive::beginArray() {
-	StackItem& top = stack.top();
+	const StackItem& top = stack.top();
 	return top.value->IsArray();
 }
 
@@ -79,12 +78,40 @@ void JSONInputArchive::endArray() {
 }
 
 bool JSONInputArchive::iterateChild(ArchiveIterator& it) {
+	if (it.getIndex() != static_cast<size_t>(-1)) {
+		stack.pop();
+
+		const StackItem& top = stack.top();
+		assert(top.value->IsArray());
+		auto array = top.value->GetArray();
+
+		size_t index = it.getIndex() + 1;
+		if (index >= array.Size()) {
+			it.reset();
+			return false;
+		}
+		SizeType sindex = static_cast<SizeType>(index);
+		it.reset(index);
+		stack.push({ &array[sindex], sindex});
+	}
+	else {
+		const StackItem& top = stack.top();
+		assert(top.value->IsArray());
+		auto array = top.value->GetArray();
+		if (array.Empty()) {
+			return false;
+		}
+		size_t index = 0;
+		it.reset(index);
+		stack.push({ &array[0], 0 });
+	}
+
 	return true;
 }
 
-bool JSONInputArchive::iterateChild(ArchiveIterator& it, const char* name) {
-	return true;
-}
+/*bool JSONInputArchive::iterateChild(ArchiveIterator& it, const char* name) { 
+	return false;
+}*/
 
 bool JSONInputArchive::readAttribute(const char* name, const char** str) {
 	return false;

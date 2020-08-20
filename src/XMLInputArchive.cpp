@@ -84,21 +84,21 @@ bool XMLInputArchive::beginElement(const char* name) {
 
 bool XMLInputArchive::iterateChild(ArchiveIterator& it) {
 	tinyxml2::XMLNode* childIt = nullptr;
-	if (! it) {
-		childIt = currentNode->FirstChildElement();
-		if (childIt == nullptr) {
-			it.reset();
-			return false;
-		}
+	if (it.getNode()) {
+		childIt = reinterpret_cast<tinyxml2::XMLNode*>(it.getNode())->NextSibling();
 	}
 	else {
-		childIt = reinterpret_cast<tinyxml2::XMLNode*>(it.getNode())->NextSibling();
+		childIt = currentNode->FirstChildElement();
+		if (! childIt) {
+			return false;
+		}
 	}
 
 	// Discard comments
 	while (childIt && childIt->ToComment()) {
 		childIt = childIt->NextSibling();
 	}
+
 	if (childIt == nullptr) {
 		// Back to parent node
 		currentNode = reinterpret_cast<tinyxml2::XMLNode*>(it.getNode())->Parent();
@@ -111,16 +111,10 @@ bool XMLInputArchive::iterateChild(ArchiveIterator& it) {
 	return true;
 }
 
+/*
 bool XMLInputArchive::iterateChild(ArchiveIterator& it, const char* name) {
 	tinyxml2::XMLNode* childIt = nullptr;
-	if (! it) {
-		childIt = currentNode->FirstChildElement(name);
-		if (childIt == nullptr) {
-			it.reset();
-			return false;
-		}
-	}
-	else {
+	if (it.getNode()) {
 		childIt = reinterpret_cast<tinyxml2::XMLNode*>(it.getNode())->NextSiblingElement(name);
 		if (childIt == nullptr) {
 			currentNode = reinterpret_cast<tinyxml2::XMLNode*>(it.getNode())->Parent();
@@ -128,11 +122,16 @@ bool XMLInputArchive::iterateChild(ArchiveIterator& it, const char* name) {
 			return false;
 		}
 	}
+	else {
+		childIt = currentNode->FirstChildElement(name);
+		if (! childIt) {
+			return false;
+		}
+	}
 	currentNode = childIt;
-
 	it.reset(childIt);
 	return true;
-}
+}*/
 
 bool XMLInputArchive::readAttribute(const char* name, const char** str) {
 	tinyxml2::XMLElement* elem = currentNode->ToElement();
