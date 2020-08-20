@@ -3,9 +3,9 @@
 
 namespace Typhoon::Reflection {
 
-ArchiveElement::ArchiveElement(InputArchive& archive, const char* tagName)
+ArchiveElement::ArchiveElement(InputArchive& archive, const char* tag)
     : archive(&archive)
-    , isValid(archive.beginElement(tagName)) {
+    , isValid(archive.beginElement(tag)) {
 }
 
 ArchiveElement::~ArchiveElement() {
@@ -18,10 +18,10 @@ ArchiveElement::operator bool() const {
 	return isValid;
 }
 
-WriteTag::WriteTag(OutputArchive& archive, const char* elementName)
+WriteTag::WriteTag(OutputArchive& archive, const char* tag)
     : archive(&archive)
-    , isValid(archive.beginElement(elementName)) {
-	assert(elementName);
+    , isValid(archive.beginElement(tag)) {
+	assert(tag);
 }
 
 WriteTag::~WriteTag() {

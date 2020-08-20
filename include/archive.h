@@ -127,7 +127,7 @@ bool operator&(InputArchive& archive, const AttributeNamer<T>& namedAttribute) {
 
 class ArchiveElement : Uncopyable {
 public:
-	ArchiveElement(InputArchive& archive, const char* tagName);
+	ArchiveElement(InputArchive& archive, const char* tag);
 	~ArchiveElement();
 
 	explicit operator bool() const;
@@ -139,7 +139,7 @@ private:
 
 class WriteTag : Uncopyable {
 public:
-	WriteTag(OutputArchive& archive, const char* element);
+	WriteTag(OutputArchive& archive, const char* tag);
 	~WriteTag();
 
 	explicit operator bool() const;
@@ -156,15 +156,15 @@ bool read(T& object, InputArchive& archive) {
 }
 
 template <class T>
-bool serialize(const T& object, OutputArchive& archive) {
+bool write(const T& object, OutputArchive& archive) {
 	static_assert(false, "Not implemented");
 }
 
 template <class T>
-bool serialize(const char* tag, const T& object, OutputArchive& archive) {
+bool write(const char* tag, const T& object, OutputArchive& archive) {
 	bool res = false;
 	if (archive.beginElement(tag)) {
-		res = serialize(object, archive);
+		res = write(object, archive);
 		archive.endElement();
 	}
 	return res;
