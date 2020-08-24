@@ -6,12 +6,10 @@
 #include <rapidjson-master/include/rapidjson/document.h>
 #include <rapidjson-master/include/rapidjson/error/en.h>
 
-using namespace rapidjson;
-
 namespace Typhoon::Reflection {
 
 JSONInputArchive::JSONInputArchive()
-    : document(std::make_unique<Document>()) {
+    : document(std::make_unique<rapidjson::Document>()) {
 }
 
 JSONInputArchive::~JSONInputArchive() = default;
@@ -19,7 +17,7 @@ JSONInputArchive::~JSONInputArchive() = default;
 ParseResult JSONInputArchive::initialize(const char* buffer) {
 	const rapidjson::ParseResult result = document->Parse(buffer);
 	if (! result.IsError()) {
-		stack.push({ document.get(), 0 });
+		stack.push({ document.get() });
 	}
 	return { ! result.IsError(), GetParseError_En(result.Code()), static_cast<int>(result.Offset()) };
 }
@@ -35,7 +33,7 @@ bool JSONInputArchive::beginElement(const char* name) {
 	if (top.value->IsObject()) {
 		auto memberItr = name ? top.value->FindMember(name) : top.value->MemberBegin();
 		if (memberItr != top.value->MemberEnd()) {
-			stack.push({ &memberItr->value, 0 });
+			stack.push({&memberItr->value});
 			return true;
 		}
 		else {
@@ -77,6 +75,28 @@ void JSONInputArchive::endArray() {
 	stack.pop();
 }
 
+bool JSONInputArchive::beginObject(const char* key) {
+	bool res = false;
+	if (beginElement(key)) {
+		res = beginObject();
+		if (! res) {
+			endElement();
+		}
+	}
+	return res;
+}
+
+bool JSONInputArchive::beginArray(const char* key) {
+	bool res = false;
+	if (beginElement(key)) {
+		res = beginArray();
+		if (! res) {
+			endElement();
+		}
+	}
+	return res;
+}
+
 bool JSONInputArchive::iterateChild(ArchiveIterator& it) {
 	if (it.getIndex() != static_cast<size_t>(-1)) {
 		stack.pop();
@@ -90,9 +110,9 @@ bool JSONInputArchive::iterateChild(ArchiveIterator& it) {
 			it.reset();
 			return false;
 		}
-		SizeType sindex = static_cast<SizeType>(index);
+		auto sindex = static_cast<rapidjson::SizeType>(index);
 		it.reset(index);
-		stack.push({ &array[sindex], sindex});
+		stack.push({ &array[sindex] });
 	}
 	else {
 		const StackItem& top = stack.top();
@@ -103,55 +123,106 @@ bool JSONInputArchive::iterateChild(ArchiveIterator& it) {
 		}
 		size_t index = 0;
 		it.reset(index);
-		stack.push({ &array[0], 0 });
+		stack.push({ &array[0] });
 	}
 
 	return true;
 }
 
-/*bool JSONInputArchive::iterateChild(ArchiveIterator& it, const char* name) { 
-	return false;
-}*/
+#if TY_REFLECTION_DEPRECATED
 
-bool JSONInputArchive::readAttribute(const char* name, const char** str) {
+bool JSONInputArchive::iterateChild(ArchiveIterator& it, const char* name) {
+	assert(false && "Not supported");
 	return false;
 }
+
+#endif
 
 bool JSONInputArchive::readAttribute(const char* name, bool& value) {
-	return false;
-}
-
-bool JSONInputArchive::readAttribute(const char* name, char& value) {
-	return false;
-}
-
-bool JSONInputArchive::readAttribute(const char* name, unsigned char& value) {
-	return false;
+	bool res = false;
+	if (beginAttribute(name)) {
+		const StackItem& top = stack.top();
+		if (top.value->IsBool()) {
+			value = top.value->GetBool();
+			res = true;
+		}
+		endElement();
+	}
+	return res;
 }
 
 bool JSONInputArchive::readAttribute(const char* name, int& value) {
-	return false;
+	bool res = false;
+	if (beginAttribute(name)) {
+		const StackItem& top = stack.top();
+		if (top.value->IsInt()) {
+			value = top.value->GetInt();
+			res = true;
+		}
+		endElement();
+	}
+	return res;
 }
 
 bool JSONInputArchive::readAttribute(const char* name, unsigned int& value) {
-	return false;
-}
-
-bool JSONInputArchive::readAttribute(const char* name, short& value) {
-	return false;
-}
-
-bool JSONInputArchive::readAttribute(const char* name, unsigned short& value) {
-	return false;
+	bool res = false;
+	if (beginAttribute(name)) {
+		const StackItem& top = stack.top();
+		if (top.value->IsUint()) {
+			value = top.value->GetUint();
+			res = true;
+		}
+		endElement();
+	}
+	return res;
 }
 
 bool JSONInputArchive::readAttribute(const char* name, float& value) {
-	return false;
+	bool res = false;
+	if (beginAttribute(name)) {
+		const StackItem& top = stack.top();
+		if (top.value->IsFloat()) {
+			value = top.value->GetFloat();
+			res = true;
+		}
+		endElement();
+	}
+	return res;
 }
 
 bool JSONInputArchive::readAttribute(const char* name, double& value) {
-	return false;
+	bool res = false;
+	if (beginAttribute(name)) {
+		const StackItem& top = stack.top();
+		if (top.value->IsDouble()) {
+			value = top.value->GetDouble();
+			res = true;
+		}
+		endElement();
+	}
+	return res;
 }
+
+bool JSONInputArchive::readAttribute(const char* name, const char*& str) {
+	bool res = false;
+	if (beginAttribute(name)) {
+		const StackItem& top = stack.top();
+		if (top.value->IsString()) {
+			str = top.value->GetString();
+			res = true;
+		}
+		endElement();
+	}
+	return res;
+}
+
+bool JSONInputArchive::beginAttribute(const char* name) {
+	char tmp[64];
+	tmp[0] = '@';
+	strcpy_s(tmp + 1, sizeof(tmp) - 1, name);
+	return beginElement(tmp);
+}
+
 
 } // namespace Typhoon::Reflection
 

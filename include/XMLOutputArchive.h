@@ -35,16 +35,12 @@ public:
 	void             endObject() override;
 	bool             beginArray() override;
 	void             endArray() override;
-	bool             writeAttribute(const char* name, bool value) override;
-	bool             writeAttribute(const char* name, char value) override;
-	bool             writeAttribute(const char* name, unsigned char value) override;
-	bool             writeAttribute(const char* name, int value) override;
-	bool             writeAttribute(const char* name, unsigned int value) override;
-	bool             writeAttribute(const char* name, unsigned short value) override;
-	bool             writeAttribute(const char* name, short value) override;
-	bool             writeAttribute(const char* name, float value) override;
-	bool             writeAttribute(const char* name, double value) override;
-	bool             writeAttribute(const char* name, const char* str) override;
+	void             writeAttribute(const char* name, bool value) override;
+	void             writeAttribute(const char* name, int value) override;
+	void             writeAttribute(const char* name, unsigned int value) override;
+	void             writeAttribute(const char* name, float value) override;
+	void             writeAttribute(const char* name, double value) override;
+	void             writeAttribute(const char* name, const char* str) override;
 	bool             write(const char* text) override;
 
 private:

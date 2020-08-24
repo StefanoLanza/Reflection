@@ -1,5 +1,6 @@
 #pragma once
 
+#include "config.h"
 #include <core/uncopyable.h>
 #include <string>
 
@@ -47,24 +48,24 @@ class InputArchive {
 public:
 	virtual ~InputArchive() = default;
 
-	virtual bool        beginElement(const char* name) = 0;
-	virtual void        endElement() = 0;
-	virtual bool        beginObject() = 0;
-	virtual void        endObject() = 0;
-	virtual bool        beginArray() = 0;
-	virtual void        endArray() = 0;
-	virtual bool        iterateChild(ArchiveIterator&) = 0;
-	//virtual bool        iterateChild(ArchiveIterator&, const char* name) = 0; // TODO remove?
+	virtual bool beginElement(const char* name) = 0;
+	virtual void endElement() = 0;
+	virtual bool beginObject() = 0;
+	virtual void endObject() = 0;
+	virtual bool beginArray() = 0;
+	virtual void endArray() = 0;
+	virtual bool iterateChild(ArchiveIterator&) = 0;
+#if TY_REFLECTION_DEPRECATED
+	virtual bool iterateChild(ArchiveIterator&, const char* name) = 0; // TODO remove
+#endif
+	virtual bool        beginObject(const char* key) = 0;
+	virtual bool        beginArray(const char* key) = 0;
 	virtual bool        readAttribute(const char* name, bool& value) = 0;
-	virtual bool        readAttribute(const char* name, char& value) = 0;
-	virtual bool        readAttribute(const char* name, short& value) = 0;
 	virtual bool        readAttribute(const char* name, int& value) = 0;
-	virtual bool        readAttribute(const char* name, unsigned char& value) = 0;
 	virtual bool        readAttribute(const char* name, unsigned int& value) = 0;
-	virtual bool        readAttribute(const char* name, unsigned short& value) = 0;
 	virtual bool        readAttribute(const char* name, float& value) = 0;
 	virtual bool        readAttribute(const char* name, double& value) = 0;
-	virtual bool        readAttribute(const char* name, const char** str) = 0;
+	virtual bool        readAttribute(const char* name, const char*& str) = 0;
 	virtual const char* currNodeText() = 0;
 
 	template <class T>
@@ -95,16 +96,12 @@ public:
 	virtual bool             write(const char* data) = 0;
 
 	// Serialization of attributes
-	virtual bool writeAttribute(const char* name, bool value) = 0;
-	virtual bool writeAttribute(const char* name, char value) = 0;
-	virtual bool writeAttribute(const char* name, unsigned char value) = 0;
-	virtual bool writeAttribute(const char* name, int value) = 0;
-	virtual bool writeAttribute(const char* name, unsigned int value) = 0;
-	virtual bool writeAttribute(const char* name, unsigned short value) = 0;
-	virtual bool writeAttribute(const char* name, short value) = 0;
-	virtual bool writeAttribute(const char* name, float value) = 0;
-	virtual bool writeAttribute(const char* name, double value) = 0;
-	virtual bool writeAttribute(const char* name, const char* str) = 0;
+	virtual void writeAttribute(const char* name, bool value) = 0;
+	virtual void writeAttribute(const char* name, int value) = 0;
+	virtual void writeAttribute(const char* name, unsigned int value) = 0;
+	virtual void writeAttribute(const char* name, float value) = 0;
+	virtual void writeAttribute(const char* name, double value) = 0;
+	virtual void writeAttribute(const char* name, const char* str) = 0;
 };
 
 template <typename T>

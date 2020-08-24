@@ -49,6 +49,12 @@ void XMLInputArchive::endElement() {
 }
 
 bool XMLInputArchive::beginObject() {
+	const char* type = nullptr;
+	if (readAttribute("type", type)) {
+		if (strcmp(type, "object")) {
+			return false;
+		}
+	}
 	typeStack.push(Type::object);
 	return true;
 }
@@ -59,6 +65,12 @@ void XMLInputArchive::endObject() {
 }
 
 bool XMLInputArchive::beginArray() {
+	const char* type = nullptr;
+	if (readAttribute("type", type)) {
+		if (strcmp(type, "array")) {
+			return false;
+		}
+	}
 	typeStack.push(Type::array);
 	return true;
 }
@@ -66,6 +78,28 @@ bool XMLInputArchive::beginArray() {
 void XMLInputArchive::endArray() {
 	assert(typeStack.top() == Type::array);
 	typeStack.pop();
+}
+
+bool XMLInputArchive::beginObject(const char* key) {
+	bool res = false;
+	if (beginElement(key)) {
+		res = beginObject();
+		if (! res) {
+			endElement();
+		}
+	}
+	return res;
+}
+
+bool XMLInputArchive::beginArray(const char* key) {
+	bool res = false;
+	if (beginElement(key)) {
+		res = beginArray();
+		if (! res) {
+			endElement();
+		}
+	}
+	return res;
 }
 
 bool XMLInputArchive::beginElement(const char* name) {
@@ -111,7 +145,8 @@ bool XMLInputArchive::iterateChild(ArchiveIterator& it) {
 	return true;
 }
 
-/*
+#if TY_REFLECTION_DEPRECATED
+
 bool XMLInputArchive::iterateChild(ArchiveIterator& it, const char* name) {
 	tinyxml2::XMLNode* childIt = nullptr;
 	if (it.getNode()) {
@@ -131,54 +166,17 @@ bool XMLInputArchive::iterateChild(ArchiveIterator& it, const char* name) {
 	currentNode = childIt;
 	it.reset(childIt);
 	return true;
-}*/
+}
 
-bool XMLInputArchive::readAttribute(const char* name, const char** str) {
-	tinyxml2::XMLElement* elem = currentNode->ToElement();
-	if (elem) {
-		const char* attr = elem->Attribute(name);
-		if (attr) {
-			*str = attr;
+#endif
+
+bool XMLInputArchive::readAttribute(const char* name, bool& value) {
+	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
+		if (auto error = elem->QueryBoolAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
 			return true;
 		}
 	}
 	return false;
-}
-
-bool XMLInputArchive::readAttribute(const char* name, bool& value) {
-	const char* str = nullptr;
-	if (readAttribute(name, &str)) {
-		if (! _stricmp(str, "true")) {
-			value = true;
-		}
-		else if (! _stricmp(str, "false")) {
-			value = false;
-		}
-		return true;
-	}
-	return false;
-}
-
-bool XMLInputArchive::readAttribute(const char* name, char& value) {
-	int ivalue;
-	if (readAttribute(name, ivalue)) {
-		value = static_cast<char>(ivalue);
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-bool XMLInputArchive::readAttribute(const char* name, unsigned char& value) {
-	int ivalue = 0;
-	if (readAttribute(name, ivalue)) {
-		value = static_cast<unsigned char>(ivalue);
-		return true;
-	}
-	else {
-		return false;
-	}
 }
 
 bool XMLInputArchive::readAttribute(const char* name, int& value) {
@@ -199,28 +197,6 @@ bool XMLInputArchive::readAttribute(const char* name, unsigned int& value) {
 	return false;
 }
 
-bool XMLInputArchive::readAttribute(const char* name, short& value) {
-	int ivalue = 0;
-	if (readAttribute(name, ivalue)) {
-		value = static_cast<short>(ivalue);
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-bool XMLInputArchive::readAttribute(const char* name, unsigned short& value) {
-	int ivalue = 0;
-	if (readAttribute(name, ivalue)) {
-		value = static_cast<unsigned short>(ivalue);
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
 bool XMLInputArchive::readAttribute(const char* name, float& value) {
 	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
 		if (auto error = elem->QueryFloatAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
@@ -233,6 +209,16 @@ bool XMLInputArchive::readAttribute(const char* name, float& value) {
 bool XMLInputArchive::readAttribute(const char* name, double& value) {
 	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
 		if (auto error = elem->QueryDoubleAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool XMLInputArchive::readAttribute(const char* name, const char*& str) {
+	tinyxml2::XMLElement* elem = currentNode->ToElement();
+	if (elem) {
+		if (auto error = elem->QueryStringAttribute(name, &str); error == tinyxml2::XML_SUCCESS) {
 			return true;
 		}
 	}

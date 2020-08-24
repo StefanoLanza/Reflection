@@ -85,55 +85,29 @@ void XMLOutputArchive::endArray() {
 	typeStack.pop();
 }
 
-bool XMLOutputArchive::writeAttribute(const char* name, const char* str) {
+void XMLOutputArchive::writeAttribute(const char* name, const char* str) {
 	assert(str);
 	currentNode->ToElement()->SetAttribute(name, str);
-	return true;
 }
 
-bool XMLOutputArchive::writeAttribute(const char* name, bool value) {
+void XMLOutputArchive::writeAttribute(const char* name, bool value) {
 	currentNode->ToElement()->SetAttribute(name, value);
-	return true;
 }
 
-bool XMLOutputArchive::writeAttribute(const char* name, char value) {
-	int ivalue = static_cast<int>(value);
-	return writeAttribute(name, ivalue);
-}
-
-bool XMLOutputArchive::writeAttribute(const char* name, unsigned char value) {
-	int ivalue = static_cast<int>(value);
-	return writeAttribute(name, ivalue);
-}
-
-bool XMLOutputArchive::writeAttribute(const char* name, int value) {
+void XMLOutputArchive::writeAttribute(const char* name, int value) {
 	currentNode->ToElement()->SetAttribute(name, value);
-	return true;
 }
 
-bool XMLOutputArchive::writeAttribute(const char* name, unsigned int value) {
+void XMLOutputArchive::writeAttribute(const char* name, unsigned int value) {
 	currentNode->ToElement()->SetAttribute(name, value);
-	return true;
 }
 
-bool XMLOutputArchive::writeAttribute(const char* name, short value) {
-	int ivalue = static_cast<int>(value);
-	return writeAttribute(name, ivalue);
-}
-
-bool XMLOutputArchive::writeAttribute(const char* name, unsigned short value) {
-	int ivalue = static_cast<int>(value);
-	return writeAttribute(name, ivalue);
-}
-
-bool XMLOutputArchive::writeAttribute(const char* name, float value) {
+void XMLOutputArchive::writeAttribute(const char* name, float value) {
 	currentNode->ToElement()->SetAttribute(name, value);
-	return true;
 }
 
-bool XMLOutputArchive::writeAttribute(const char* name, double value) {
+void XMLOutputArchive::writeAttribute(const char* name, double value) {
 	currentNode->ToElement()->SetAttribute(name, value);
-	return true;
 }
 
 bool XMLOutputArchive::write(const char* text) {

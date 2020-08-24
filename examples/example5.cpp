@@ -9,7 +9,7 @@
 
 #define XML          0
 #define JSON         1
-#define ARCHIVE_TYPE JSON
+#define ARCHIVE_TYPE XML
 
 struct Person {
 	std::string name;
@@ -111,6 +111,10 @@ std::string writeToArchive(const PersonMap& obj, const CityVector& cities, const
 	archive.beginRoot();
 	writeObject(obj, name, archive);
 	writeObject(cities, citiesName, archive);
+	archive.writeAttribute("bool", true);
+	archive.writeAttribute("int", 13);
+	archive.writeAttribute("float", 3.141);
+	archive.writeAttribute("double", 31.1312312312312312);
 	archive.endRoot();
 	archive.saveToString(archiveContent);
 	return archiveContent;
@@ -126,4 +130,12 @@ void readFromArchive(PersonMap& obj, CityVector& cities, const std::string& arch
 		readObject(&obj, name, archive);
 		readObject(&cities, citiesName, archive);
 	}
+	bool b = false;
+	int i = 0;
+	float f = 0.f;
+	double d = 0.;
+	archive.readAttribute("bool", b);
+	archive.readAttribute("int", i);
+	archive.readAttribute("float", f);
+	archive.readAttribute("double", d);
 }

@@ -27,7 +27,7 @@ bool JSONOutputArchive::saveToFile(const char* fileName) {
 
 bool JSONOutputArchive::saveToString(std::string& string) {
 	if (! saved) {
-		//writer->EndObject();
+		// writer->EndObject();
 		saved = true;
 	}
 	string = stream->GetString(); // TODO string_view
@@ -70,48 +70,45 @@ void JSONOutputArchive::endArray() {
 	writer->EndArray();
 }
 
-bool JSONOutputArchive::writeAttribute(const char* name, const char* str) {
-	return false;
+void JSONOutputArchive::writeAttribute(const char* name, bool value) {
+	writeAttributeKey(name);
+	writer->Bool(value);
 }
 
-bool JSONOutputArchive::writeAttribute(const char* name, bool value) {
-	return false;
+void JSONOutputArchive::writeAttribute(const char* name, int value) {
+	writeAttributeKey(name);
+	writer->Int(value);
 }
 
-bool JSONOutputArchive::writeAttribute(const char* name, char value) {
-	return false;
+void JSONOutputArchive::writeAttribute(const char* name, unsigned int value) {
+	writeAttributeKey(name);
+	writer->Int64(value);
 }
 
-bool JSONOutputArchive::writeAttribute(const char* name, unsigned char value) {
-	return false;
+void JSONOutputArchive::writeAttribute(const char* name, float value) {
+	writeAttributeKey(name);
+	writer->Double(value);
 }
 
-bool JSONOutputArchive::writeAttribute(const char* name, int value) {
-	return false;
+void JSONOutputArchive::writeAttribute(const char* name, double value) {
+	writeAttributeKey(name);
+	writer->Double(value);
 }
 
-bool JSONOutputArchive::writeAttribute(const char* name, unsigned int value) {
-	return false;
-}
-
-bool JSONOutputArchive::writeAttribute(const char* name, short value) {
-	return false;
-}
-
-bool JSONOutputArchive::writeAttribute(const char* name, unsigned short value) {
-	return false;
-}
-
-bool JSONOutputArchive::writeAttribute(const char* name, float value) {
-	return false;
-}
-
-bool JSONOutputArchive::writeAttribute(const char* name, double value) {
-	return false;
+void JSONOutputArchive::writeAttribute(const char* name, const char* str) {
+	writeAttributeKey(name);
+	writer->String(str);
 }
 
 bool JSONOutputArchive::write(const char* text) {
 	return writer->String(text, static_cast<SizeType>(strlen(text)));
+}
+
+void JSONOutputArchive::writeAttributeKey(const char* key) const {
+	char tmp[64];
+	tmp[0] = '@';
+	strcpy_s(tmp + 1, sizeof(tmp) - 1, key);
+	writer->Key(tmp);
 }
 
 } // namespace Typhoon::Reflection

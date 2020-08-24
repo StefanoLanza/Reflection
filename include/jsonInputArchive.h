@@ -23,26 +23,28 @@ public:
 	void        endObject() override;
 	bool        beginArray() override;
 	void        endArray() override;
+	bool        beginObject(const char* key) override;
+	bool        beginArray(const char* key) override;
 	bool        iterateChild(ArchiveIterator& it) override;
-	//bool        iterateChild(ArchiveIterator& it, const char* name) override;
+#if TY_REFLECTION_DEPRECATED
+	bool iterateChild(ArchiveIterator& it, const char* name) override;
+#endif
 
 	const char* currNodeText() override;
 
 	bool readAttribute(const char* name, bool& value) override;
-	bool readAttribute(const char* name, char& value) override;
-	bool readAttribute(const char* name, unsigned char& value) override;
 	bool readAttribute(const char* name, int& value) override;
 	bool readAttribute(const char* name, unsigned int& value) override;
-	bool readAttribute(const char* name, unsigned short& value) override;
-	bool readAttribute(const char* name, short& value) override;
 	bool readAttribute(const char* name, float& value) override;
 	bool readAttribute(const char* name, double& value) override;
-	bool readAttribute(const char* name, const char** str) override;
+	bool readAttribute(const char* name, const char*& str) override;
+
+private:
+	bool beginAttribute(const char* name);
 
 private:
 	struct StackItem {
 		const rapidjson::Value* value;
-		rapidjson::SizeType     index; // For array iteration
 	};
 
 	std::unique_ptr<rapidjson::Document> document;
