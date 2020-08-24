@@ -63,6 +63,10 @@ const Type& Variant::getType() const {
 	return detail::getTypeDB().getType(typeId);
 }
 
+void Variant::setName(std::string_view newName) {
+	name = newName;
+}
+
 const char* Variant::getName() const {
 	return name.c_str();
 }

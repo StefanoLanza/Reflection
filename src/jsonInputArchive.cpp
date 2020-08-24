@@ -27,13 +27,50 @@ const char* JSONInputArchive::currNodeText() {
 	return stack.top().value->GetString();
 }
 
+bool JSONInputArchive::readBool(const char* key, bool& value) {
+	assert(false);
+	return false;
+}
+
+bool JSONInputArchive::readInt(const char* key, int& value) {
+	assert(false);
+	return false;
+}
+
+bool JSONInputArchive::readUInt(const char* key, unsigned int& value) {
+	assert(false);
+	return false;
+}
+
+bool JSONInputArchive::readFloat(const char* key, float& value) {
+	assert(false);
+	return false;
+}
+
+bool JSONInputArchive::readDouble(const char* key, double& value) {
+	assert(false);
+	return false;
+}
+
+bool JSONInputArchive::readString(const char* key, const char*& str) {
+	bool             res = false;
+	const StackItem& top = stack.top();
+	if (top.value->IsObject()) {
+		if (auto memberItr = top.value->FindMember(key); memberItr != top.value->MemberEnd()) {
+			str = memberItr->value.GetString();
+			res = true;
+		}
+	}
+	return res;
+}
+
 bool JSONInputArchive::beginElement(const char* name) {
 	assert(! stack.empty());
 	const StackItem& top = stack.top();
 	if (top.value->IsObject()) {
 		auto memberItr = name ? top.value->FindMember(name) : top.value->MemberBegin();
 		if (memberItr != top.value->MemberEnd()) {
-			stack.push({&memberItr->value});
+			stack.push({ &memberItr->value });
 			return true;
 		}
 		else {
@@ -61,7 +98,6 @@ bool JSONInputArchive::beginObject() {
 void JSONInputArchive::endObject() {
 	[[maybe_unused]] const StackItem& top = stack.top();
 	assert(top.value->IsObject());
-	stack.pop();
 }
 
 bool JSONInputArchive::beginArray() {
@@ -222,7 +258,6 @@ bool JSONInputArchive::beginAttribute(const char* name) {
 	strcpy_s(tmp + 1, sizeof(tmp) - 1, name);
 	return beginElement(tmp);
 }
-
 
 } // namespace Typhoon::Reflection
 

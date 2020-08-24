@@ -117,6 +117,48 @@ bool XMLOutputArchive::write(const char* text) {
 	return res;
 }
 
+bool XMLOutputArchive::writeBool(const char* key, bool value) {
+	auto element = document->NewElement(key);
+	element->SetText(value);
+	currentNode->InsertEndChild(element);
+	return true;
+}
+
+bool XMLOutputArchive::writeInt(const char* key, int value) {
+	auto element = document->NewElement(key);
+	element->SetText(value);
+	currentNode->InsertEndChild(element);
+	return true;
+}
+
+bool XMLOutputArchive::writeUInt(const char* key, unsigned int value) {
+	auto element = document->NewElement(key);
+	element->SetText(value);
+	currentNode->InsertEndChild(element);
+	return true;
+}
+
+bool XMLOutputArchive::writeFloat(const char* key, float value) {
+	auto element = document->NewElement(key);
+	element->SetText(value);
+	currentNode->InsertEndChild(element);
+	return true;
+}
+
+bool XMLOutputArchive::writeDouble(const char* key, double value) {
+	auto element = document->NewElement(key);
+	element->SetText(value);
+	currentNode->InsertEndChild(element);
+	return true;
+}
+
+bool XMLOutputArchive::writeString(const char* key, const char* str) {
+	auto element = document->NewElement(key);
+	element->SetText(str);
+	currentNode->InsertEndChild(element);
+	return true;
+}
+
 void XMLOutputArchive::beginArrayElement() {
 	if (! typeStack.empty() && typeStack.top() == Type::array) {
 		auto element = document->NewElement("element");

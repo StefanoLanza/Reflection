@@ -1,4 +1,4 @@
-// Example showing reflection and serialization of containers: arrays and maps
+// Example showing reflection and serialization of containers: array, vector and map
 
 #include "customAllocator.h"
 #include <include/reflection.h>
@@ -9,7 +9,7 @@
 
 #define XML          0
 #define JSON         1
-#define ARCHIVE_TYPE XML
+#define ARCHIVE_TYPE JSON
 
 struct Person {
 	std::string name;
@@ -34,12 +34,16 @@ bool operator==(const City& a, const City& b) {
 using PersonId = uint32_t;
 using PersonMap = std::map<PersonId, Person>;
 using CityVector = std::vector<City>;
+using NumberVector = std::array<int, 6>;
 
-void        registerUserTypes();
-PersonMap   buildPersonMap();
-CityVector  buildCities();
-std::string writeToArchive(const PersonMap& obj, const CityVector& cities, const char* name, const char* citiesName);
-void        readFromArchive(PersonMap& obj, CityVector& cities, const std::string& archiveContent, const char* name, const char* citiesName);
+void         registerUserTypes();
+PersonMap    buildPersonMap();
+CityVector   buildCities();
+NumberVector buildPrimeNumbers();
+std::string  writeToArchive(const PersonMap& persons, const CityVector& cities, const NumberVector& numbers, const char* personsKey,
+                            const char* citiesKey, const char* numbersKey);
+void         readFromArchive(PersonMap& persons, CityVector& cities, NumberVector& numbers, const std::string& archiveContent, const char* personsKey,
+                             const char* citiesKey, const char* numbersKey);
 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
@@ -48,15 +52,22 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	refl::initReflection(customAllocator);
 	registerUserTypes();
 
-	PersonMap  persons = buildPersonMap();
-	CityVector cities = buildCities();
+	PersonMap    persons = buildPersonMap();
+	CityVector   cities = buildCities();
+	NumberVector primeNumbers = buildPrimeNumbers();
 
-	const char* name = "Persons";
-	const char* citiesName = "Cities";
-	std::string archiveContent = writeToArchive(persons, cities, name, citiesName);
-	PersonMap   otherPersons;
-	CityVector  otherCities;
-	readFromArchive(otherPersons, otherCities, archiveContent, name, citiesName);
+	const char* personsKey = "Persons";
+	const char* citiesKey = "Cities";
+	const char* numbersKey = "PrimeNumbers";
+
+	// Write containers
+	const std::string archiveContent = writeToArchive(persons, cities, primeNumbers, personsKey, citiesKey, numbersKey);
+
+	// Read containers
+	PersonMap    otherPersons;
+	CityVector   otherCities;
+	NumberVector otherNumbers;
+	readFromArchive(otherPersons, otherCities, otherNumbers, archiveContent, personsKey, citiesKey, numbersKey);
 
 	std::cout << "Total allocated memory " << customAllocator.getTotalAlloc() << " bytes" << std::endl;
 	refl::deinitReflection();
@@ -101,7 +112,12 @@ CityVector buildCities() {
 	return cities;
 }
 
-std::string writeToArchive(const PersonMap& obj, const CityVector& cities, const char* name, const char* citiesName) {
+NumberVector buildPrimeNumbers() {
+	return { 1, 2, 3, 5, 7, 11 };
+}
+
+std::string writeToArchive(const PersonMap& persons, const CityVector& cities, const NumberVector& numbers, const char* personsKey,
+                           const char* citiesKey, const char* numbersKey) {
 	std::string archiveContent;
 #if ARCHIVE_TYPE == XML
 	refl::XMLOutputArchive archive;
@@ -109,8 +125,9 @@ std::string writeToArchive(const PersonMap& obj, const CityVector& cities, const
 	refl::JSONOutputArchive archive;
 #endif
 	archive.beginRoot();
-	writeObject(obj, name, archive);
-	writeObject(cities, citiesName, archive);
+	writeObject(persons, personsKey, archive);
+	writeObject(cities, citiesKey, archive);
+	writeObject(numbers, numbersKey, archive);
 	archive.writeAttribute("bool", true);
 	archive.writeAttribute("int", 13);
 	archive.writeAttribute("float", 3.141);
@@ -120,19 +137,21 @@ std::string writeToArchive(const PersonMap& obj, const CityVector& cities, const
 	return archiveContent;
 }
 
-void readFromArchive(PersonMap& obj, CityVector& cities, const std::string& archiveContent, const char* name, const char* citiesName) {
+void readFromArchive(PersonMap& persons, CityVector& cities, NumberVector& numbers, const std::string& archiveContent, const char* personsKey,
+                     const char* citiesKey, const char* numbersKey) {
 #if ARCHIVE_TYPE == XML
 	refl::XMLInputArchive archive;
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONInputArchive  archive;
 #endif
 	if (archive.initialize(archiveContent.data())) {
-		readObject(&obj, name, archive);
-		readObject(&cities, citiesName, archive);
+		readObject(&persons, personsKey, archive);
+		readObject(&cities, citiesKey, archive);
+		readObject(&numbers, numbersKey, archive);
 	}
-	bool b = false;
-	int i = 0;
-	float f = 0.f;
+	bool   b = false;
+	int    i = 0;
+	float  f = 0.f;
 	double d = 0.;
 	archive.readAttribute("bool", b);
 	archive.readAttribute("int", i);

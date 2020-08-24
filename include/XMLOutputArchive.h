@@ -42,6 +42,12 @@ public:
 	void             writeAttribute(const char* name, double value) override;
 	void             writeAttribute(const char* name, const char* str) override;
 	bool             write(const char* text) override;
+	bool             writeBool(const char* key, bool value) override;
+	bool             writeInt(const char* key, int value) override;
+	bool             writeUInt(const char* key, unsigned int value) override;
+	bool             writeFloat(const char* key, float value) override;
+	bool             writeDouble(const char* key, double value) override;
+	bool             writeString(const char* key, const char* str) override;
 
 private:
 	void beginArrayElement();

@@ -38,6 +38,12 @@ public:
 	bool iterateChild(ArchiveIterator& it, const char* name) override;
 #endif
 	const char* currNodeText() override;
+	bool        readBool(const char* key, bool& value) override;
+	bool        readInt(const char* key, int& value) override;
+	bool        readUInt(const char* key, unsigned int& value) override;
+	bool        readFloat(const char* key, float& value) override;
+	bool        readDouble(const char* key, double& value) override;
+	bool        readString(const char* key, const char*& str) override;
 	bool        readAttribute(const char* name, bool& value) override;
 	bool        readAttribute(const char* name, int& value) override;
 	bool        readAttribute(const char* name, unsigned int& value) override;

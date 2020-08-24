@@ -42,6 +42,42 @@ const char* XMLInputArchive::currNodeText() {
 	return res;
 }
 
+bool XMLInputArchive::readBool(const char* key, bool& value)
+{
+	return false;
+}
+
+bool XMLInputArchive::readInt(const char* key, int& value)
+{
+	return false;
+}
+
+bool XMLInputArchive::readUInt(const char* key, unsigned int& value)
+{
+	return false;
+}
+
+bool XMLInputArchive::readFloat(const char* key, float& value)
+{
+	return false;
+}
+
+bool XMLInputArchive::readDouble(const char* key, double& value)
+{
+	return false;
+}
+
+bool XMLInputArchive::readString(const char* key, const char*& str) {
+	bool res = false;
+	if (auto element = currentNode->FirstChildElement(key); element) {
+		if (const char* text = element->GetText(); text) {
+			str = text;
+			res = true;
+		}
+	}
+	return res;
+}
+
 void XMLInputArchive::endElement() {
 	if (currentNode) {
 		currentNode = currentNode->Parent();

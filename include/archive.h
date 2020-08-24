@@ -68,6 +68,14 @@ public:
 	virtual bool        readAttribute(const char* name, const char*& str) = 0;
 	virtual const char* currNodeText() = 0;
 
+	// New API
+	virtual bool readBool(const char* key, bool& value) = 0;
+	virtual bool readInt(const char* key, int& value) = 0;
+	virtual bool readUInt(const char* key, unsigned int& value) = 0;
+	virtual bool readFloat(const char* key, float& value) = 0;
+	virtual bool readDouble(const char* key, double& value) = 0;
+	virtual bool readString(const char* key, const char*& str) = 0;
+
 	template <class T>
 	T readObject(const char* tag, T&& defaultValue);
 
@@ -94,6 +102,15 @@ public:
 	virtual bool             beginArray() = 0;
 	virtual void             endArray() = 0;
 	virtual bool             write(const char* data) = 0;
+
+	// New API
+	virtual bool writeBool(const char* key, bool value) = 0;
+	virtual bool writeInt(const char* key, int value) = 0;
+	virtual bool writeUInt(const char* key, unsigned int value) = 0;
+	virtual bool writeFloat(const char* key, float value) = 0;
+	virtual bool writeDouble(const char* key, double value) = 0;
+	virtual bool writeString(const char* key, const char* str) = 0;
+	// TODO int64 uint64 ?
 
 	// Serialization of attributes
 	virtual void writeAttribute(const char* name, bool value) = 0;

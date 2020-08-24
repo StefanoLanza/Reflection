@@ -30,7 +30,7 @@ namespace detail {
 template <class T>
 inline const Type* autoRegisterType(Context& context) {
 	const Type* type = context.typeDB->tryGetType<T>();
-	if (type == nullptr) {
+	if (! type) {
 		type = autoRegisterHelper<T>::autoRegister(context);
 	}
 	assert(type);

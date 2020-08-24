@@ -197,57 +197,39 @@ bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB
 	const Type*          value_type = containerType.getValueType();
 	constexpr TypeId     variant_typeID = getTypeId<Variant>();
 
-	char tmp[64];
-
-	if (value_type->typeID == variant_typeID) {
-		ReadIterator* const iterator = containerType.newReadIterator(tmp, sizeof(tmp), data);
-		while (iterator->isValid()) {
-			Variant* var = static_cast<Variant*>(const_cast<void*>(iterator->getValue()));
-			// TODO readVar(var, )
-			if (var->getTypeId() != nullTypeId && archive.beginElement(var->getName())) {
-				const Type& varType = typeDB.getType(var->getTypeId());
-				readObject(const_cast<void*>(var->getStorage()), varType, semantic, typeDB, archive);
-				archive.endElement();
-			}
-			iterator->gotoNext();
-		}
-		containerType.deleteIterator(iterator);
-	}
-	else {
-		char                 stackMem[512];
-		WriteIterator* const containerIterator = containerType.newWriteIterator(tmp, sizeof(tmp), data);
-		ArchiveIterator      archiveIterator;
-		while (archive.iterateChild(archiveIterator)) {
-			if (containerIterator->isValid()) {
-				if (key_type) {
-					// Construct a temporary for the key TODO stack allocator
-					size_t      space = sizeof(stackMem);
-					void*       buffer = stackMem;
-					void* const key = std::align(key_type->alignment, key_type->size, buffer, space);
-					if (key) {
-						key_type->constructObject(key);
-						// read key
-						readObject(key, "key", *key_type, Semantic::none, typeDB, archive);
-						// Create value using key
-						void* value = containerIterator->insert(key);
-						// Destruct key
-						key_type->destructObject(key);
-						readObject(value, "value", *value_type, semantic, typeDB, archive);
-					}
-					else {
-					}
-				}
-				else {
-					readObject(containerIterator->pushBack(), *value_type, semantic, typeDB, archive);
+	char                 tmp[64];
+	char                 stackMem[512];
+	WriteIterator* const containerIterator = containerType.newWriteIterator(tmp, sizeof(tmp), data);
+	ArchiveIterator      archiveIterator;
+	while (archive.iterateChild(archiveIterator)) {
+		if (containerIterator->isValid()) {
+			if (key_type) {
+				// Construct a temporary for the key TODO stack allocator
+				size_t      space = sizeof(stackMem);
+				void*       buffer = stackMem;
+				void* const key = std::align(key_type->alignment, key_type->size, buffer, space);
+				if (key) {
+					key_type->constructObject(key);
+					// read key
+					readObject(key, "key", *key_type, Semantic::none, typeDB, archive);
+					// Create value using key
+					void* value = containerIterator->insert(key);
+					// Destruct key
+					key_type->destructObject(key);
+					readObject(value, "value", *value_type, semantic, typeDB, archive);
 				}
 			}
 			else {
-				// Out of bounds error
+				readObject(containerIterator->pushBack(), *value_type, semantic, typeDB, archive);
 			}
 		}
-
-		containerType.deleteIterator(containerIterator);
+		else {
+			// Out of bounds error
+		}
 	}
+
+	containerType.deleteIterator(containerIterator);
+
 	return true;
 }
 
@@ -266,9 +248,19 @@ bool readReference(void* data, const Type& type, Semantic semantic, const TypeDB
 }
 
 bool readVariant(void* data, const Type& /*type*/, Semantic semantic, const TypeDB& typeDB, InputArchive& archive) {
-	Variant*    variant = static_cast<Variant*>(data);
-	const Type& type = typeDB.getType(variant->getTypeId());
-	return readObject(variant->getStorage(), type, semantic, typeDB, archive);
+	Variant* variant = static_cast<Variant*>(data);
+	bool     res = false;
+	if (archive.beginObject()) {
+		// TODO read type from archive
+		const Type& type = typeDB.getType(variant->getTypeId());
+		const char* name = nullptr;
+		if (archive.readString("name", name)) {
+			variant->setName(name);
+			res = readObject(variant->getStorage(), "value", type, semantic, typeDB, archive);
+		}
+		archive.endObject();
+	}
+	return res;
 }
 
 } // namespace

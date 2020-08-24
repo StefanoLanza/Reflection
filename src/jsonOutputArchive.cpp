@@ -104,6 +104,42 @@ bool JSONOutputArchive::write(const char* text) {
 	return writer->String(text, static_cast<SizeType>(strlen(text)));
 }
 
+bool JSONOutputArchive::writeBool(const char* key, bool value) {
+	writer->Key(key);
+	writer->Bool(value);
+	return true;
+}
+
+bool JSONOutputArchive::writeInt(const char* key, int value) {
+	writer->Key(key);
+	writer->Int(value);
+	return true;
+}
+
+bool JSONOutputArchive::writeUInt(const char* key, unsigned int value) {
+	writer->Key(key);
+	writer->Uint(value);
+	return true;
+}
+
+bool JSONOutputArchive::writeFloat(const char* key, float value) {
+	writer->Key(key);
+	writer->Double(value);
+	return true;
+}
+
+bool JSONOutputArchive::writeDouble(const char* key, double value) {
+	writer->Key(key);
+	writer->Double(value);
+	return true;
+}
+
+bool JSONOutputArchive::writeString(const char* key, const char* str) {
+	writer->Key(key);
+	writer->String(str);
+	return true;
+}
+
 void JSONOutputArchive::writeAttributeKey(const char* key) const {
 	char tmp[64];
 	tmp[0] = '@';

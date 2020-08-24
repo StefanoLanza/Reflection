@@ -12,6 +12,7 @@
 #include "type.h"
 #include "typeDB.h"
 #include "variant.h"
+#include "serializeBuiltIns.h"
 #include <cassert>
 #include <core/ptrUtil.h>
 #include <core/stackAlloc.h>
@@ -205,7 +206,11 @@ bool writeReference(const void* data, const Type& type, const TypeDB& typeDB, Ou
 bool writeVariant(const void* data, const Type& /*type*/, const TypeDB& typeDB, OutputArchive& archive) {
 	const Variant* variant = static_cast<const Variant*>(data);
 	const Type&    type = typeDB.getType(variant->getTypeId());
-	return writeObject(variant->getStorage(), variant->getName(), type, archive);
+	archive.beginObject();
+	archive.writeString("name", variant->getName());
+	writeObject(variant->getStorage(), "value", type, archive);
+	archive.endObject();
+	return true;
 }
 
 } // namespace

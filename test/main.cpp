@@ -684,24 +684,42 @@ TEST_CASE("Variant") {
 
 	using VariantArray = std::array<Variant, 2>;
 	const VariantArray variants { Variant { 3.14, "double" }, Variant { 41, "int" } };
-	VariantArray       otherVariants { Variant { 0., "double" }, Variant { 0, "int" } };
+	VariantArray       otherVariants { Variant { 0., "null" }, Variant { 0, "null" } };
 	VariantArray       clonedVariants { Variant { 0., "double" }, Variant { 0, "int" } };
 
-	auto compare = [](const VariantArray& b0, const VariantArray& b1) { return b0[0] == b1[0] && b0[1] == b1[1]; };
+	auto        compare = [](const VariantArray& b0, const VariantArray& b1) { return b0[0] == b1[0] && b0[1] == b1[1]; };
+	const char* key = "variants";
 
 	SECTION("XML Serialization") {
-		const char*      XMLelement = "variants";
-		std::string      xmlContent;
+		std::string      archiveContent;
 		XMLOutputArchive outArchive;
 
-		CHECK(writeObject(variants, XMLelement, outArchive));
-		outArchive.saveToString(xmlContent);
+		outArchive.beginRoot();
+		CHECK(writeObject(variants, key, outArchive));
+		outArchive.endRoot();
+		outArchive.saveToString(archiveContent);
 
 		XMLInputArchive inArchive;
-		REQUIRE(inArchive.initialize(xmlContent.data()));
-		REQUIRE(readObject(&otherVariants, XMLelement, inArchive));
+		REQUIRE(inArchive.initialize(archiveContent.data()));
+		REQUIRE(readObject(&otherVariants, key, inArchive));
 		CHECK(compare(otherVariants, variants));
 	}
+
+	SECTION("JSON Serialization") {
+		std::string       archiveContent;
+		JSONOutputArchive outArchive;
+
+		outArchive.beginRoot();
+		CHECK(writeObject(variants, key, outArchive));
+		outArchive.endRoot();
+		outArchive.saveToString(archiveContent);
+
+		JSONInputArchive inArchive;
+		REQUIRE(inArchive.initialize(archiveContent.data()));
+		REQUIRE(readObject(&otherVariants, key, inArchive));
+		CHECK(compare(otherVariants, variants));
+	}
+
 	SECTION("Clone") {
 		cloneObject(&clonedVariants, variants);
 		CHECK(compare(clonedVariants, variants));

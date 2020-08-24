@@ -30,6 +30,7 @@ public:
 	TypeId getTypeId() const {
 		return typeId;
 	}
+	void        setName(std::string_view name);
 	const char* getName() const;
 	void*       getStorage() {
         return &storage;
