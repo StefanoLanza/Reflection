@@ -206,7 +206,12 @@ bool writeReference(const void* data, const Type& type, const TypeDB& typeDB, Ou
 bool writeVariant(const void* data, const Type& /*type*/, const TypeDB& typeDB, OutputArchive& archive) {
 	const Variant* variant = static_cast<const Variant*>(data);
 	const Type&    type = typeDB.getType(variant->getTypeId());
+	const char* typeName = typeIdToName(variant->getTypeId());
+	if (! typeName) {
+		return false;
+	}
 	archive.beginObject();
+	archive.writeString("type", typeName);
 	archive.writeString("name", variant->getName());
 	writeObject(variant->getStorage(), "value", type, archive);
 	archive.endObject();

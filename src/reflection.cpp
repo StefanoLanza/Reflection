@@ -36,29 +36,33 @@ bool writeBuiltin<std::string>(const void* data, OutputArchive& archive) {
 }
 
 template <class T>
-void createBuiltin(Context& context) {
+void createBuiltin(Context& context, const char* typeName) {
 	BuiltinType* type = context.scopedAllocator->make<BuiltinType>(getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>());
 	type->setCustomReader(&readBuiltin<T>);
 	type->setCustomWriter(&writeBuiltin<T>);
 	context.typeDB->registerType(type);
+	registerTypeName(getTypeId<T>(), typeName);
 }
 
+#define CREATE_BUILTIN(type, context)       \
+		createBuiltin<type>(context, #type) \
+
 void registerBuiltinTypes(Context& context) {
-	createBuiltin<bool>(context);
-	createBuiltin<char>(context);
-	createBuiltin<unsigned char>(context);
-	createBuiltin<short>(context);
-	createBuiltin<unsigned short>(context);
-	createBuiltin<int>(context);
-	createBuiltin<unsigned int>(context);
-	createBuiltin<long>(context);
-	createBuiltin<unsigned long>(context);
-	createBuiltin<long long>(context);
-	createBuiltin<unsigned long long>(context);
-	createBuiltin<float>(context);
-	createBuiltin<double>(context);
-	createBuiltin<const char*>(context);
-	createBuiltin<std::string>(context);
+	CREATE_BUILTIN(bool, context);
+	CREATE_BUILTIN(char, context);
+	CREATE_BUILTIN(unsigned char, context);
+	CREATE_BUILTIN(short, context);
+	CREATE_BUILTIN(unsigned short, context);
+	CREATE_BUILTIN(int, context);
+	CREATE_BUILTIN(unsigned int, context);
+	CREATE_BUILTIN(long, context);
+	CREATE_BUILTIN(unsigned long, context);
+	CREATE_BUILTIN(long long, context);
+	CREATE_BUILTIN(unsigned long long, context);
+	CREATE_BUILTIN(float, context);
+	CREATE_BUILTIN(double, context);
+	CREATE_BUILTIN(const char*, context);
+	CREATE_BUILTIN(std::string, context);
 
 	context.typeDB->registerType(context.scopedAllocator->make<VariantType>());
 }

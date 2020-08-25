@@ -248,16 +248,31 @@ bool readReference(void* data, const Type& type, Semantic semantic, const TypeDB
 }
 
 bool readVariant(void* data, const Type& /*type*/, Semantic semantic, const TypeDB& typeDB, InputArchive& archive) {
-	Variant* variant = static_cast<Variant*>(data);
 	bool     res = false;
 	if (archive.beginObject()) {
-		// TODO read type from archive
-		const Type& type = typeDB.getType(variant->getTypeId());
-		const char* name = nullptr;
-		if (archive.readString("name", name)) {
-			variant->setName(name);
-			res = readObject(variant->getStorage(), "value", type, semantic, typeDB, archive);
+		const char* typeName = nullptr;
+		if (! archive.readString("type", typeName)) {
+			archive.endObject();
+			return false;
 		}
+		
+		TypeId typeId = typeNameToId(typeName);
+		if (! typeId) {
+			archive.endObject();
+			return false;
+		}
+
+		const char* name = nullptr;
+		if (! archive.readString("name", name)) {
+			archive.endObject();
+			return false;
+		}
+
+		const Type& type = typeDB.getType(typeId);
+		Variant* variant = static_cast<Variant*>(data);
+		*variant = Variant(typeId, name);
+		res = readObject(variant->getStorage(), "value", type, semantic, typeDB, archive);
+	
 		archive.endObject();
 	}
 	return res;

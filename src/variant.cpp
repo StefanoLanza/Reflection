@@ -24,47 +24,66 @@ Variant::Variant(Variant&& other) noexcept
 	*this = std::move(other);
 }
 
-Variant::Variant(const void* data, TypeId typeId, const char* name)
+Variant::Variant(const void* data, TypeId typeId, std::string_view name)
     : typeId { typeId }
     , name { name } {
-	const auto& types = getType();
-	assert(types.size <= sizeof storage);
-	types.copyConstructObject(&storage, data);
+	const auto& type = getType();
+	assert(type.size <= sizeof storage);
+	type.copyConstructObject(&storage, data);
 }
 
-Variant::~Variant() //
-{
+Variant::Variant(TypeId typeId, std::string_view name)
+    : typeId { typeId }
+    , name { name } {
+	const auto& type = getType();
+	assert(type.size <= sizeof storage);
+	type.constructObject(&storage);
+}
+
+Variant::~Variant() {
 	destruct();
 }
 
 Variant& Variant::operator=(const Variant& other) {
-	destruct();
-	if (other.typeId != nullTypeId) {
-		const Type& types = other.getType();
-		types.copyConstructObject(&storage, &other.storage);
+	if (other.typeId == typeId) {
+		if (typeId) {
+			const Type& type = getType();
+			type.copyObject(&storage, &other.storage);
+		}
 	}
-	typeId = other.typeId;
+	else {
+		destruct();
+		if (other.typeId) {
+			const Type& type = other.getType();
+			type.copyConstructObject(&storage, &other.storage);
+		}
+		typeId = other.typeId;
+	}
 	name = other.name;
 	return *this;
 }
 
 Variant& Variant::operator=(Variant&& other) noexcept {
-	destruct();
-	if (other.typeId != nullTypeId) {
-		const Type& types = other.getType();
-		types.moveConstructObject(&storage, &other.storage);
+	if (other.typeId == typeId) {
+		if (typeId) {
+			const Type& type = getType();
+			type.moveObject(&storage, &other.storage);
+		}
 	}
-	typeId = other.typeId;
+	else {
+		destruct();
+		if (other.typeId) {
+			const Type& type = other.getType();
+			type.moveConstructObject(&storage, &other.storage);
+		}
+		typeId = other.typeId;
+	}
 	name = std::move(other.name);
 	return *this;
 }
 
 const Type& Variant::getType() const {
 	return detail::getTypeDB().getType(typeId);
-}
-
-void Variant::setName(std::string_view newName) {
-	name = newName;
 }
 
 const char* Variant::getName() const {

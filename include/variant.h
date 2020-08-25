@@ -17,10 +17,11 @@ public:
 	Variant();
 	Variant(const Variant& other);
 	Variant(Variant&& other) noexcept;
-	Variant(const void* data, TypeId typeId, const char* name);
+	Variant(const void* data, TypeId typeId, std::string_view name);
+	Variant(TypeId typeId, std::string_view name);
 
 	template <class T>
-	explicit Variant(T&& value, const char* name);
+	explicit Variant(T&& value, std::string_view name);
 
 	~Variant();
 
@@ -30,7 +31,6 @@ public:
 	TypeId getTypeId() const {
 		return typeId;
 	}
-	void        setName(std::string_view name);
 	const char* getName() const;
 	void*       getStorage() {
         return &storage;
@@ -62,7 +62,7 @@ private:
 };
 
 template <class T>
-inline Variant::Variant(T&& value, const char* name)
+inline Variant::Variant(T&& value, std::string_view name)
     : typeId { nullTypeId }
     , name { name } {
 	set(std::forward<T>(value));

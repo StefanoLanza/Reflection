@@ -5,6 +5,8 @@
 #include <include/reflection.h>
 #include <string>
 
+// #include <vld.h>
+
 void registerUserTypes();
 
 void compare(const GameObject& o0, const GameObject& o1) {
@@ -684,8 +686,8 @@ TEST_CASE("Variant") {
 
 	using VariantArray = std::array<Variant, 2>;
 	const VariantArray variants { Variant { 3.14, "double" }, Variant { 41, "int" } };
-	VariantArray       otherVariants { Variant { 0., "null" }, Variant { 0, "null" } };
-	VariantArray       clonedVariants { Variant { 0., "double" }, Variant { 0, "int" } };
+	VariantArray       otherVariants;
+	VariantArray       clonedVariants;
 
 	auto        compare = [](const VariantArray& b0, const VariantArray& b1) { return b0[0] == b1[0] && b0[1] == b1[1]; };
 	const char* key = "variants";

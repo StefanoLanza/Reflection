@@ -222,10 +222,7 @@ void cloneReference(void* data, const void* srcData, const ReferenceType& type) 
 void cloneVariant(void* dstData, const void* srcData, const TypeDB& typeDB) {
 	const Variant* srcVariant = static_cast<const Variant*>(srcData);
 	Variant*       dstVariant = static_cast<Variant*>(dstData);
-	if (srcVariant->getTypeId() == dstVariant->getTypeId()) {
-		const Type& variantDataType = typeDB.getType(srcVariant->getTypeId());
-		cloneObject(dstVariant->getStorage(), srcVariant->getStorage(), variantDataType);
-	}
+	*dstVariant = *srcVariant;
 }
 
 } // namespace
