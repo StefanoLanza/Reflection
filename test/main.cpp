@@ -85,6 +85,7 @@ TEST_CASE("Primitives") {
 		CHECK(b == b2);
 	};
 
+#if TY_REFLECTION_XML
 	SECTION("XML Serialization") {
 		XMLOutputArchive outArchive;
 		std::string      content = write(outArchive);
@@ -92,7 +93,9 @@ TEST_CASE("Primitives") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
+#if TY_REFLECTION_JSON
 	SECTION("JSON Serialization") {
 		JSONOutputArchive outArchive;
 		std::string       content = write(outArchive);
@@ -100,6 +103,7 @@ TEST_CASE("Primitives") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
 	SECTION("Clone") {
 		cloneObject(&c2, c);
@@ -143,6 +147,7 @@ TEST_CASE("Enum") {
 		CHECK(readSeason == season);
 	};
 
+#if TY_REFLECTION_XML
 	SECTION("XML Serialization") {
 		XMLOutputArchive outArchive;
 		std::string      content = write(outArchive);
@@ -150,7 +155,9 @@ TEST_CASE("Enum") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
+#if TY_REFLECTION_JSON
 	SECTION("JSON Serialization") {
 		JSONOutputArchive outArchive;
 		std::string       content = write(outArchive);
@@ -158,6 +165,7 @@ TEST_CASE("Enum") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
 	SECTION("Clone") {
 		SeasonType cloned;
@@ -187,6 +195,7 @@ TEST_CASE("BitMask") {
 		CHECK(readFlags == flags);
 	};
 
+#if TY_REFLECTION_XML
 	SECTION("XML Serialization") {
 		XMLOutputArchive outArchive;
 		std::string      content = write(outArchive);
@@ -194,7 +203,9 @@ TEST_CASE("BitMask") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
+#if TY_REFLECTION_JSON
 	SECTION("JSON Serialization") {
 		JSONOutputArchive outArchive;
 		std::string       content = write(outArchive);
@@ -202,6 +213,7 @@ TEST_CASE("BitMask") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
 	SECTION("Clone") {
 		ActionFlags cloned;
@@ -239,6 +251,7 @@ TEST_CASE("C array") {
 		CHECK(compareArrays(in_array, array, size));
 	};
 
+#if TY_REFLECTION_XML
 	SECTION("XML serialization") {
 		XMLOutputArchive outArchive;
 		std::string      content = write(outArchive);
@@ -246,7 +259,9 @@ TEST_CASE("C array") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
+#if TY_REFLECTION_JSON
 	SECTION("JSON serialization") {
 		JSONOutputArchive outArchive;
 		std::string       content = write(outArchive);
@@ -254,6 +269,7 @@ TEST_CASE("C array") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
 	SECTION("Clone") {
 		Array cloned;
@@ -283,6 +299,7 @@ TEST_CASE("std::vector") {
 		CHECK(in_vec == vec);
 	};
 
+#if TY_REFLECTION_XML
 	SECTION("XML serialization") {
 		std::string      xmlContent;
 		XMLOutputArchive outArchive;
@@ -291,7 +308,9 @@ TEST_CASE("std::vector") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
+#if TY_REFLECTION_JSON
 	SECTION("JSON serialization") {
 		std::string       xmlContent;
 		JSONOutputArchive outArchive;
@@ -300,6 +319,7 @@ TEST_CASE("std::vector") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
 	SECTION("Clone") {
 		Vector cloned;
@@ -329,6 +349,7 @@ TEST_CASE("std::map") {
 		CHECK(inMap == map);
 	};
 
+#if TY_REFLECTION_XML
 	SECTION("XML serialization") {
 		XMLOutputArchive outArchive;
 		std::string      content = write(outArchive);
@@ -336,7 +357,9 @@ TEST_CASE("std::map") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
+#if TY_REFLECTION_JSON
 	SECTION("JSON serialization") {
 		JSONOutputArchive outArchive;
 		std::string       content = write(outArchive);
@@ -344,6 +367,7 @@ TEST_CASE("std::map") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
 	SECTION("Clone") {
 		Map cloned;
@@ -377,6 +401,7 @@ TEST_CASE("std::array") {
 		CHECK(in_array == array);
 	};
 
+#if TY_REFLECTION_XML
 	SECTION("XML serialization") {
 		XMLOutputArchive outArchive;
 		std::string      content = write(outArchive);
@@ -384,7 +409,9 @@ TEST_CASE("std::array") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
+#if TY_REFLECTION_JSON
 	SECTION("JSON serialization") {
 		JSONOutputArchive outArchive;
 		std::string       content = write(outArchive);
@@ -392,6 +419,7 @@ TEST_CASE("std::array") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
 	SECTION("Clone") {
 		Array cloned;
@@ -421,6 +449,7 @@ TEST_CASE("std::pair") {
 		CHECK(inPair == pair);
 	};
 
+#if TY_REFLECTION_XML
 	SECTION("XML serialization") {
 		XMLOutputArchive outArchive;
 		std::string      content = write(outArchive);
@@ -428,7 +457,9 @@ TEST_CASE("std::pair") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
+#if TY_REFLECTION_JSON
 	SECTION("JSON serialization") {
 		JSONOutputArchive outArchive;
 		std::string       content = write(outArchive);
@@ -436,6 +467,7 @@ TEST_CASE("std::pair") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
 	SECTION("Clone") {
 		Pair cloned;
@@ -466,6 +498,7 @@ TEST_CASE("std::tuple") {
 		CHECK(inTuple == tuple);
 	};
 
+#if TY_REFLECTION_XML
 	SECTION("XML serialization") {
 		XMLOutputArchive outArchive;
 		std::string      content = write(outArchive);
@@ -473,7 +506,9 @@ TEST_CASE("std::tuple") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
+#if TY_REFLECTION_JSON
 	SECTION("JSON serialization") {
 		JSONOutputArchive outArchive;
 		std::string       content = write(outArchive);
@@ -481,6 +516,7 @@ TEST_CASE("std::tuple") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
 	SECTION("Clone") {
 		Tuple cloned;
@@ -509,6 +545,7 @@ TEST_CASE("std::unique_ptr") {
 		CHECK(*inMaterial == *material);
 	};
 
+#if TY_REFLECTION_XML
 	SECTION("XML serialization") {
 		XMLOutputArchive outArchive;
 		std::string      content = write(outArchive);
@@ -516,7 +553,9 @@ TEST_CASE("std::unique_ptr") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
+#if TY_REFLECTION_JSON
 	SECTION("JSON serialization") {
 		JSONOutputArchive outArchive;
 		std::string       content = write(outArchive);
@@ -524,6 +563,7 @@ TEST_CASE("std::unique_ptr") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
 	SECTION("Clone") {
 		auto clonedMaterial = std::make_unique<Material>();
@@ -552,6 +592,7 @@ TEST_CASE("std::shared_ptr") {
 		CHECK(*inMaterial == *material);
 	};
 
+#if TY_REFLECTION_XML
 	SECTION("XML serialization") {
 		XMLOutputArchive outArchive;
 		std::string      content = write(outArchive);
@@ -559,7 +600,9 @@ TEST_CASE("std::shared_ptr") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
+#if TY_REFLECTION_JSON
 	SECTION("JSON serialization") {
 		JSONOutputArchive outArchive;
 		std::string       content = write(outArchive);
@@ -567,6 +610,7 @@ TEST_CASE("std::shared_ptr") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
 	SECTION("Clone") {
 		auto clonedMaterial = std::make_shared<Material>();
@@ -604,6 +648,7 @@ TEST_CASE("Class") {
 		compare(inObject, gameObject);
 	};
 
+#if TY_REFLECTION_XML
 	SECTION("XML serialization") {
 		XMLOutputArchive outArchive;
 		std::string      content = write(outArchive);
@@ -611,7 +656,9 @@ TEST_CASE("Class") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
+#if TY_REFLECTION_JSON
 	SECTION("JSON serialization") {
 		JSONOutputArchive outArchive;
 		std::string       content = write(outArchive);
@@ -619,6 +666,7 @@ TEST_CASE("Class") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
 	SECTION("Clone") {
 		GameObject clonedObject;
@@ -651,6 +699,7 @@ TEST_CASE("Struct") {
 		REQUIRE(fog == inFog);
 	};
 
+#if TY_REFLECTION_XML
 	SECTION("XML serialization") {
 		XMLOutputArchive outArchive;
 		std::string      content = write(outArchive);
@@ -658,7 +707,9 @@ TEST_CASE("Struct") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
+#if TY_REFLECTION_JSON
 	SECTION("JSON serialization") {
 		JSONOutputArchive outArchive;
 		std::string       content = write(outArchive);
@@ -666,6 +717,7 @@ TEST_CASE("Struct") {
 		REQUIRE(inArchive.initialize(content.data()));
 		read(inArchive);
 	}
+#endif
 
 	SECTION("Clone") {
 		Fog clonedFog;
@@ -673,13 +725,6 @@ TEST_CASE("Struct") {
 		REQUIRE(fog == clonedFog);
 	}
 }
-
-#if 0
-	TestDerivedClass derivedObject;
-	CHECK(writeObject(derivedObject, "derivedObject", archive));
-
-}
-#endif
 
 TEST_CASE("Variant") {
 	using namespace refl;
@@ -692,6 +737,7 @@ TEST_CASE("Variant") {
 	auto        compare = [](const VariantArray& b0, const VariantArray& b1) { return b0[0] == b1[0] && b0[1] == b1[1]; };
 	const char* key = "variants";
 
+#if TY_REFLECTION_XML
 	SECTION("XML Serialization") {
 		std::string      archiveContent;
 		XMLOutputArchive outArchive;
@@ -706,7 +752,9 @@ TEST_CASE("Variant") {
 		REQUIRE(readObject(&otherVariants, key, inArchive));
 		CHECK(compare(otherVariants, variants));
 	}
-
+#endif
+	
+#if TY_REFLECTION_JSON
 	SECTION("JSON Serialization") {
 		std::string       archiveContent;
 		JSONOutputArchive outArchive;
@@ -721,6 +769,7 @@ TEST_CASE("Variant") {
 		REQUIRE(readObject(&otherVariants, key, inArchive));
 		CHECK(compare(otherVariants, variants));
 	}
+#endif
 
 	SECTION("Clone") {
 		cloneObject(&clonedVariants, variants);

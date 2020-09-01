@@ -35,7 +35,7 @@ std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementT
 
 template <class T, size_t size>
 bool readArray(std::array<T, size>& array, const char* elementName, InputArchive& archive) {
-	return readArray(array.data(), array.size(), elementName, archive);
+	return readArray(array.data(), array.size(), elementName, archive).first;
 }
 
 template <class T>

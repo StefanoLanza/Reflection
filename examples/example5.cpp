@@ -9,7 +9,13 @@
 
 #define XML          0
 #define JSON         1
+#if TY_REFLECTION_JSON
 #define ARCHIVE_TYPE JSON
+#elif TY_REFLECTION_XML
+#define ARCHIVE_TYPE XML
+#else
+#error "No supported archive types"
+#endif
 
 struct Person {
 	std::string name;
@@ -113,7 +119,7 @@ CityVector buildCities() {
 }
 
 NumberVector buildPrimeNumbers() {
-	return { 1, 2, 3, 5, 7, 11 };
+	return { 2, 3, 5, 7, 11, 13 };
 }
 
 std::string writeToArchive(const PersonMap& persons, const CityVector& cities, const NumberVector& numbers, const char* personsKey,

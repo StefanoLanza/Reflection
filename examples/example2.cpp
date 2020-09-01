@@ -8,7 +8,13 @@
 
 #define XML          0
 #define JSON         1
+#if TY_REFLECTION_JSON
 #define ARCHIVE_TYPE JSON
+#elif TY_REFLECTION_XML
+#define ARCHIVE_TYPE XML
+#else
+#error "No supported archive types"
+#endif
 
 struct Coords {
 	float x;

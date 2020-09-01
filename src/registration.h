@@ -70,6 +70,7 @@ Context& getContext();
 		constexpr bool isClass = false;                                                                                                       \
 		const auto     structType = scopedAllocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
                                                                   detail::buildMethodTable<class_>(), std::ref(allocator_));              \
+		registerTypeName(Typhoon::getTypeId<class_>(), #class);                                                                               \
 		do {                                                                                                                                  \
 	} while (0)
 
@@ -79,6 +80,7 @@ Context& getContext();
 		constexpr bool isClass = true;                                                                                                        \
 		const auto     structType = scopedAllocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
                                                                   detail::buildMethodTable<class_>(), std::ref(allocator_));              \
+		registerTypeName(Typhoon::getTypeId<class_>(), #class);                                                                               \
 		do {                                                                                                                                  \
 	} while (0)
 
@@ -92,20 +94,20 @@ Context& getContext();
 		assert(parentType.subClass == Type::Subclass::Struct);                                                                                \
 		const auto structType = scopedAllocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), &parentType, \
 		                                                          detail::buildMethodTable<class_>(), std::ref(allocator_));                  \
+		registerTypeName(Typhoon::getTypeId<class_>(), #class);                                                                               \
 		do {                                                                                                                                  \
 	} while (0)
 
-#define FIELD_RENAMED(field, name)                                                                                       \
-	do {                                                                                                                 \
-		structType->addProperty(detail::createFieldProperty(name, Flags::all, Semantic::none, &class_::field, context)); \
+#define FIELD_RENAMED_EXT(field, name, flags, semantic)                                                       \
+	do {                                                                                                      \
+		structType->addProperty(detail::createFieldProperty(name, flags, semantic, &class_::field, context)); \
 	} while (false)
+
+#define FIELD_RENAMED(field, name) FIELD_RENAMED_EXT(field, name, Flags::all, Semantic::none)
 
 #define FIELD(field) FIELD_RENAMED(field, #field)
 
-#define FIELD_EXT(field, flags, semantic)                                                                     \
-	do {                                                                                                      \
-		structType->addProperty(detail::createFieldProperty(#field, flags, semantic, &class_::field, context)); \
-	} while (false)
+#define FIELD_EXT(field, flags, semantic) FIELD_RENAMED_EXT(field, #field, Flags::all, Semantic::none)
 
 #define PROPERTY(name, getter, setter)                                                                                                       \
 	do {                                                                                                                                     \

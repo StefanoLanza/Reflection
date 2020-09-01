@@ -8,11 +8,11 @@
 #include "pointerType.h"
 #include "property.h"
 #include "referenceType.h"
+#include "serializeBuiltIns.h"
 #include "structType.h"
 #include "type.h"
 #include "typeDB.h"
 #include "variant.h"
-#include "serializeBuiltIns.h"
 #include <cassert>
 #include <core/ptrUtil.h>
 #include <core/stackAlloc.h>
@@ -103,7 +103,8 @@ bool writeEnum(const void* data, const Type& type, const TypeDB& /*typeDB*/, Out
 	const Enumerator* enumerator = enumType.findEnumeratorByValue(data, enumType.size);
 	bool              res = false;
 	if (enumerator) {
-		res = archive.write(enumerator->name);
+		res = true;
+		archive.write(enumerator->name);
 	}
 	return res;
 }
@@ -141,7 +142,6 @@ bool writeContainer(const void* data, const Type& type, const TypeDB& typeDB, Ou
 	const ContainerType& containerType = static_cast<const ContainerType&>(type);
 	const Type*          keyType = containerType.getKeyType();
 	const Type*          valueType = containerType.getValueType();
-	constexpr TypeId     variant_typeID = getTypeId<Variant>();
 
 	if (! archive.beginArray()) {
 		return false;
@@ -171,9 +171,10 @@ bool writeContainer(const void* data, const Type& type, const TypeDB& typeDB, Ou
 		else {
 			// Write value
 			/*if (elementName) {
-				writeObject(iterator->getValue(), elementName, *valueType, archive);
+			    writeObject(iterator->getValue(), elementName, *valueType, archive);
 			}
-			else*/ {
+			else*/
+			{
 				writeObjectImpl(iterator->getValue(), *valueType, typeDB, archive);
 			}
 		}
@@ -206,7 +207,7 @@ bool writeReference(const void* data, const Type& type, const TypeDB& typeDB, Ou
 bool writeVariant(const void* data, const Type& /*type*/, const TypeDB& typeDB, OutputArchive& archive) {
 	const Variant* variant = static_cast<const Variant*>(data);
 	const Type&    type = typeDB.getType(variant->getTypeId());
-	const char* typeName = typeIdToName(variant->getTypeId());
+	const char*    typeName = typeIdToName(variant->getTypeId());
 	if (! typeName) {
 		return false;
 	}

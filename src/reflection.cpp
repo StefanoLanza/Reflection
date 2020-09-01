@@ -32,7 +32,8 @@ void readBuiltin<std::string>(void* data, InputArchive& archive) {
 
 template <>
 bool writeBuiltin<std::string>(const void* data, OutputArchive& archive) {
-	return archive.write(static_cast<const std::string*>(data)->c_str());
+	archive.write(static_cast<const std::string*>(data)->c_str());
+	return true;
 }
 
 template <class T>

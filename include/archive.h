@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include <core/uncopyable.h>
+#include <cstdint>
 #include <string>
 
 namespace Typhoon::Reflection {
@@ -101,16 +102,17 @@ public:
 	virtual void             endObject() = 0;
 	virtual bool             beginArray() = 0;
 	virtual void             endArray() = 0;
-	virtual bool             write(const char* data) = 0;
+	virtual void             write(const char* data) = 0;
 
 	// New API
-	virtual bool writeBool(const char* key, bool value) = 0;
-	virtual bool writeInt(const char* key, int value) = 0;
-	virtual bool writeUInt(const char* key, unsigned int value) = 0;
-	virtual bool writeFloat(const char* key, float value) = 0;
-	virtual bool writeDouble(const char* key, double value) = 0;
-	virtual bool writeString(const char* key, const char* str) = 0;
-	// TODO int64 uint64 ?
+	virtual void writeBool(const char* key, bool value) = 0;
+	virtual void writeInt(const char* key, int value) = 0;
+	virtual void writeUInt(const char* key, unsigned int value) = 0;
+	virtual void writeInt64(const char* key, int64_t value) = 0;
+	virtual void writeUInt64(const char* key, uint64_t value) = 0;
+	virtual void writeFloat(const char* key, float value) = 0;
+	virtual void writeDouble(const char* key, double value) = 0;
+	virtual void writeString(const char* key, const char* str) = 0;
 
 	// Serialization of attributes
 	virtual void writeAttribute(const char* name, bool value) = 0;

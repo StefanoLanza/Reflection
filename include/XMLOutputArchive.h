@@ -41,13 +41,15 @@ public:
 	void             writeAttribute(const char* name, float value) override;
 	void             writeAttribute(const char* name, double value) override;
 	void             writeAttribute(const char* name, const char* str) override;
-	bool             write(const char* text) override;
-	bool             writeBool(const char* key, bool value) override;
-	bool             writeInt(const char* key, int value) override;
-	bool             writeUInt(const char* key, unsigned int value) override;
-	bool             writeFloat(const char* key, float value) override;
-	bool             writeDouble(const char* key, double value) override;
-	bool             writeString(const char* key, const char* str) override;
+	void             write(const char* text) override;
+	void             writeBool(const char* key, bool value) override;
+	void             writeInt(const char* key, int value) override;
+	void             writeUInt(const char* key, unsigned int value) override;
+	void             writeInt64(const char* key, int64_t value) override;
+	void             writeUInt64(const char* key, uint64_t value) override;
+	void             writeFloat(const char* key, float value) override;
+	void             writeDouble(const char* key, double value) override;
+	void             writeString(const char* key, const char* str) override;
 
 private:
 	void beginArrayElement();

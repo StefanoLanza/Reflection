@@ -195,7 +195,8 @@ bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB
 	const ContainerType& containerType = static_cast<const ContainerType&>(type);
 	const Type*          key_type = containerType.getKeyType();
 	const Type*          value_type = containerType.getValueType();
-	constexpr TypeId     variant_typeID = getTypeId<Variant>();
+
+	containerType.clear(data);
 
 	char                 tmp[64];
 	char                 stackMem[512];

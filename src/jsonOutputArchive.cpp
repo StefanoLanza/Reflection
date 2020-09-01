@@ -1,4 +1,4 @@
-#include "JSONOutputArchive.h"
+#include "jsonOutputArchive.h"
 
 #if TY_REFLECTION_JSON
 
@@ -100,44 +100,48 @@ void JSONOutputArchive::writeAttribute(const char* name, const char* str) {
 	writer->String(str);
 }
 
-bool JSONOutputArchive::write(const char* text) {
-	return writer->String(text, static_cast<SizeType>(strlen(text)));
+void JSONOutputArchive::write(const char* text) {
+	writer->String(text, static_cast<SizeType>(strlen(text)));
 }
 
-bool JSONOutputArchive::writeBool(const char* key, bool value) {
+void JSONOutputArchive::writeBool(const char* key, bool value) {
 	writer->Key(key);
 	writer->Bool(value);
-	return true;
 }
 
-bool JSONOutputArchive::writeInt(const char* key, int value) {
+void JSONOutputArchive::writeInt(const char* key, int value) {
 	writer->Key(key);
 	writer->Int(value);
-	return true;
 }
 
-bool JSONOutputArchive::writeUInt(const char* key, unsigned int value) {
+void JSONOutputArchive::writeUInt(const char* key, unsigned int value) {
 	writer->Key(key);
 	writer->Uint(value);
-	return true;
 }
 
-bool JSONOutputArchive::writeFloat(const char* key, float value) {
+void JSONOutputArchive::writeInt64(const char* key, int64_t value) {
+	writer->Key(key);
+	writer->Int64(value);
+}
+
+void JSONOutputArchive::writeUInt64(const char* key, uint64_t value) {
+	writer->Key(key);
+	writer->Uint64(value);
+}
+
+void JSONOutputArchive::writeFloat(const char* key, float value) {
 	writer->Key(key);
 	writer->Double(value);
-	return true;
 }
 
-bool JSONOutputArchive::writeDouble(const char* key, double value) {
+void JSONOutputArchive::writeDouble(const char* key, double value) {
 	writer->Key(key);
 	writer->Double(value);
-	return true;
 }
 
-bool JSONOutputArchive::writeString(const char* key, const char* str) {
+void JSONOutputArchive::writeString(const char* key, const char* str) {
 	writer->Key(key);
 	writer->String(str);
-	return true;
 }
 
 void JSONOutputArchive::writeAttributeKey(const char* key) const {

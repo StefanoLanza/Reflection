@@ -97,70 +97,7 @@ void cloneStruct(void* dstData, const void* srcData, const StructType& structTyp
 }
 
 void cloneBuiltin(void* data, const void* srcData, const BuiltinType& type) {
-	constexpr TypeId boolID = getTypeId<bool>();
-	constexpr TypeId charID = getTypeId<char>();
-	constexpr TypeId ucharID = getTypeId<unsigned char>();
-	constexpr TypeId floatID = getTypeId<float>();
-	constexpr TypeId shortID = getTypeId<short>();
-	constexpr TypeId ushortID = getTypeId<unsigned short>();
-	constexpr TypeId intID = getTypeId<int>();
-	constexpr TypeId uintID = getTypeId<unsigned int>();
-	constexpr TypeId longID = getTypeId<long>();
-	constexpr TypeId ulongID = getTypeId<unsigned long>();
-	constexpr TypeId longlongID = getTypeId<long long>();
-	constexpr TypeId ulonglongID = getTypeId<unsigned long long>();
-	constexpr TypeId doubleID = getTypeId<double>();
-	constexpr TypeId constcharID = getTypeId<const char*>();
-	constexpr TypeId stdstringID = getTypeId<std::string>();
-	const TypeId     typeID = type.typeID;
-
-	if (typeID == boolID) {
-		*static_cast<bool*>(data) = *static_cast<const bool*>(srcData);
-	}
-	else if (typeID == charID) {
-		*static_cast<char*>(data) = *static_cast<const char*>(srcData);
-	}
-	else if (typeID == ucharID) {
-		*static_cast<unsigned char*>(data) = *static_cast<const unsigned char*>(srcData);
-	}
-	else if (typeID == shortID) {
-		*static_cast<short*>(data) = *static_cast<const short*>(srcData);
-	}
-	else if (typeID == ushortID) {
-		*static_cast<unsigned short*>(data) = *static_cast<const unsigned short*>(srcData);
-	}
-	else if (typeID == intID) {
-		*static_cast<int*>(data) = *static_cast<const int*>(srcData);
-	}
-	else if (typeID == uintID) {
-		*static_cast<unsigned int*>(data) = *static_cast<const unsigned int*>(srcData);
-	}
-	else if (typeID == longID) {
-		*static_cast<long*>(data) = *static_cast<const long*>(srcData);
-	}
-	else if (typeID == ulongID) {
-		*static_cast<unsigned long*>(data) = *static_cast<const unsigned long*>(srcData);
-	}
-	else if (typeID == longlongID) {
-		*static_cast<long long*>(data) = *static_cast<const long long*>(srcData);
-	}
-	else if (typeID == ulonglongID) {
-		*static_cast<unsigned long long*>(data) = *static_cast<const unsigned long long*>(srcData);
-	}
-	else if (typeID == floatID) {
-		*static_cast<float*>(data) = *static_cast<const float*>(srcData);
-	}
-	else if (typeID == doubleID) {
-		*static_cast<double*>(data) = *static_cast<const double*>(srcData);
-	}
-	else if (typeID == constcharID) {
-	}
-	else if (typeID == stdstringID) {
-		*static_cast<std::string*>(data) = *static_cast<const std::string*>(srcData);
-	}
-	else {
-		assert(0);
-	}
+	type.copyObject(data, srcData);
 }
 
 void cloneEnum(void* data, const void* srcData, const EnumType& type) {
@@ -219,7 +156,7 @@ void cloneReference(void* data, const void* srcData, const ReferenceType& type) 
 	cloneObject(dstPointer, srcPointer, type.getReferencedType());
 }
 
-void cloneVariant(void* dstData, const void* srcData, const TypeDB& typeDB) {
+void cloneVariant(void* dstData, const void* srcData, const TypeDB& /*typeDB*/) {
 	const Variant* srcVariant = static_cast<const Variant*>(srcData);
 	Variant*       dstVariant = static_cast<Variant*>(dstData);
 	*dstVariant = *srcVariant;

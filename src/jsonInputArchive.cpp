@@ -1,4 +1,4 @@
-#include "JSONInputArchive.h"
+#include "jsonInputArchive.h"
 
 #if TY_REFLECTION_JSON
 

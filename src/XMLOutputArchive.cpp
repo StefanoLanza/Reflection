@@ -110,53 +110,74 @@ void XMLOutputArchive::writeAttribute(const char* name, double value) {
 	currentNode->ToElement()->SetAttribute(name, value);
 }
 
-bool XMLOutputArchive::write(const char* text) {
+void XMLOutputArchive::write(const char* text) {
 	beginArrayElement(); // insert "element" node for array
-	bool res = currentNode->InsertEndChild(document->NewText(text)) != nullptr;
+	currentNode->InsertEndChild(document->NewText(text));
 	endArrayElement();
-	return res;
 }
 
-bool XMLOutputArchive::writeBool(const char* key, bool value) {
+void XMLOutputArchive::writeBool(const char* key, bool value) {
+	beginArrayElement();
 	auto element = document->NewElement(key);
 	element->SetText(value);
 	currentNode->InsertEndChild(element);
-	return true;
+	endArrayElement();
 }
 
-bool XMLOutputArchive::writeInt(const char* key, int value) {
+void XMLOutputArchive::writeInt(const char* key, int value) {
+	beginArrayElement();
 	auto element = document->NewElement(key);
 	element->SetText(value);
 	currentNode->InsertEndChild(element);
-	return true;
+	endArrayElement();
 }
 
-bool XMLOutputArchive::writeUInt(const char* key, unsigned int value) {
+void XMLOutputArchive::writeUInt(const char* key, unsigned int value) {
+	beginArrayElement();
 	auto element = document->NewElement(key);
 	element->SetText(value);
 	currentNode->InsertEndChild(element);
-	return true;
+	endArrayElement();
 }
 
-bool XMLOutputArchive::writeFloat(const char* key, float value) {
+void XMLOutputArchive::writeInt64(const char* key, int64_t value) {
+	beginArrayElement();
 	auto element = document->NewElement(key);
 	element->SetText(value);
 	currentNode->InsertEndChild(element);
-	return true;
+	endArrayElement();
 }
 
-bool XMLOutputArchive::writeDouble(const char* key, double value) {
+void XMLOutputArchive::writeUInt64(const char* key, uint64_t value) {
+	beginArrayElement();
 	auto element = document->NewElement(key);
 	element->SetText(value);
 	currentNode->InsertEndChild(element);
-	return true;
+	endArrayElement();
 }
 
-bool XMLOutputArchive::writeString(const char* key, const char* str) {
+void XMLOutputArchive::writeFloat(const char* key, float value) {
+	beginArrayElement();
+	auto element = document->NewElement(key);
+	element->SetText(value);
+	currentNode->InsertEndChild(element);
+	endArrayElement();
+}
+
+void XMLOutputArchive::writeDouble(const char* key, double value) {
+	beginArrayElement();
+	auto element = document->NewElement(key);
+	element->SetText(value);
+	currentNode->InsertEndChild(element);
+	endArrayElement();
+}
+
+void XMLOutputArchive::writeString(const char* key, const char* str) {
+	beginArrayElement();
 	auto element = document->NewElement(key);
 	element->SetText(str);
 	currentNode->InsertEndChild(element);
-	return true;
+	endArrayElement();
 }
 
 void XMLOutputArchive::beginArrayElement() {

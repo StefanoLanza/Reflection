@@ -20,7 +20,9 @@ template <class T>
 bool sprintf(T data, const char* fmt, OutputArchive& archive) {
 	char tmp[128];
 	bool ok = sprintf_s(tmp, fmt, data) >= 0;
-	ok = ok && archive.write(tmp);
+	if (ok) { 
+		archive.write(tmp);
+	}
 	return ok;
 }
 
@@ -97,7 +99,8 @@ bool read(const char*& data, InputArchive& archive) {
 }
 
 bool write(bool data, OutputArchive& archive) {
-	return archive.write(data ? "true" : "false");
+	archive.write(data ? "true" : "false");
+	return true;
 }
 
 bool write(char data, OutputArchive& archive) {
@@ -150,7 +153,8 @@ bool write(double data, OutputArchive& archive) {
 
 bool write(const char* str, OutputArchive& archive) {
 	assert(str);
-	return archive.write(str);
+	archive.write(str);
+	return true;
 }
 
 } // namespace Typhoon::Reflection

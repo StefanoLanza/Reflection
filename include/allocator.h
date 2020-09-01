@@ -34,16 +34,17 @@ public:
  */
 class LinearAllocator : public Allocator {
 public:
-	LinearAllocator(char* buffer, size_t bufferSize);
+	LinearAllocator(char* buffer, size_t bufferSize, Allocator* backup);
 
 	void* alloc(size_t size, size_t alignment) override;
 	void  free(void* ptr, size_t size) override;
 
 private:
-	char*  buffer;
-	void*  offset;
-	size_t bufferSize;
-	size_t freeSize;
+	char*      buffer;
+	void*      offset;
+	size_t     bufferSize;
+	size_t     freeSize;
+	Allocator* backup;
 };
 
 } // namespace Typhoon::Reflection
