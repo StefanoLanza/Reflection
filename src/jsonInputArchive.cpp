@@ -27,41 +27,68 @@ const char* JSONInputArchive::currNodeText() {
 	return stack.top().value->GetString();
 }
 
-bool JSONInputArchive::readBool(const char* key, bool& value) {
-	assert(false);
+bool JSONInputArchive::readBool(const char* key, bool& b) {
+	if (auto& value = getValue(key); value.IsBool()) {
+		b = value.GetBool();
+		return true;
+	}
 	return false;
 }
 
-bool JSONInputArchive::readInt(const char* key, int& value) {
-	assert(false);
+bool JSONInputArchive::readInt(const char* key, int& i) {
+	if (auto& value = getValue(key); value.IsInt()) {
+		i = value.GetInt();
+		return true;
+	}
 	return false;
 }
 
-bool JSONInputArchive::readUInt(const char* key, unsigned int& value) {
-	assert(false);
+bool JSONInputArchive::readUInt(const char* key, unsigned int& ui) {
+	if (auto& value = getValue(key); value.IsUint()) {
+		ui = value.GetUint();
+		return true;
+	}
 	return false;
 }
 
-bool JSONInputArchive::readFloat(const char* key, float& value) {
-	assert(false);
+bool JSONInputArchive::readInt64(const char* key, int64_t& i64) {
+	if (auto& value = getValue(key); value.IsInt64()) {
+		i64 = value.GetInt64();
+		return true;
+	}
 	return false;
 }
 
-bool JSONInputArchive::readDouble(const char* key, double& value) {
-	assert(false);
+bool JSONInputArchive::readUInt64(const char* key, uint64_t& ui64) {
+	if (auto& value = getValue(key); value.IsUint64()) {
+		ui64 = value.GetUint64();
+		return true;
+	}
+	return false;
+}
+
+bool JSONInputArchive::readFloat(const char* key, float& f) {
+	if (auto& value = getValue(key); value.IsFloat()) {
+		f = value.GetFloat();
+		return true;
+	}
+	return false;
+}
+
+bool JSONInputArchive::readDouble(const char* key, double& d) {
+	if (auto& value = getValue(key); value.IsDouble()) {
+		d = value.GetDouble();
+		return true;
+	}
 	return false;
 }
 
 bool JSONInputArchive::readString(const char* key, const char*& str) {
-	bool             res = false;
-	const StackItem& top = stack.top();
-	if (top.value->IsObject()) {
-		if (auto memberItr = top.value->FindMember(key); memberItr != top.value->MemberEnd()) {
-			str = memberItr->value.GetString();
-			res = true;
-		}
+	if (auto& value = getValue(key); value.IsString()) {
+		str = value.GetString();
+		return true;
 	}
-	return res;
+	return false;
 }
 
 bool JSONInputArchive::beginElement(const char* name) {
@@ -257,6 +284,17 @@ bool JSONInputArchive::beginAttribute(const char* name) {
 	tmp[0] = '@';
 	strcpy_s(tmp + 1, sizeof(tmp) - 1, name);
 	return beginElement(tmp);
+}
+
+const rapidjson::Value& JSONInputArchive::getValue(const char* key) const {
+	const StackItem& top = stack.top();
+	if (top.value->IsObject()) {
+		if (auto memberItr = top.value->FindMember(key); memberItr != top.value->MemberEnd()) {
+			return memberItr->value;
+		}
+	}
+	static rapidjson::Value nullValue;
+	return nullValue;
 }
 
 } // namespace Typhoon::Reflection

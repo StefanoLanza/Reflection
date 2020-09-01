@@ -72,6 +72,26 @@ bool XMLInputArchive::readUInt(const char* key, unsigned int& value) {
 	return res;
 }
 
+
+bool XMLInputArchive::readInt64(const char* key, int64_t& value) {
+	bool res = false;
+	if (auto element = currentNode->FirstChildElement(key); element) {
+		if (auto error = element->QueryInt64Text(&value); error == tinyxml2::XML_SUCCESS) {
+			res = true;
+		}
+	}
+	return res;
+}
+
+bool XMLInputArchive::readUInt64(const char* key, uint64_t& value) {
+	bool res = false;
+	if (auto element = currentNode->FirstChildElement(key); element) {
+		if (auto error = element->QueryUnsigned64Text(&value); error == tinyxml2::XML_SUCCESS) {
+			res = true;
+		}
+	}
+	return res;
+}
 bool XMLInputArchive::readFloat(const char* key, float& value) {
 	bool res = false;
 	if (auto element = currentNode->FirstChildElement(key); element) {

@@ -41,6 +41,8 @@ public:
 	bool        readBool(const char* key, bool& value) override;
 	bool        readInt(const char* key, int& value) override;
 	bool        readUInt(const char* key, unsigned int& value) override;
+	bool        readInt64(const char* key, int64_t& value) override;
+	bool        readUInt64(const char* key, uint64_t& value) override;
 	bool        readFloat(const char* key, float& value) override;
 	bool        readDouble(const char* key, double& value) override;
 	bool        readString(const char* key, const char*& str) override;

@@ -73,6 +73,8 @@ public:
 	virtual bool readBool(const char* key, bool& value) = 0;
 	virtual bool readInt(const char* key, int& value) = 0;
 	virtual bool readUInt(const char* key, unsigned int& value) = 0;
+	virtual bool readInt64(const char* key, int64_t& value) = 0;
+	virtual bool readUInt64(const char* key, uint64_t& value) = 0;
 	virtual bool readFloat(const char* key, float& value) = 0;
 	virtual bool readDouble(const char* key, double& value) = 0;
 	virtual bool readString(const char* key, const char*& str) = 0;

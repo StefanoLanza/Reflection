@@ -212,15 +212,18 @@ bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB
 				if (key) {
 					key_type->constructObject(key);
 					// read key
-					readObject(key, "key", *key_type, Semantic::none, typeDB, archive);
-					// Create value using key
-					void* value = containerIterator->insert(key);
+					if (readObject(key, "key", *key_type, Semantic::none, typeDB, archive)) {
+						// Create value using key
+						void* value = containerIterator->insert(key);
+						readObject(value, "value", *value_type, semantic, typeDB, archive);
+						// TODO insert on success only ?
+					}
 					// Destruct key
 					key_type->destructObject(key);
-					readObject(value, "value", *value_type, semantic, typeDB, archive);
 				}
 			}
 			else {
+				// TODO insert on success only with a move
 				readObject(containerIterator->pushBack(), *value_type, semantic, typeDB, archive);
 			}
 		}
