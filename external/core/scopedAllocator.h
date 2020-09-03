@@ -3,7 +3,7 @@
 #include "allocator.h"
 #include <type_traits>
 
-namespace Typhoon::Reflection {
+namespace Typhoon {
 
 template <typename T>
 void destructorCall(void* ptr) {
@@ -28,6 +28,8 @@ public:
 		return new (ptr) T(std::forward<ArgTypes>(args)...);
 	}
 
+	void* alloc(size_t size, size_t alignment);
+
 private:
 	void registerObject(void* obj, size_t objSize, Destructor destructor);
 
@@ -37,4 +39,4 @@ private:
 	Finalizer* finalizerHead;
 };
 
-} // namespace Typhoon::Reflection
+} // namespace Typhoon

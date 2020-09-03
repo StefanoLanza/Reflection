@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../src/context.h"
-#include "../src/scopedAllocator.h"
 #include "../src/typeDB.h"
 #include "type.h"
+#include <core/scopedAllocator.h>
 
 namespace Typhoon::Reflection {
 

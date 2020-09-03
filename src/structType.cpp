@@ -1,6 +1,6 @@
 #include "structType.h"
-#include "allocator.h"
 #include "property.h"
+#include <core/allocator.h>
 
 namespace Typhoon::Reflection {
 

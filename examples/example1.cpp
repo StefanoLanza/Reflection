@@ -5,8 +5,8 @@
 #include <iostream>
 #include <string>
 
-#define XML          0
-#define JSON         1
+#define XML  0
+#define JSON 1
 #if TY_REFLECTION_JSON
 #define ARCHIVE_TYPE JSON
 #elif TY_REFLECTION_XML
@@ -50,8 +50,9 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 #if _DEBUG
 	refl::initReflection();
 #else
-	char                  buffer[8192];
-	refl::LinearAllocator linearAllocator(buffer, std::size(buffer));
+	char                     buffer[8192];
+	Typhoon::HeapAllocator   heapAllocator;
+	Typhoon::LinearAllocator linearAllocator(buffer, std::size(buffer), &heapAllocator);
 	refl::initReflection(linearAllocator);
 #endif
 	registerUserTypes();
@@ -103,6 +104,7 @@ std::string writeBuiltins(const Builtins& obj, const char* element) {
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
+	archive.beginRoot();
 	if (archive.beginElement(element)) {
 		archive.beginObject();
 		writeObject(obj.i, "i", archive);
@@ -113,6 +115,7 @@ std::string writeBuiltins(const Builtins& obj, const char* element) {
 		writeObject(obj.flags, "flags", archive);
 		archive.endObject();
 		archive.endElement();
+		archive.endRoot();
 		archive.saveToString(content);
 	}
 	return content;
@@ -122,7 +125,7 @@ void readBuiltins(Builtins& obj, const std::string& content, const char* element
 #if ARCHIVE_TYPE == XML
 	refl::XMLInputArchive archive;
 #elif ARCHIVE_TYPE == JSON
-	refl::JSONInputArchive archive;
+	refl::JSONInputArchive  archive;
 #endif
 	if (refl::ParseResult res = archive.initialize(content.data()); res) {
 		if (archive.beginElement(element)) {

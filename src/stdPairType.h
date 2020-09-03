@@ -4,10 +4,10 @@
 #include "flags.h"
 #include "makeProperty.h"
 #include "property.h"
-#include "scopedAllocator.h"
 #include "semantics.h"
 #include "structType.h"
 #include "typeDB.h"
+#include <core/scopedAllocator.h>
 #include <utility>
 
 namespace Typhoon::Reflection::detail {

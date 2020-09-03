@@ -26,9 +26,13 @@
 #include "jsonOutputArchive.h"
 #endif
 
-namespace Typhoon::Reflection {
+namespace Typhoon {
 
 class Allocator;
+
+}
+
+namespace Typhoon::Reflection {
 
 /**
  * @brief Initialize the reflection library with the default allocator

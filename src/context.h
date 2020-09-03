@@ -1,10 +1,15 @@
 #pragma once
 
+namespace Typhoon {
+
+class Allocator;
+class ScopedAllocator;
+
+} // namespace Typhoon
+
 namespace Typhoon::Reflection {
 
 class TypeDB;
-class Allocator;
-class ScopedAllocator;
 
 struct Context {
 	TypeDB*          typeDB;

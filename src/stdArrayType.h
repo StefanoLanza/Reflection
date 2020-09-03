@@ -2,8 +2,8 @@
 
 #include "containerType.h"
 #include "context.h"
-#include "scopedAllocator.h"
 #include "typeDB.h"
+#include <core/scopedAllocator.h>
 
 #include <array>
 #include <cassert>

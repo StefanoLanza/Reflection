@@ -1,10 +1,10 @@
 #include "allocator.h"
-#include <core/ptrUtil.h>
+#include "ptrUtil.h"
 
 #include <cassert>
 #include <memory>
 
-namespace Typhoon::Reflection {
+namespace Typhoon {
 
 void* HeapAllocator::alloc(size_t size, [[maybe_unused]] size_t alignment) {
 #ifdef _MSC_VER

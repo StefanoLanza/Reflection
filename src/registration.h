@@ -2,7 +2,6 @@
 
 #include "config.h"
 
-#include "allocator.h"
 #include "arrayType.h"
 #include "bitMaskType.h"
 #include "containerType.h"
@@ -22,6 +21,7 @@
 #include "stdVectorType.h"
 #include "structType.h"
 #include "typeDB.h"
+#include <core/scopedAllocator.h>
 
 namespace Typhoon::Reflection {
 
@@ -46,6 +46,7 @@ Context& getContext();
 #define BEGIN_REFLECTION()                                            \
 	__pragma(warning(push)) __pragma(warning(disable : 4127)) do {    \
 		using namespace refl;                                         \
+		using namespace Typhoon;                                      \
 		Context&         context = detail::getContext();              \
 		TypeDB&          typeDB_ = *context.typeDB;                   \
 		ScopedAllocator& scopedAllocator_ = *context.scopedAllocator; \

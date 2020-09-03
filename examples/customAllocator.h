@@ -1,7 +1,7 @@
-#include <include/allocator.h>
+#include <core/allocator.h>
 #include <new>
 
-class CustomAllocator : public Typhoon::Reflection::Allocator {
+class CustomAllocator : public Typhoon::Allocator {
 public:
 	void* alloc(size_t size, size_t /*alignment*/) override {
 		totalAlloc += size;

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "allocator.h"
+#include <core/allocator.h>
 
-namespace Typhoon::Reflection {
+namespace Typhoon {
 
 class Allocator;
 
@@ -65,4 +65,4 @@ bool operator!=(const stdAllocator<T1>& a1, const stdAllocator<T2>& a2) {
 	return ! (a1 == a2);
 }
 
-} // namespace Typhoon::Reflection
+} // namespace Typhoon

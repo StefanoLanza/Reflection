@@ -98,7 +98,9 @@ std::string writeGameObject(const GameObject& obj, const char* element) {
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
+	archive.beginRoot();
 	writeObject(obj, element, archive);
+	archive.endRoot();
 	archive.saveToString(content);
 	return content;
 }

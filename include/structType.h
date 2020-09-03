@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../src/stdAllocator.h"
 #include "type.h"
 #include <core/span.h>
+#include <core/stdAllocator.h>
 
 #include <memory>
 #include <vector>
@@ -11,7 +11,6 @@ namespace Typhoon::Reflection {
 
 class Type;
 class Property;
-class Allocator;
 
 class StructType : public Type {
 public:

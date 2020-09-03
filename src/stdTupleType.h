@@ -3,10 +3,10 @@
 #include "context.h"
 #include "flags.h"
 #include "property.h"
-#include "scopedAllocator.h"
 #include "semantics.h"
 #include "structType.h"
 #include "typeDB.h"
+#include <core/scopedAllocator.h>
 #include <tuple>
 
 namespace Typhoon::Reflection::detail {

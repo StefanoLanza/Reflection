@@ -1,11 +1,10 @@
 #include "../include/reflection.h"
-#include "allocator.h"
 #include "archive.h"
 #include "builtinType.h"
 #include "context.h"
-#include "scopedAllocator.h"
 #include "serializeBuiltIns.h"
 #include "variantType.h"
+#include <core/scopedAllocator.h>
 #include <cstdint>
 #include <string>
 
@@ -45,8 +44,7 @@ void createBuiltin(Context& context, const char* typeName) {
 	registerTypeName(getTypeId<T>(), typeName);
 }
 
-#define CREATE_BUILTIN(type, context)       \
-		createBuiltin<type>(context, #type) \
+#define CREATE_BUILTIN(type, context) createBuiltin<type>(context, #type)
 
 void registerBuiltinTypes(Context& context) {
 	CREATE_BUILTIN(bool, context);

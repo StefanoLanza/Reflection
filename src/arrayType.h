@@ -2,9 +2,9 @@
 
 #include "containerType.h"
 #include "context.h"
-#include "scopedAllocator.h"
 #include "typeDB.h"
 #include <cassert>
+#include <core/scopedAllocator.h>
 
 namespace Typhoon::Reflection::detail {
 

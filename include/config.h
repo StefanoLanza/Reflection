@@ -1,3 +1,5 @@
+#pragma once
+
 // Set to 1/0 to enable/disable XML serialization support
 #ifndef TY_REFLECTION_XML
 #define TY_REFLECTION_XML 1
@@ -33,4 +35,11 @@ namespace Typhoon::Reflection {}
 
 // Namespace alias
 namespace refl = Typhoon::Reflection;
+#endif
+
+// Stack size for read and write operations
+#ifdef TY_REFLECTION_STACK_SIZE
+inline constexpr size_t stackSize = TY_REFLECTION_STACK_SIZE;
+#else
+inline constexpr size_t stackSize = 1024;
 #endif
