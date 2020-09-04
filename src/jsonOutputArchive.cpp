@@ -15,7 +15,8 @@ namespace Typhoon::Reflection {
 JSONOutputArchive::JSONOutputArchive()
     : stream(std::make_unique<StringBuffer>())
     , writer(std::make_unique<PrettyWriter<StringBuffer>>(*stream))
-    , saved(false) {
+    , endRoot(true) {
+	writer->StartObject(); // begin root
 }
 
 JSONOutputArchive::~JSONOutputArchive() {
@@ -26,9 +27,9 @@ bool JSONOutputArchive::saveToFile(const char* fileName) {
 }
 
 bool JSONOutputArchive::saveToString(std::string& string) {
-	if (! saved) {
-		// writer->EndObject();
-		saved = true;
+	if (endRoot) {
+		writer->EndObject();
+		endRoot = false;
 	}
 	string = stream->GetString(); // TODO string_view
 	return true;
@@ -36,14 +37,6 @@ bool JSONOutputArchive::saveToString(std::string& string) {
 
 std::string_view JSONOutputArchive::getString() {
 	return { stream->GetString(), stream->GetSize() };
-}
-
-void JSONOutputArchive::beginRoot() {
-	writer->StartObject();
-}
-
-void JSONOutputArchive::endRoot() {
-	writer->EndObject();
 }
 
 bool JSONOutputArchive::beginElement(const char* name) {

@@ -12,6 +12,8 @@ XMLOutputArchive::XMLOutputArchive()
 	// Insert declaration "xml version=\"1.0\" encoding=\"UTF-8\""
 	document->LinkEndChild(document->NewDeclaration());
 	currentNode = document.get();
+	beginElement("root");
+	endRoot = true;
 }
 
 XMLOutputArchive::~XMLOutputArchive() {
@@ -20,6 +22,11 @@ XMLOutputArchive::~XMLOutputArchive() {
 
 bool XMLOutputArchive::saveToFile(const char* fileName) {
 	assert(fileName);
+
+	if (endRoot) {
+		endElement(); // end root
+		endRoot = false;
+	}
 	const tinyxml2::XMLError error = document->SaveFile(fileName);
 	return error == tinyxml2::XML_SUCCESS;
 }
@@ -29,6 +36,10 @@ bool XMLOutputArchive::saveToString(std::string& string) {
 	// attach it to the document you want to convert in to a std::string
 	if (document->Accept(&printer)) {
 		// Create a std::string and copy your document data in to the string
+		if (endRoot) {
+			endElement(); // end root
+			endRoot = false;
+		}
 		string = printer.CStr();
 		return true;
 	}
@@ -37,14 +48,6 @@ bool XMLOutputArchive::saveToString(std::string& string) {
 
 std::string_view XMLOutputArchive::getString() {
 	return {};
-}
-
-void XMLOutputArchive::beginRoot() {
-	beginElement("root");
-}
-
-void XMLOutputArchive::endRoot() {
-	endElement();
 }
 
 bool XMLOutputArchive::beginElement(const char* name) {

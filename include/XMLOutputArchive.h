@@ -27,8 +27,6 @@ public:
 	bool             saveToFile(const char* filename) override;
 	bool             saveToString(std::string& string) override;
 	std::string_view getString() override;
-	void             beginRoot() override;
-	void             endRoot() override;
 	bool             beginElement(const char* name) override;
 	void             endElement() override;
 	bool             beginObject() override;
@@ -61,6 +59,7 @@ private:
 	std::unique_ptr<tinyxml2::XMLDocument> document;    // The tinyxml document object
 	tinyxml2::XMLNode*                     currentNode; // The node that is currently being processed
 	std::stack<Type>                       typeStack;
+	bool                                   endRoot;
 };
 
 } // namespace Typhoon::Reflection

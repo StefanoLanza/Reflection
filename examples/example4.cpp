@@ -74,9 +74,7 @@ std::string writeTextureToArchive(const Texture& obj, const char* name) {
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
-	archive.beginRoot();
 	writeObject(obj, name, archive);
-	archive.endRoot();
 	archive.saveToString(archiveContent);
 	return archiveContent;
 }

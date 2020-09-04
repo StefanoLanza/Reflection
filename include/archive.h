@@ -96,8 +96,6 @@ public:
 	virtual bool             saveToFile(const char* filename) = 0;
 	virtual bool             saveToString(std::string& string) = 0;
 	virtual std::string_view getString() = 0;
-	virtual void             beginRoot() = 0;
-	virtual void             endRoot() = 0;
 	virtual bool             beginElement(const char* name) = 0;
 	virtual void             endElement() = 0;
 	virtual bool             beginObject() = 0;

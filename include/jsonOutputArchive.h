@@ -19,8 +19,6 @@ public:
 	bool             saveToFile(const char* filename) override;
 	bool             saveToString(std::string& string) override;
 	std::string_view getString() override;
-	void             beginRoot() override;
-	void             endRoot() override;
 	bool             beginElement(const char* name) override;
 	void             endElement() override;
 	bool             beginObject() override;
@@ -49,7 +47,7 @@ private:
 private:
 	std::unique_ptr<rapidjson::StringBuffer>                          stream;
 	std::unique_ptr<rapidjson::PrettyWriter<rapidjson::StringBuffer>> writer;
-	bool                                                              saved;
+	bool                                                              endRoot;
 };
 
 } // namespace Typhoon::Reflection

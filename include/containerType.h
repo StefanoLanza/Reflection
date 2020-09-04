@@ -4,6 +4,12 @@
 
 #include <memory>
 
+namespace Typhoon {
+
+class ScopedAllocator;
+
+}
+
 namespace Typhoon::Reflection {
 
 class ReadIterator {
@@ -39,10 +45,8 @@ public:
 	}
 
 	virtual bool           isEmpty(const void* container) const = 0;
-	virtual ReadIterator*  newReadIterator(void* mem, size_t memSize, const void* data) const = 0;
-	virtual WriteIterator* newWriteIterator(void* mem, size_t memSize, void* data) const = 0;
-	virtual void           deleteIterator(ReadIterator* iterator) const = 0;
-	virtual void           deleteIterator(WriteIterator* iterator) const = 0;
+	virtual ReadIterator*  newReadIterator(const void* container, ScopedAllocator& allocator) const = 0;
+	virtual WriteIterator* newWriteIterator(void* container, ScopedAllocator& allocator) const = 0;
 	virtual void           clear(void* container) const = 0;
 
 private:

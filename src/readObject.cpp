@@ -208,8 +208,8 @@ bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB
 
 	containerType.clear(data);
 
-	char                 tmp[64];
-	WriteIterator* const containerIterator = containerType.newWriteIterator(tmp, sizeof(tmp), data); // TODO scopedAlloc
+	ScopedAllocator      outerScopedAllocator(stackAllocator);
+	WriteIterator* const containerIterator = containerType.newWriteIterator(data, outerScopedAllocator);
 	ArchiveIterator      archiveIterator;
 	while (archive.iterateChild(archiveIterator)) {
 		if (containerIterator->isValid()) {
@@ -238,8 +238,6 @@ bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB
 			// Out of bounds error
 		}
 	}
-
-	containerType.deleteIterator(containerIterator);
 
 	return true;
 }

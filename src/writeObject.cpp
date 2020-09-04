@@ -138,7 +138,6 @@ bool writeBitMask(const void* data, const Type& type, const TypeDB& /*typeDB*/, 
 }
 
 bool writeContainer(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator) {
-	char                 tmp[64];
 	const ContainerType& containerType = static_cast<const ContainerType&>(type);
 	const Type*          keyType = containerType.getKeyType();
 	const Type*          valueType = containerType.getValueType();
@@ -147,7 +146,8 @@ bool writeContainer(const void* data, const Type& type, const TypeDB& typeDB, Ou
 		return false;
 	}
 
-	ReadIterator* iterator = containerType.newReadIterator(tmp, sizeof(tmp), data); // TODO scoped allocator instead
+	ScopedAllocator scopedAllocator(stackAllocator);
+	ReadIterator*   iterator = containerType.newReadIterator(data, scopedAllocator);
 	while (iterator->isValid()) {
 		if (keyType) {
 			// write key and value
@@ -164,7 +164,6 @@ bool writeContainer(const void* data, const Type& type, const TypeDB& typeDB, Ou
 		iterator->gotoNext();
 	}
 
-	containerType.deleteIterator(iterator); // TODO scoped allocator
 	archive.endArray();
 	return true;
 }

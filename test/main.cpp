@@ -5,7 +5,7 @@
 #include <include/reflection.h>
 #include <string>
 
-// #include <vld.h>
+#include <vld.h>
 
 void registerUserTypes();
 
@@ -48,7 +48,6 @@ TEST_CASE("Primitives") {
 	using namespace refl;
 
 	auto write = [&](OutputArchive& archive) {
-		archive.beginRoot();
 		REQUIRE(writeObject(c, "c", archive));
 		REQUIRE(writeObject(uc, "uc", archive));
 		REQUIRE(writeObject(i, "i", archive));
@@ -58,7 +57,6 @@ TEST_CASE("Primitives") {
 		REQUIRE(writeObject(f, "f", archive));
 		REQUIRE(writeObject(d, "d", archive));
 		REQUIRE(writeObject(b, "b", archive));
-		archive.endRoot();
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -133,10 +131,8 @@ TEST_CASE("Enum") {
 	const char* elementName = "season";
 
 	auto write = [&](OutputArchive& archive) {
-		archive.beginRoot();
 		std::string content;
 		REQUIRE(writeObject(season, elementName, archive));
-		archive.endRoot();
 		REQUIRE(archive.saveToString(content));
 		return content;
 	};
@@ -181,9 +177,7 @@ TEST_CASE("BitMask") {
 	const char* elementName = "flags";
 
 	auto write = [&](OutputArchive& archive) {
-		archive.beginRoot();
 		REQUIRE(writeObject(flags, elementName, archive));
-		archive.endRoot();
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -237,10 +231,8 @@ TEST_CASE("C array") {
 	const char* elementName = "array";
 
 	auto write = [&](OutputArchive& archive) {
-		archive.beginRoot();
 		REQUIRE(writeObject(array, elementName, archive));
 		std::string content;
-		archive.endRoot();
 		REQUIRE(archive.saveToString(content));
 		return content;
 	};
@@ -285,9 +277,7 @@ TEST_CASE("std::vector") {
 	const char*  elementName = "vector";
 
 	auto write = [&](OutputArchive& archive) {
-		archive.beginRoot();
 		REQUIRE(writeObject(vec, elementName, archive));
-		archive.endRoot();
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -335,9 +325,7 @@ TEST_CASE("std::map") {
 	const char* elementName = "map";
 
 	auto write = [&](OutputArchive& archive) {
-		archive.beginRoot();
 		REQUIRE(writeObject(map, elementName, archive));
-		archive.endRoot();
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -387,9 +375,7 @@ TEST_CASE("std::array") {
 	const char* elementName = "array";
 
 	auto write = [&](OutputArchive& archive) {
-		archive.beginRoot();
 		REQUIRE(writeObject(array, elementName, archive));
-		archive.endRoot();
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -435,9 +421,7 @@ TEST_CASE("std::pair") {
 	const char* elementName = "pair";
 
 	auto write = [&](OutputArchive& archive) {
-		archive.beginRoot();
 		REQUIRE(writeObject(pair, elementName, archive));
-		archive.endRoot();
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -484,9 +468,7 @@ TEST_CASE("std::tuple") {
 	const char* elementName = "tuple";
 
 	auto write = [&](OutputArchive& archive) {
-		archive.beginRoot();
 		REQUIRE(writeObject(tuple, elementName, archive));
-		archive.endRoot();
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -531,9 +513,7 @@ TEST_CASE("std::unique_ptr") {
 	const char* elementName = "material";
 
 	auto write = [&](OutputArchive& archive) {
-		archive.beginRoot();
 		REQUIRE(writeObject(material, elementName, archive));
-		archive.endRoot();
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -578,9 +558,7 @@ TEST_CASE("std::shared_ptr") {
 	const char* elementName = "material";
 
 	auto write = [&](OutputArchive& archive) {
-		archive.beginRoot();
 		REQUIRE(writeObject(material, elementName, archive));
-		archive.endRoot();
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -634,9 +612,7 @@ TEST_CASE("Class") {
 	const char* elementName = "gameObject";
 
 	auto write = [&](OutputArchive& archive) {
-		archive.beginRoot();
 		CHECK(writeObject(gameObject, elementName, archive));
-		archive.endRoot();
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -685,9 +661,7 @@ TEST_CASE("Struct") {
 	const char* elementName = "fog";
 
 	auto write = [&](OutputArchive& archive) {
-		archive.beginRoot();
 		CHECK(writeObject(fog, elementName, archive));
-		archive.endRoot();
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -742,9 +716,7 @@ TEST_CASE("Variant") {
 		std::string      archiveContent;
 		XMLOutputArchive outArchive;
 
-		outArchive.beginRoot();
 		CHECK(writeObject(variants, key, outArchive));
-		outArchive.endRoot();
 		outArchive.saveToString(archiveContent);
 
 		XMLInputArchive inArchive;
@@ -759,9 +731,7 @@ TEST_CASE("Variant") {
 		std::string       archiveContent;
 		JSONOutputArchive outArchive;
 
-		outArchive.beginRoot();
 		CHECK(writeObject(variants, key, outArchive));
-		outArchive.endRoot();
 		outArchive.saveToString(archiveContent);
 
 		JSONInputArchive inArchive;

@@ -15,19 +15,20 @@
 #include "variant.h"
 #include <cassert>
 #include <core/ptrUtil.h>
+#include <core/scopedAllocator.h>
 
 namespace Typhoon::Reflection {
 
 namespace {
 
-ErrorCode cloneObject(void* dstData, const void* srcData, const Type& type);
+ErrorCode cloneObjectImpl(void* dstData, const void* srcData, const Type& type, LinearAllocator& stackAllocator);
 void      cloneBuiltin(void* data, const void* srcData, const BuiltinType& type);
 void      cloneStruct(void* data, const void* srcData, const StructType& structType, const TypeDB& typeDB);
 void      cloneEnum(void* data, const void* srcData, const EnumType& type);
 void      cloneBitMask(void* data, const void* srcData, const BitMaskType& type);
-void      cloneContainer(void* data, const void* srcData, const ContainerType& type);
-void      clonePointer(void* data, const void* srcData, const PointerType& type);
-void      cloneReference(void* data, const void* srcData, const ReferenceType& type);
+void      cloneContainer(void* data, const void* srcData, const ContainerType& type, LinearAllocator& stackAllocator);
+void      clonePointer(void* data, const void* srcData, const PointerType& type, LinearAllocator& stackAllocator);
+void      cloneReference(void* data, const void* srcData, const ReferenceType& type, LinearAllocator& stackAllocator);
 void      cloneVariant(void* dstData, const void* srcData, const TypeDB& typeDB);
 
 } // namespace
@@ -42,7 +43,9 @@ ErrorCode cloneObject(void* dstObject, const void* srcObject, TypeId typeId) {
 			errorCode = ErrorCode::ok;
 		}
 		else {
-			errorCode = cloneObject(dstObject, srcObject, *type);
+			char            stack[stackSize];
+			LinearAllocator stackAllocator(stack, std::size(stack), nullptr);
+			errorCode = cloneObjectImpl(dstObject, srcObject, *type, stackAllocator);
 		}
 	}
 	else {
@@ -53,7 +56,7 @@ ErrorCode cloneObject(void* dstObject, const void* srcObject, TypeId typeId) {
 
 namespace {
 
-ErrorCode cloneObject(void* dstData, const void* srcData, const Type& type) {
+ErrorCode cloneObjectImpl(void* dstData, const void* srcData, const Type& type, LinearAllocator& stackAllocator) {
 	const TypeDB&        typeDB = detail::getTypeDB();
 	const Type::Subclass subclass = type.subClass;
 	if (subclass == Type::Subclass::Builtin) {
@@ -69,13 +72,13 @@ ErrorCode cloneObject(void* dstData, const void* srcData, const Type& type) {
 		cloneBitMask(dstData, srcData, static_cast<const BitMaskType&>(type));
 	}
 	else if (subclass == Type::Subclass::Container) {
-		cloneContainer(dstData, srcData, static_cast<const ContainerType&>(type));
+		cloneContainer(dstData, srcData, static_cast<const ContainerType&>(type), stackAllocator);
 	}
 	else if (subclass == Type::Subclass::Pointer) {
-		clonePointer(dstData, srcData, static_cast<const PointerType&>(type));
+		clonePointer(dstData, srcData, static_cast<const PointerType&>(type), stackAllocator);
 	}
 	else if (subclass == Type::Subclass::Reference) {
-		cloneReference(dstData, srcData, static_cast<const ReferenceType&>(type));
+		cloneReference(dstData, srcData, static_cast<const ReferenceType&>(type), stackAllocator);
 	}
 	else if (subclass == Type::Subclass::Variant) {
 		cloneVariant(dstData, srcData, typeDB);
@@ -108,15 +111,13 @@ void cloneBitMask(void* data, const void* srcData, const BitMaskType& type) {
 	std::memcpy(data, srcData, type.size);
 }
 
-void cloneContainer(void* dstContainer, const void* srcContainer, const ContainerType& type) {
+void cloneContainer(void* dstContainer, const void* srcContainer, const ContainerType& type, LinearAllocator& stackAllocator) {
 	const Type* key_type = type.getKeyType();
 	const Type* value_type = type.getValueType();
 
-	char tmp[64]; // FIXME alignment for iterators?
-	char tmp2[64];
-
-	WriteIterator* const writeIterator = type.newWriteIterator(tmp, sizeof tmp, dstContainer);
-	ReadIterator* const  readIterator = type.newReadIterator(tmp2, sizeof tmp2, srcContainer);
+	ScopedAllocator      scopedAllocator(stackAllocator);
+	WriteIterator* const writeIterator = type.newWriteIterator(dstContainer, scopedAllocator);
+	ReadIterator* const  readIterator = type.newReadIterator(srcContainer, scopedAllocator);
 	type.clear(dstContainer);
 
 	while (readIterator->isValid()) {
@@ -124,36 +125,33 @@ void cloneContainer(void* dstContainer, const void* srcContainer, const Containe
 			const void* key = readIterator->getKey();
 			const void* srcValue = readIterator->getValue();
 			void*       dstValue = writeIterator->insert(key);
-			// clone value
-			cloneObject(dstValue, srcValue, *value_type);
+			// Clone value
+			cloneObjectImpl(dstValue, srcValue, *value_type, stackAllocator);
 		}
 		else {
 			const void* srcValue = readIterator->getValue();
 			void*       dstValue = writeIterator->pushBack();
-			// clone value
-			cloneObject(dstValue, srcValue, *value_type);
+			// Clone value
+			cloneObjectImpl(dstValue, srcValue, *value_type, stackAllocator);
 		}
 		readIterator->gotoNext();
 	}
-
-	type.deleteIterator(writeIterator);
-	type.deleteIterator(readIterator);
 }
 
-void clonePointer(void* data, const void* srcData, const PointerType& type) {
+void clonePointer(void* data, const void* srcData, const PointerType& type, LinearAllocator& stackAllocator) {
 	void*       dstPointer = type.resolvePointer(data);
 	const void* srcPointer = type.resolvePointer(srcData);
 	if (dstPointer && srcPointer) {
-		cloneObject(dstPointer, srcPointer, type.getPointedType());
+		cloneObjectImpl(dstPointer, srcPointer, type.getPointedType(), stackAllocator);
 	}
 }
 
-void cloneReference(void* data, const void* srcData, const ReferenceType& type) {
+void cloneReference(void* data, const void* srcData, const ReferenceType& type, LinearAllocator& stackAllocator) {
 	void*       dstPointer = *static_cast<void**>(data);
 	const void* srcPointer = *static_cast<void* const*>(srcData);
 	assert(dstPointer); // cannot be null
 	assert(srcPointer);
-	cloneObject(dstPointer, srcPointer, type.getReferencedType());
+	cloneObjectImpl(dstPointer, srcPointer, type.getReferencedType(), stackAllocator);
 }
 
 void cloneVariant(void* dstData, const void* srcData, const TypeDB& /*typeDB*/) {

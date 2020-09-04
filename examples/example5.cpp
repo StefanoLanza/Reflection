@@ -130,7 +130,6 @@ std::string writeToArchive(const PersonMap& persons, const CityVector& cities, c
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
-	archive.beginRoot();
 	writeObject(persons, personsKey, archive);
 	writeObject(cities, citiesKey, archive);
 	writeObject(numbers, numbersKey, archive);
@@ -138,7 +137,6 @@ std::string writeToArchive(const PersonMap& persons, const CityVector& cities, c
 	archive.writeAttribute("int", 13);
 	archive.writeAttribute("float", 3.141);
 	archive.writeAttribute("double", 31.1312312312312312);
-	archive.endRoot();
 	archive.saveToString(archiveContent);
 	return archiveContent;
 }

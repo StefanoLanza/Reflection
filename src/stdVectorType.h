@@ -77,24 +77,12 @@ public:
 		return reinterpret_cast<const VECTOR_TYPE*>(container)->empty();
 	}
 
-	ReadIterator* newReadIterator(void* mem, size_t memSize, const void* container) const override {
-		assert(sizeof(ReadIteratorType) <= memSize);
-		(void)memSize;
-		return new (mem) ReadIteratorType(reinterpret_cast<const VECTOR_TYPE*>(container));
+	ReadIterator* newReadIterator(const void* container, ScopedAllocator& allocator) const override {
+		return allocator.make<ReadIteratorType>(reinterpret_cast<const VECTOR_TYPE*>(container));
 	}
 
-	WriteIterator* newWriteIterator(void* mem, size_t memSize, void* container) const override {
-		assert(sizeof(WriteIteratorType) <= memSize);
-		(void)memSize;
-		return new (mem) WriteIteratorType(reinterpret_cast<VECTOR_TYPE*>(container));
-	}
-
-	void deleteIterator(ReadIterator* iterator) const override {
-		iterator->~ReadIterator();
-	}
-
-	void deleteIterator(WriteIterator* iterator) const override {
-		iterator->~WriteIterator();
+	WriteIterator* newWriteIterator(void* container, ScopedAllocator& allocator) const override {
+		return allocator.make<WriteIteratorType>(reinterpret_cast<VECTOR_TYPE*>(container));
 	}
 
 	void clear(void* container) const override {
