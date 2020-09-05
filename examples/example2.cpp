@@ -3,6 +3,7 @@
 
 #include <include/reflection.h>
 #include <include/version.h>
+#include <algorithm>
 #include <iostream>
 #include <string>
 

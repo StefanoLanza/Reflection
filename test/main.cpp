@@ -5,7 +5,7 @@
 #include <include/reflection.h>
 #include <string>
 
-#include <vld.h>
+//#include <vld.h>
 
 void registerUserTypes();
 
