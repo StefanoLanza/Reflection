@@ -82,7 +82,7 @@ public:
 		static_assert(std::is_same_v<std::decay_t<R>, std::decay_t<A>>);
 		using value_type = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<value_type>(context);
-		return { makeFreeSetter(setter), makeFreeGetter(getter), name, valueType, flags, semantic };
+		return { makeFreeSetter(setter), makeFreeGetter(getter), name, valueType, flags, semantic, *context.allocator };
 	}
 
 	template <typename R, typename A>
@@ -91,7 +91,7 @@ public:
 		static_assert(std::is_same_v<std::decay_t<R>, std::decay_t<A>>);
 		using value_type = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<value_type>(context);
-		return { makeMemberSetter(setter), makeMemberGetter(getter), name, valueType, flags, semantic };
+		return { makeMemberSetter(setter), makeMemberGetter(getter), name, valueType, flags, semantic, *context.allocator };
 	}
 
 	template <typename R>
@@ -99,35 +99,35 @@ public:
 		using value_type = std::decay_t<R>;
 		const Type* A = autoRegisterType<value_type>(context);
 		assert(A);
-		return { nullptr, makeFreeGetter(getter), name, A, flags, semantic };
+		return { nullptr, makeFreeGetter(getter), name, A, flags, semantic, *context.allocator };
 	}
 
 	template <typename A>
 	static Property createProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A), Context& context) {
 		using value_type = std::decay_t<A>;
 		const Type* type = autoRegisterType<value_type>(context);
-		return { makeFreeSetter(setter), nullptr, name, type, flags, semantic };
+		return { makeFreeSetter(setter), nullptr, name, type, flags, semantic, *context.allocator };
 	}
 
 	template <typename R>
 	static Property createROProperty(const char* name, uint32_t flags, Semantic semantic, R (C::*getter)() const, Context& context) {
 		using value_type = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<value_type>(context);
-		return { nullptr, makeMemberGetter(getter), name, valueType, flags, semantic };
+		return { nullptr, makeMemberGetter(getter), name, valueType, flags, semantic, *context.allocator };
 	}
 
 	template <typename T, typename A>
 	static Property createProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A), T C::*memberPtr, Context& context) {
 		static_assert(std::is_same_v<T, std::decay_t<A>>);
 		const Type* varType = autoRegisterType<T>(context);
-		return { makeFreeSetter(setter), makeFieldGetter(memberPtr), name, varType, flags, semantic };
+		return { makeFreeSetter(setter), makeFieldGetter(memberPtr), name, varType, flags, semantic, *context.allocator };
 	}
 };
 
 template <typename C, typename T>
 Property createFieldProperty(const char* name, uint32_t flags, Semantic semantic, T C::*memberPtr, Context& context) {
 	const Type* varType = autoRegisterType<T>(context);
-	return { makeFieldSetter(memberPtr), makeFieldGetter(memberPtr), name, varType, flags, semantic };
+	return { makeFieldSetter(memberPtr), makeFieldGetter(memberPtr), name, varType, flags, semantic, *context.allocator };
 }
 
 } // namespace Typhoon::Reflection::detail

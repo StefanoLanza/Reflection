@@ -1,4 +1,5 @@
 #include "structType.h"
+#include "attribute.h"
 #include "property.h"
 #include <core/allocator.h>
 
@@ -7,7 +8,8 @@ namespace Typhoon::Reflection {
 StructType::StructType(TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const MethodTable& methods, Allocator& allocator)
     : Type { typeID, Subclass::Struct, size, alignment, methods }
     , parentType(parentType)
-    , properties(stdAllocator<Property>(allocator)) {
+    , properties(stdAllocator<Property>(allocator))
+    , attributes(stdAllocator<const Attribute*>(allocator)) {
 }
 
 StructType::~StructType() = default;
@@ -17,25 +19,30 @@ const StructType* StructType::getParentType() const {
 }
 
 bool StructType::inheritsFrom(const StructType* type) const {
-	const StructType* parent = this;
-	bool              res = false;
+	const StructType* parent = parentType;
 	while (parent) {
 		if (parent == type) {
-			res = true;
-			break;
+			return true;
 		}
 		parent = parent->parentType;
 	}
-
-	return res;
+	return false;
 }
 
 void StructType::addProperty(Property&& property) {
 	properties.push_back(std::move(property));
 }
 
+void StructType::addAttribute(const Attribute* attribute) {
+	attributes.push_back(attribute);
+}
+
 span<const Property> StructType::getProperties() const {
 	return { properties.data(), properties.size() };
+}
+
+span<const Attribute* const> StructType::getAttributes() const {
+	return { attributes.data(), attributes.size() };
 }
 
 } // namespace Typhoon::Reflection

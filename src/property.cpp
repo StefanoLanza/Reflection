@@ -5,13 +5,14 @@
 
 namespace Typhoon::Reflection {
 
-Property::Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, uint32_t flags, Semantic semantic)
+Property::Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, uint32_t flags, Semantic semantic, Allocator& allocator)
     : setter { std::move(setter) }
     , getter { std::move(getter) }
     , name(name)
     , valueType(valueType)
     , flags(flags)
-    , semantic(semantic) {
+    , semantic(semantic)
+    , attributes(stdAllocator<const Attribute*>(allocator)) {
 	assert(valueType);
 	// Override flags
 	if (! this->setter) {
@@ -61,6 +62,14 @@ void Property::copyValue(void* dstSelf, const void* srcSelf) const {
 		setter(dstSelf, value);
 		valueType->destructObject(temporary);
 	}
+}
+
+void Property::addAttribute(const Attribute* attribute) {
+	attributes.push_back(attribute);
+}
+
+span<const Attribute* const> Property::getAttributes() const {
+	return { attributes.data(), attributes.size() };
 }
 
 } // namespace Typhoon::Reflection
