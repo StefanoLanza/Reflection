@@ -7,7 +7,7 @@
 
 namespace Typhoon {
 
-bool openXMLArchive(XMLInputArchive& archive, const char* fileName, IO::FileServer& fileServer) {
+bool openXMLArchive(Reflection::XMLInputArchive& archive, const char* fileName, IO::FileServer& fileServer) {
 	assert(fileName);
 	// Open stream
 	auto stream { fileServer.OpenFile(fileName) };
