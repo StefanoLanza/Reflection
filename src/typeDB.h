@@ -19,6 +19,7 @@ public:
 
 	const Type& getType(TypeId typeID) const;
 	const Type* tryGetType(TypeId typeID) const;
+	const Type* tryGetType(const char* typeName) const;
 
 	template <class T>
 	const Type& getType() const {

@@ -34,7 +34,7 @@ public:
 
 class ContainerType : public Type {
 public:
-	ContainerType(TypeId typeID, size_t size, const Type* keyType, const Type* valueType, const MethodTable& methods);
+	ContainerType(const char* typeName, TypeId typeID, size_t size, const Type* keyType, const Type* valueType, const MethodTable& methods);
 	virtual ~ContainerType() = default;
 
 	const Type* getKeyType() const {

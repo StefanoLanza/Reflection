@@ -48,7 +48,7 @@ struct autoRegisterHelper<std::tuple<Args...>> {
 		using Tuple = std::tuple<Args...>;
 
 		constexpr TypeId  typeId = getTypeId<Tuple>();
-		StructType* const tupleType = context.scopedAllocator->make<StructType>(typeId, sizeof(Tuple), alignof(Tuple), nullptr,
+		StructType* const tupleType = context.scopedAllocator->make<StructType>("std::tuple", typeId, sizeof(Tuple), alignof(Tuple), nullptr,
 		                                                                        buildMethodTable<Tuple>(), std::ref(*context.allocator));
 		// Register all elements
 		registerTupleElement<Tuple, 0>(*tupleType, context);

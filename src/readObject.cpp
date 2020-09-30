@@ -265,8 +265,8 @@ bool readVariant(void* data, const Type& /*type*/, Semantic semantic, const Type
 			return false;
 		}
 
-		TypeId typeId = typeNameToId(typeName);
-		if (! typeId) {
+		const Type* type = typeDB.tryGetType(typeName);	
+		if (! type) {
 			archive.endObject();
 			return false;
 		}
@@ -277,10 +277,9 @@ bool readVariant(void* data, const Type& /*type*/, Semantic semantic, const Type
 			return false;
 		}
 
-		const Type& type = typeDB.getType(typeId);
 		Variant*    variant = static_cast<Variant*>(data);
-		*variant = Variant(typeId, name);
-		res = readObject(variant->getStorage(), "value", type, semantic, typeDB, archive, stackAllocator);
+		*variant = Variant(type->getTypeId(), name);
+		res = readObject(variant->getStorage(), "value", *type, semantic, typeDB, archive, stackAllocator);
 
 		archive.endObject();
 	}

@@ -33,4 +33,13 @@ const Type* TypeDB::tryGetType(TypeId typeID) const {
 	return nullptr;
 }
 
+const Type* TypeDB::tryGetType(const char* typeName) const {
+	for (const auto& type : types) {
+		if (! strcmp(type->getName(), typeName)) {
+			return type;
+		}
+	}
+	return nullptr;
+}
+
 } // namespace Typhoon::Reflection

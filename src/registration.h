@@ -65,38 +65,35 @@ Context& getContext();
 		const auto     structType = scopedAllocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
                                                                   MethodTable {}, std::ref(allocator_));
 
-#define BEGIN_STRUCT(class)                                                                                                                   \
-	do {                                                                                                                                      \
-		using class_ = class;                                                                                                                 \
-		constexpr bool isClass = false;                                                                                                       \
-		const auto     structType = scopedAllocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-                                                                  detail::buildMethodTable<class_>(), std::ref(allocator_));              \
-		registerTypeName(Typhoon::getTypeId<class_>(), #class);                                                                               \
-		do {                                                                                                                                  \
+#define BEGIN_STRUCT(class)                                                                                                                           \
+	do {                                                                                                                                              \
+		using class_ = class;                                                                                                                         \
+		constexpr bool isClass = false;                                                                                                               \
+		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+                                                                  detail::buildMethodTable<class_>(), std::ref(allocator_));                      \
+		do {                                                                                                                                          \
 	} while (0)
 
-#define BEGIN_CLASS(class)                                                                                                                    \
-	do {                                                                                                                                      \
-		using class_ = class;                                                                                                                 \
-		constexpr bool isClass = true;                                                                                                        \
-		const auto     structType = scopedAllocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-                                                                  detail::buildMethodTable<class_>(), std::ref(allocator_));              \
-		registerTypeName(Typhoon::getTypeId<class_>(), #class);                                                                               \
-		do {                                                                                                                                  \
+#define BEGIN_CLASS(class)                                                                                                                            \
+	do {                                                                                                                                              \
+		using class_ = class;                                                                                                                         \
+		constexpr bool isClass = true;                                                                                                                \
+		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+                                                                  detail::buildMethodTable<class_>(), std::ref(allocator_));                      \
+		do {                                                                                                                                          \
 	} while (0)
 
-#define BEGIN_SUB_CLASS(class, parentClass)                                                                                                   \
-	do {                                                                                                                                      \
-		using class_ = class;                                                                                                                 \
-		constexpr bool isClass = true;                                                                                                        \
-		static_assert(! std::is_same_v<parentClass, class>, #parentClass " and " #class " are the same class");                               \
-		static_assert(std::is_base_of_v<parentClass, class>, #parentClass " is not a base class of " #class);                                 \
-		const StructType& parentType = static_cast<const StructType&>(typeDB_.getType<parentClass>());                                        \
-		assert(parentType.subClass == Type::Subclass::Struct);                                                                                \
-		const auto structType = scopedAllocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), &parentType, \
-		                                                          detail::buildMethodTable<class_>(), std::ref(allocator_));                  \
-		registerTypeName(Typhoon::getTypeId<class_>(), #class);                                                                               \
-		do {                                                                                                                                  \
+#define BEGIN_SUB_CLASS(class, parentClass)                                                                                               \
+	do {                                                                                                                                  \
+		using class_ = class;                                                                                                             \
+		constexpr bool isClass = true;                                                                                                    \
+		static_assert(! std::is_same_v<parentClass, class>, #parentClass " and " #class " are the same class");                           \
+		static_assert(std::is_base_of_v<parentClass, class>, #parentClass " is not a base class of " #class);                             \
+		const StructType& parentType = static_cast<const StructType&>(typeDB_.getType<parentClass>());                                    \
+		assert(parentType.subClass == Type::Subclass::Struct);                                                                            \
+		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_),  \
+		                                                          &parentType, detail::buildMethodTable<class_>(), std::ref(allocator_)); \
+		do {                                                                                                                              \
 	} while (0)
 
 #define FIELD_RENAMED_EXT(field, name, flags, semantic)                                                       \
@@ -197,7 +194,7 @@ Context& getContext();
 #define END_ENUM()                                                                                                                             \
 	}                                                                                                                                          \
 	;                                                                                                                                          \
-	const auto enumType = scopedAllocator_.make<EnumType>(Typhoon::getTypeId<enumClass_>(), enumName, sizeof(enumClass_), alignof(enumClass_), \
+	const auto enumType = scopedAllocator_.make<EnumType>(enumName, Typhoon::getTypeId<enumClass_>(), sizeof(enumClass_), alignof(enumClass_), \
 	                                                      enumerators, _countof(enumerators));                                                 \
 	typeDB_.registerType(enumType);                                                                                                            \
 	}                                                                                                                                          \
@@ -207,17 +204,18 @@ Context& getContext();
 	do {                                                                                                              \
 		using bitMaskStruct_ = bitMaskStruct;                                                                         \
 		static_assert(std::is_convertible_v<bitMaskStruct_::StorageType, BitMaskStorageType>, "Not of type BitMask"); \
+		const char* typeName = #bitMaskStruct;                                                                        \
 	static const BitMaskConstant enumerators[] = {
 
 #define BITMASK_VALUE(name) { #name, static_cast<BitMaskStorageType>(bitMaskStruct_::name) },
 
-#define END_BITMASK()                                                                                                                \
-	}                                                                                                                                \
-	;                                                                                                                                \
-	const auto type = scopedAllocator_.make<BitMaskType>(Typhoon::getTypeId<bitMaskStruct_>(), sizeof(bitMaskStruct_::StorageType),  \
-	                                                     alignof(bitMaskStruct_::StorageType), enumerators, std::size(enumerators)); \
-	typeDB_.registerType(type);                                                                                                      \
-	}                                                                                                                                \
+#define END_BITMASK()                                                                                                                         \
+	}                                                                                                                                         \
+	;                                                                                                                                         \
+	const auto type = scopedAllocator_.make<BitMaskType>(typeName, Typhoon::getTypeId<bitMaskStruct_>(), sizeof(bitMaskStruct_::StorageType), \
+	                                                     alignof(bitMaskStruct_::StorageType), enumerators, std::size(enumerators));          \
+	typeDB_.registerType(type);                                                                                                               \
+	}                                                                                                                                         \
 	while (false)
 
 } // namespace Typhoon::Reflection

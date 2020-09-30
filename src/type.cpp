@@ -2,12 +2,17 @@
 
 namespace Typhoon::Reflection {
 
-Type::Type(TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods)
-    : typeID(typeId)
+Type::Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods)
+    : typeName(typeName)
+	, typeID(typeId)
     , size(size)
     , alignment(alignment)
     , subClass(subClass)
     , methods(methods) {
+}
+
+const char* Type::getName() const {
+	return typeName;
 }
 
 TypeId Type::getTypeId() const {

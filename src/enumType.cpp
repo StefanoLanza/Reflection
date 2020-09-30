@@ -2,15 +2,10 @@
 
 namespace Typhoon::Reflection {
 
-EnumType::EnumType(TypeId typeID, const char* name, size_t size, size_t alignment, const Enumerator enumConstants[], size_t count)
-    : Type(typeID, Subclass::Enum, size, alignment, {})
-    , name(name)
+EnumType::EnumType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Enumerator enumConstants[], size_t count)
+    : Type(typeName, typeID, Subclass::Enum, size, alignment, {})
     , enumerators(enumConstants)
     , numEnumerators(count) {
-}
-
-const char* EnumType::getName() const {
-	return name;
 }
 
 span<const Enumerator> EnumType::getEnumerators() const {

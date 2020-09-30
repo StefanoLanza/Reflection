@@ -69,7 +69,7 @@ template <typename TYPE, size_t LENGTH>
 class ArrayContainer : public ContainerType {
 public:
 	ArrayContainer(TypeId typeID, const Type* valueType)
-	    : ContainerType(typeID, sizeof(TYPE) * LENGTH, nullptr, valueType, {}) {
+	    : ContainerType("[]", typeID, sizeof(TYPE) * LENGTH, nullptr, valueType, {}) {
 	}
 
 	bool isEmpty(const void* /*container*/) const override {

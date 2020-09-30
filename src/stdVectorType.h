@@ -70,7 +70,7 @@ template <typename VECTOR_TYPE>
 class StdVectorContainer final : public ContainerType {
 public:
 	StdVectorContainer(TypeId typeID, const Type* valueType)
-	    : ContainerType(typeID, sizeof(VECTOR_TYPE), nullptr, valueType, buildMethodTable<VECTOR_TYPE>()) {
+	    : ContainerType("std::vector", typeID, sizeof(VECTOR_TYPE), nullptr, valueType, buildMethodTable<VECTOR_TYPE>()) {
 	}
 
 	bool isEmpty(const void* container) const override {

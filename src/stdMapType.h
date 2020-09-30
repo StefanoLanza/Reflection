@@ -80,7 +80,7 @@ template <typename MAP_TYPE>
 class StdMapContainer final : public ContainerType {
 public:
 	StdMapContainer(TypeId typeID, const Type* keyType, const Type* valueType)
-	    : ContainerType(typeID, sizeof(MAP_TYPE), keyType, valueType, buildMethodTable<MAP_TYPE>()) {
+	    : ContainerType("std::map", typeID, sizeof(MAP_TYPE), keyType, valueType, buildMethodTable<MAP_TYPE>()) {
 	}
 
 	bool isEmpty(const void* container) const override {

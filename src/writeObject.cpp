@@ -188,7 +188,7 @@ bool writeReference(const void* data, const Type& type, const TypeDB& typeDB, Ou
 bool writeVariant(const void* data, const Type& /*type*/, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator) {
 	const Variant* variant = static_cast<const Variant*>(data);
 	const Type&    type = typeDB.getType(variant->getTypeId());
-	const char*    typeName = typeIdToName(variant->getTypeId());
+	const char*    typeName = variant->getType().getName();
 	if (! typeName) {
 		return false;
 	}

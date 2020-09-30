@@ -72,7 +72,7 @@ public:
 	using array_type = std::array<T, L>;
 
 	StdArrayContainer(TypeId typeID, const Type* valueType)
-	    : ContainerType(typeID, sizeof(array_type), nullptr, valueType, buildMethodTable<array_type>()) {
+	    : ContainerType("std::array", typeID, sizeof(array_type), nullptr, valueType, buildMethodTable<array_type>()) {
 	}
 
 	bool isEmpty(const void* container) const override {

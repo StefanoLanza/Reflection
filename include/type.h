@@ -112,8 +112,9 @@ class Type {
 public:
 	enum class Subclass { Builtin, Struct, Enum, BitMask, Container, Pointer, Reference, Variant };
 
-	Type(TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods);
+	Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods);
 
+	const char*         getName() const;
 	TypeId              getTypeId() const;
 	size_t              getSize() const;
 	size_t              getAlignment() const;
@@ -138,6 +139,7 @@ public:
 	Subclass subClass;
 
 private:
+	const char*  typeName;
 	MethodTable  methods;
 	CustomWriter customWriter;
 	CustomReader customReader;

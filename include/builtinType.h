@@ -6,7 +6,7 @@ namespace Typhoon::Reflection {
 
 class BuiltinType : public Type {
 public:
-	BuiltinType(TypeId typeID, size_t size, size_t alignment, const MethodTable& methods);
+	BuiltinType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const MethodTable& methods);
 };
 
 } // namespace Typhoon::Reflection

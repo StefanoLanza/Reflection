@@ -37,11 +37,10 @@ bool writeBuiltin<std::string>(const void* data, OutputArchive& archive) {
 
 template <class T>
 void createBuiltin(Context& context, const char* typeName) {
-	BuiltinType* type = context.scopedAllocator->make<BuiltinType>(getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>());
+	BuiltinType* type = context.scopedAllocator->make<BuiltinType>(typeName, getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>());
 	type->setCustomReader(&readBuiltin<T>);
 	type->setCustomWriter(&writeBuiltin<T>);
 	context.typeDB->registerType(type);
-	registerTypeName(getTypeId<T>(), typeName);
 }
 
 #define CREATE_BUILTIN(type, context) createBuiltin<type>(context, #type)

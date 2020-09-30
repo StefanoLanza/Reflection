@@ -22,12 +22,32 @@ void HeapAllocator::free(void* ptr, size_t /*size*/) {
 #endif
 }
 
+void* HeapAllocator::realloc(void* ptr, size_t bytes, size_t alignment) {
+#ifdef _MSC_VER
+	return _aligned_realloc(ptr, bytes, alignment);
+#else
+	::realloc(ptr);
+#endif
+}
+
 LinearAllocator::LinearAllocator(char* buffer, size_t bufferSize, Allocator* backup)
     : buffer(buffer)
     , offset(buffer)
     , bufferSize(bufferSize)
     , freeSize(bufferSize)
-    , backup(backup) {
+    , backup(backup)
+    , parent(nullptr) {
+}
+
+LinearAllocator::LinearAllocator(Allocator& allocator, size_t bufferSize, Allocator* backup)
+    : LinearAllocator(static_cast<char*>(allocator.alloc(bufferSize, 1)), bufferSize, backup) {
+	parent = &allocator;
+}
+
+LinearAllocator::~LinearAllocator() {
+	if (parent) {
+		parent->free(buffer, bufferSize);
+	}
 }
 
 void* LinearAllocator::alloc(size_t size, size_t alignment) {
@@ -58,4 +78,31 @@ void LinearAllocator::free(void* ptr, size_t size) {
 	}
 }
 
-} // namespace Typhoon::Reflection
+void* LinearAllocator::realloc(void* ptr, size_t bytes, size_t alignment) {
+	// TODO possibly reuse last allocation
+	free(ptr, bytes);
+	return alloc(bytes, alignment);
+}
+
+void LinearAllocator::rewind() {
+	offset = buffer;
+	freeSize = bufferSize;
+}
+
+void LinearAllocator::rewind(void* ptr) {
+	if (ptr) {
+		offset = ptr;
+		freeSize = reinterpret_cast<uintptr_t>(buffer) + bufferSize - reinterpret_cast<uintptr_t>(ptr);
+		assert(freeSize <= bufferSize);
+	}
+}
+
+void* LinearAllocator::getBuffer() const {
+	return buffer;
+}
+
+size_t LinearAllocator::getPointerOffset(const void* ptr) const {
+	return reinterpret_cast<intptr_t>(ptr) - reinterpret_cast<intptr_t>(buffer);
+}
+
+} // namespace Typhoon

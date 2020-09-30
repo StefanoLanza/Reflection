@@ -4,7 +4,7 @@
 namespace Typhoon::Reflection {
 
 PointerType::PointerType(TypeId typeID, size_t size, size_t alignment, const Type* pointedType)
-    : Type { typeID, Subclass::Pointer, size, alignment, {} }
+    : Type { "*", typeID, Subclass::Pointer, size, alignment, {} }
     , pointedType { pointedType } {
 	assert(pointedType);
 }

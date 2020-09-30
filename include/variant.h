@@ -48,11 +48,12 @@ public:
 	template <class T>
 	bool tryGet(T* value) const;
 
+	const Type& getType() const;
+
 	bool operator==(const Variant& other) const;
 	bool operator!=(const Variant& other) const;
 
 private:
-	const Type& getType() const;
 	void        destruct();
 
 private:
