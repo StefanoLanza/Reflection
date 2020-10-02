@@ -41,6 +41,8 @@ void registerTupleElement(StructType& tupleType, Context& context) {
 	}
 }
 
+const char* buildTemplateTypeName(const char* typeNames[], const char* prefix, const char* suffix, ScopedAllocator& alloc);
+
 // std::tuple specialization
 template <typename... Args>
 struct autoRegisterHelper<std::tuple<Args...>> {
@@ -48,7 +50,9 @@ struct autoRegisterHelper<std::tuple<Args...>> {
 		using Tuple = std::tuple<Args...>;
 
 		constexpr TypeId  typeId = getTypeId<Tuple>();
-		StructType* const tupleType = context.scopedAllocator->make<StructType>("std::tuple", typeId, sizeof(Tuple), alignof(Tuple), nullptr,
+		// TODO typeName
+		const char*       typeName = "std::tuple";
+		StructType* const tupleType = context.scopedAllocator->make<StructType>(typeName, typeId, sizeof(Tuple), alignof(Tuple), nullptr,
 		                                                                        buildMethodTable<Tuple>(), std::ref(*context.allocator));
 		// Register all elements
 		registerTupleElement<Tuple, 0>(*tupleType, context);
