@@ -9,12 +9,13 @@
   * std containers
   * std::pair, std::tuple
   * std smart pointers
+* Configurable memory allocation
 * Support for custom serialization procedures
 * No exceptions
 * No RTTI
 
 # Requirements
-* C++ 17
+* C++ 17 comformant compiler (e.g. Visual Studio 2019)
 
 # INSTALLATION
 * Clone the repository to a local folder
@@ -23,7 +24,7 @@
   * Select a build configuration (Release, Debug, Win32, x64)
   * Build and run the UnitTest project
 * For integration in your own project
-  * Add the folders core, reflection and TinyXML to your project build pipeline.
+  * Add the folders core, reflection, TinyXML, rapidjson-master to your project build configuration.
 
 # CONFIGURATION
 Look at the file src/config.h Here you can find configuration settings for the library. You can change these settings by either editing this file or by defining them with the preprocessor in your build configuration.
@@ -32,8 +33,7 @@ Look at the file src/config.h Here you can find configuration settings for the l
 Look inside the examples folder for sample code.
 
 # TODO
-- [ ] Custom memory allocator
-- [ ] JSON and YAML support
+- [ ] YAML support
 - [ ] Documentation
 
 # CONTRIBUTE
