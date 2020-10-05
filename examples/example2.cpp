@@ -1,14 +1,16 @@
 // Example showing reflection and serialization of a struct. Some fields are serialized directly. Some fields are set via a C-style API,
 // which does parameter validation
 
+#include <algorithm>
 #include <include/reflection.h>
 #include <include/version.h>
-#include <algorithm>
+#include <include/visitor.h>
+#include <iomanip>
 #include <iostream>
 #include <string>
 
-#define XML          0
-#define JSON         1
+#define XML  0
+#define JSON 1
 #if TY_REFLECTION_JSON
 #define ARCHIVE_TYPE JSON
 #elif TY_REFLECTION_XML
@@ -43,6 +45,7 @@ int getRemainingLives(const GameObject& obj) {
 }
 
 void        registerUserTypes();
+void        printRegisteredTypes();
 GameObject  makeGameObject();
 std::string writeGameObject(const GameObject& obj, const char* XMLelement);
 void        readGameObject(GameObject& obj, const std::string& xmlString, const char* XMLelement);
@@ -52,6 +55,7 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 
 	refl::initReflection();
 	registerUserTypes();
+	printRegisteredTypes();
 
 	const char* element = "gameObject";
 	GameObject  obj = makeGameObject();
@@ -83,6 +87,15 @@ void registerUserTypes() {
 	END_REFLECTION();
 }
 
+void printRegisteredTypes() {
+	refl::Visitor visitor = [](const refl::Type& type, const refl::VisitContext& context) {
+		std::cout << std::setfill(' ') << std::setw(context.level * 4) << ' ';
+		std::cout << type.getName() << std::endl;
+	};
+	refl::VisitOptions visitorOptions;
+	refl::visitType(Typhoon::getTypeId<GameObject>(), visitor, visitorOptions);
+}
+
 GameObject makeGameObject() {
 	GameObject obj;
 	setLives(obj, 1000);
@@ -93,7 +106,7 @@ GameObject makeGameObject() {
 }
 
 std::string writeGameObject(const GameObject& obj, const char* element) {
-	std::string            content;
+	std::string content;
 #if ARCHIVE_TYPE == XML
 	refl::XMLOutputArchive archive;
 #elif ARCHIVE_TYPE == JSON
@@ -108,7 +121,7 @@ void readGameObject(GameObject& obj, const std::string& archiveContent, const ch
 #if ARCHIVE_TYPE == XML
 	refl::XMLInputArchive archive;
 #elif ARCHIVE_TYPE == JSON
-	refl::JSONInputArchive archive;
+	refl::JSONInputArchive  archive;
 #endif
 	if (archive.initialize(archiveContent.data())) {
 		readObject(&obj, element, archive);
