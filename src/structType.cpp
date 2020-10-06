@@ -5,7 +5,8 @@
 
 namespace Typhoon::Reflection {
 
-StructType::StructType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const MethodTable& methods, Allocator& allocator)
+StructType::StructType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const MethodTable& methods,
+                       Allocator& allocator)
     : Type { typeName, typeID, Subclass::Struct, size, alignment, methods }
     , parentType(parentType)
     , properties(stdAllocator<Property>(allocator))

@@ -67,31 +67,31 @@ project("Reflection")
 
 project("Example1")
 	kind "ConsoleApp"
-	files "examples/example1.cpp"
+	files { "examples/example1.cpp", "examples/utils.*", }
 	includedirs { ".", "include", "external", }
 	links({"Reflection", })
 
 project("Example2")
 	kind "ConsoleApp"
-	files "examples/example2.cpp"
+	files { "examples/example2.cpp", "examples/utils.*", }
 	includedirs { ".", "include", "external", }
 	links({"Reflection", })
 
 project("Example3")
 	kind "ConsoleApp"
-	files "examples/example3.cpp"
+	files { "examples/example3.cpp", "examples/utils.*", }
 	includedirs { ".", "include", "external", }
 	links({"Reflection", })
 
 project("Example4")
 	kind "ConsoleApp"
-	files "examples/example4.cpp"
+	files { "examples/example4.cpp", "examples/utils.*", }
 	includedirs { ".", "include", "external",  }
 	links({"Reflection", })
 
 project("Example5")
 	kind "ConsoleApp"
-	files "examples/example5.cpp"
+	files { "examples/example5.cpp", "examples/utils.*", }
 	includedirs { ".", "include", "external",  }
 	links({"Reflection", })
 

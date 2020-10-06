@@ -1,0 +1,43 @@
+#include "utils.h"
+#include <include/enumType.h>
+#include <include/type.h>
+#include <include/visitor.h>
+#include <iomanip>
+#include <iostream>
+
+namespace {
+
+void printEnum(const refl::EnumType& enumType, std::streamsize indent) {
+	std::cout << std::endl;
+	for (auto& enumerator : enumType.getEnumerators()) {
+		std::cout << std::setfill(' ') << std::setw(indent + 4) << ' ';
+		std::cout << enumerator.name << ": ";
+		// TODO translate to actual type << enumerator.value;
+		std::cout << std::endl;
+	}
+}
+
+} // namespace
+
+void printRegisteredType(Typhoon::TypeId typeId) {
+	refl::Visitor visitor = [](const refl::Type& type, const refl::VisitContext& context) {
+		std::streamsize indent = std::streamsize(context.level) * 4;
+		std::cout << std::setfill(' ') << std::setw(indent) << ' ';
+		if (type.getSubClass() == refl::Type::Subclass::Struct) {
+			std::cout << "struct ";
+		}
+		else if (type.getSubClass() == refl::Type::Subclass::Enum) {
+			std::cout << "enum ";
+		}
+		std::cout << type.getName();
+		if (context.objectName) {
+			std::cout << " " << context.objectName;
+		}
+		if (type.getSubClass() == refl::Type::Subclass::Enum) {
+			printEnum(static_cast<const refl::EnumType&>(type), indent);
+		}
+		std::cout << std::endl;
+	};
+	refl::VisitOptions visitorOptions;
+	refl::visitType(typeId, visitor, visitorOptions);
+}

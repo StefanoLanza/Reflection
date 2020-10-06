@@ -1,5 +1,6 @@
 // Example showing reflection and serialization of a builtin types, enums and bitmasks
 
+#include "utils.h"
 #include <include/reflection.h>
 #include <include/version.h>
 #include <iostream>
@@ -40,6 +41,7 @@ struct Builtins {
 };
 
 void        registerUserTypes();
+void        printRegisteredTypes();
 Builtins    makeBuiltins();
 std::string writeBuiltins(const Builtins& b, const char* XMLelement);
 void        readBuiltins(Builtins& b, const std::string& xmlString, const char* XMLelement);
@@ -56,6 +58,7 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	refl::initReflection(linearAllocator);
 #endif
 	registerUserTypes();
+	printRegisteredTypes();
 
 	const char* element = "builtins";
 	Builtins    b = makeBuiltins();
@@ -84,6 +87,11 @@ void registerUserTypes() {
 	END_ENUM();
 
 	END_REFLECTION();
+}
+
+void printRegisteredTypes() {
+	printRegisteredType<TestFlags>();
+	printRegisteredType<TestEnum>();
 }
 
 Builtins makeBuiltins() {

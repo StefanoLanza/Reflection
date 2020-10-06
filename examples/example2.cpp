@@ -4,10 +4,9 @@
 #include <algorithm>
 #include <include/reflection.h>
 #include <include/version.h>
-#include <include/visitor.h>
-#include <iomanip>
 #include <iostream>
 #include <string>
+#include "utils.h"
 
 #define XML  0
 #define JSON 1
@@ -88,12 +87,7 @@ void registerUserTypes() {
 }
 
 void printRegisteredTypes() {
-	refl::Visitor visitor = [](const refl::Type& type, const refl::VisitContext& context) {
-		std::cout << std::setfill(' ') << std::setw(context.level * 4) << ' ';
-		std::cout << type.getName() << std::endl;
-	};
-	refl::VisitOptions visitorOptions;
-	refl::visitType(Typhoon::getTypeId<GameObject>(), visitor, visitorOptions);
+	printRegisteredType(Typhoon::getTypeId<GameObject>());
 }
 
 GameObject makeGameObject() {
