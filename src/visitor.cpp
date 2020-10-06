@@ -20,7 +20,7 @@ namespace {
 
 void visitType(const Type& type, const Visitor& visitor, const VisitOptions& options, const TypeDB& typeDB, VisitContext& context);
 
-void visitFundamental(const Type& type, const Visitor& visitor, [[maybe_unused]] const VisitOptions& options, [[maube_unused]] const TypeDB& typeDB,
+void visitFundamental(const Type& type, const Visitor& visitor, [[maybe_unused]] const VisitOptions& options, [[maybe_unused]] const TypeDB& typeDB,
                       VisitContext& context) {
 	visitor(type, context);
 }

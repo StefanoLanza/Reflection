@@ -24,15 +24,18 @@ inline Enumerator makeEnumerator(const char* name, T value) {
 
 class EnumType final : public Type {
 public:
-	EnumType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Enumerator enumConstants[], size_t count);
+	EnumType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Enumerator enumConstants[], size_t count,
+	         const Type* underlyingType);
 
 	span<const Enumerator> getEnumerators() const;
 	const Enumerator*      findEnumeratorByValue(const void* value, size_t valueSize) const;
 	const Enumerator*      findEnumeratorByName(const char* constantName) const;
+	const Type&            getUnderlyingType() const;
 
 private:
 	const Enumerator* enumerators;
 	size_t            numEnumerators;
+	const Type*       underlyingType;
 };
 
 } // namespace Typhoon::Reflection

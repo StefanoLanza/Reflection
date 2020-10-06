@@ -8,14 +8,21 @@
 
 #include <vector>
 
+namespace Typhoon {
+class ScopedAllocator;
+}
+
 namespace Typhoon::Reflection {
+
+class Namespace;
 
 class TypeDB : Uncopyable {
 public:
-	TypeDB(Allocator& allocator);
+	TypeDB(Allocator& allocator, ScopedAllocator& scopedAllocator);
 	~TypeDB();
 
-	void registerType(const Type* type);
+	void       registerType(const Type* type);
+	Namespace& getGlobalNamespace() const;
 
 	const Type& getType(TypeId typeID) const;
 	const Type* tryGetType(TypeId typeID) const;
@@ -33,6 +40,7 @@ public:
 
 private:
 	std::vector<const Type*, stdAllocator<const Type*>> types;
+	Namespace*                                          globalNamespace;
 };
 
 } // namespace Typhoon::Reflection

@@ -1,13 +1,16 @@
 #include "typeDB.h"
 #include "structType.h"
+#include "namespace.h"
+#include <core/scopedAllocator.h>
 
 #include <cassert>
 
 namespace Typhoon::Reflection {
 
-TypeDB::TypeDB(Allocator& allocator)
+TypeDB::TypeDB(Allocator& allocator, ScopedAllocator& scopedAllocator)
     : types(stdAllocator<const Type*>(allocator)) {
 	types.reserve(64);
+	globalNamespace = scopedAllocator.make<Namespace>("global", std::ref(allocator));
 }
 
 TypeDB::~TypeDB() = default;
@@ -15,6 +18,11 @@ TypeDB::~TypeDB() = default;
 void TypeDB::registerType(const Type* newType) {
 	assert(newType);
 	types.push_back(newType);
+}
+
+Namespace& TypeDB::getGlobalNamespace() const
+{
+	return *globalNamespace;
 }
 
 const Type& TypeDB::getType(TypeId typeID) const {

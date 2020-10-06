@@ -7,12 +7,21 @@
 
 namespace {
 
+void printEnumerator(const refl::Enumerator& enumerator, const refl::Type& underlyingType) {
+	uint64_t uv = 0;
+	int64_t v = 0;
+	// TODO Handle signed
+	std::memcpy(&uv, enumerator.value, underlyingType.getSize());
+	std::cout << uv;
+}
+
 void printEnum(const refl::EnumType& enumType, std::streamsize indent) {
 	std::cout << std::endl;
+	const auto underlyingType = enumType.getUnderlyingType();
 	for (auto& enumerator : enumType.getEnumerators()) {
 		std::cout << std::setfill(' ') << std::setw(indent + 4) << ' ';
 		std::cout << enumerator.name << ": ";
-		// TODO translate to actual type << enumerator.value;
+		printEnumerator(enumerator, underlyingType);
 		std::cout << std::endl;
 	}
 }

@@ -79,7 +79,7 @@ void initReflection(Allocator& allocator) {
 
 	context.allocator = &allocator;
 	context.scopedAllocator = new (allocator.alloc<ScopedAllocator>()) ScopedAllocator(allocator);
-	context.typeDB = context.scopedAllocator->make<TypeDB>(std::ref(allocator));
+	context.typeDB = context.scopedAllocator->make<TypeDB>(std::ref(allocator), std::ref(*context.scopedAllocator));
 	registerBuiltinTypes(context);
 }
 

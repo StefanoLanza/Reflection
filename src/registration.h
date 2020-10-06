@@ -8,6 +8,7 @@
 #include "enumType.h"
 #include "flags.h"
 #include "makeProperty.h"
+#include "namespace.h"
 #include "pointerType.h"
 #include "property.h"
 #include "referenceType.h"
@@ -43,14 +44,15 @@ Context& getContext();
 
 // Macro-based reflection
 
-#define BEGIN_REFLECTION()                                            \
-	__pragma(warning(push)) __pragma(warning(disable : 4127)) do {    \
-		using namespace refl;                                         \
-		using namespace Typhoon;                                      \
-		Context&         context = detail::getContext();              \
-		TypeDB&          typeDB_ = *context.typeDB;                   \
-		ScopedAllocator& scopedAllocator_ = *context.scopedAllocator; \
-		Allocator&       allocator_ = *context.allocator;             \
+#define BEGIN_REFLECTION()                                              \
+	__pragma(warning(push)) __pragma(warning(disable : 4127)) do {      \
+		using namespace refl;                                           \
+		using namespace Typhoon;                                        \
+		Context&         context = detail::getContext();                \
+		TypeDB&          typeDB_ = *context.typeDB;                     \
+		ScopedAllocator& scopedAllocator_ = *context.scopedAllocator;   \
+		Allocator&       allocator_ = *context.allocator;               \
+		Namespace*       currNamespace = &typeDB_.getGlobalNamespace(); \
 		(void)allocator_;
 
 #define END_REFLECTION() \
@@ -168,16 +170,18 @@ Context& getContext();
 		structType->setCustomCloner(cloner); \
 	} while (0)
 
-#define END_STRUCT()                  \
-	static_assert(! isClass);         \
-	typeDB_.registerType(structType); \
-	}                                 \
+#define END_STRUCT()                    \
+	static_assert(! isClass);           \
+	typeDB_.registerType(structType);   \
+	currNamespace->addType(structType); \
+	}                                   \
 	while (0)
 
-#define END_CLASS()                   \
-	static_assert(isClass);           \
-	typeDB_.registerType(structType); \
-	}                                 \
+#define END_CLASS()                     \
+	static_assert(isClass);             \
+	typeDB_.registerType(structType);   \
+	currNamespace->addType(structType); \
+	}                                   \
 	while (0)
 
 #define BEGIN_ENUM(enumClass)                                    \
@@ -191,13 +195,15 @@ Context& getContext();
 
 #define ENUMERATOR(value) makeEnumerator(#value, enumClass_::value),
 
-#define END_ENUM()                                                                                                                             \
-	}                                                                                                                                          \
-	;                                                                                                                                          \
-	const auto enumType = scopedAllocator_.make<EnumType>(enumName, Typhoon::getTypeId<enumClass_>(), sizeof(enumClass_), alignof(enumClass_), \
-	                                                      enumerators, _countof(enumerators));                                                 \
-	typeDB_.registerType(enumType);                                                                                                            \
-	}                                                                                                                                          \
+#define END_ENUM()                                                                                                                              \
+	}                                                                                                                                           \
+	;                                                                                                                                           \
+	const Type& underlyingType = typeDB_.getType<std::underlying_type_t<enumClass_>>();                                                       \
+	const auto  enumType = scopedAllocator_.make<EnumType>(enumName, Typhoon::getTypeId<enumClass_>(), sizeof(enumClass_), alignof(enumClass_), \
+                                                          enumerators, _countof(enumerators), &underlyingType);                                \
+	typeDB_.registerType(enumType);                                                                                                             \
+	currNamespace->addType(enumType);                                                                                                           \
+	}                                                                                                                                           \
 	while (false)
 
 #define BEGIN_BITMASK(bitMaskStruct)                                                                                  \
@@ -209,13 +215,14 @@ Context& getContext();
 
 #define BITMASK_VALUE(name) { #name, static_cast<BitMaskStorageType>(bitMaskStruct_::name) },
 
-#define END_BITMASK()                                                                                                                         \
-	}                                                                                                                                         \
-	;                                                                                                                                         \
-	const auto type = scopedAllocator_.make<BitMaskType>(typeName, Typhoon::getTypeId<bitMaskStruct_>(), sizeof(bitMaskStruct_::StorageType), \
-	                                                     alignof(bitMaskStruct_::StorageType), enumerators, std::size(enumerators));          \
-	typeDB_.registerType(type);                                                                                                               \
-	}                                                                                                                                         \
+#define END_BITMASK()                                                                                                                                \
+	}                                                                                                                                                \
+	;                                                                                                                                                \
+	const auto bitmaskType = scopedAllocator_.make<BitMaskType>(typeName, Typhoon::getTypeId<bitMaskStruct_>(), sizeof(bitMaskStruct_::StorageType), \
+	                                                            alignof(bitMaskStruct_::StorageType), enumerators, std::size(enumerators));          \
+	typeDB_.registerType(bitmaskType);                                                                                                               \
+	currNamespace->addType(bitmaskType);                                                                                                             \
+	}                                                                                                                                                \
 	while (false)
 
 } // namespace Typhoon::Reflection
