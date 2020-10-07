@@ -33,8 +33,8 @@ public:
 	void             writeAttribute(const char* name, const char* str) override;
 	void             write(const char* text) override;
 	void             writeBool(bool value) override;
-	void             writeInt(const char* key, int value) override;
-	void             writeUInt(const char* key, unsigned int value) override;
+	void             writeInt(int value) override;
+	void             writeUInt(unsigned int value) override;
 	void             writeInt64(const char* key, int64_t value) override;
 	void             writeUInt64(const char* key, uint64_t value) override;
 	void             writeFloat(const char* key, float value) override;

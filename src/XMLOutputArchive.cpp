@@ -121,25 +121,19 @@ void XMLOutputArchive::write(const char* text) {
 
 void XMLOutputArchive::writeBool(bool value) {
 	beginArrayElement();
-	static_cast<tinyxml2::XMLElement*>(currentNode)->SetText(value); //->InsertEndChild(document->NewText(value));
-//	element->SetText(value);
-//	currentNode->InsertEndChild(element);
+	currentNode->ToElement()->SetText(value);
 	endArrayElement();
 }
 
-void XMLOutputArchive::writeInt(const char* key, int value) {
+void XMLOutputArchive::writeInt(int value) {
 	beginArrayElement();
-	auto element = document->NewElement(key);
-	element->SetText(value);
-	currentNode->InsertEndChild(element);
+	currentNode->ToElement()->SetText(value);
 	endArrayElement();
 }
 
-void XMLOutputArchive::writeUInt(const char* key, unsigned int value) {
+void XMLOutputArchive::writeUInt(unsigned int value) {
 	beginArrayElement();
-	auto element = document->NewElement(key);
-	element->SetText(value);
-	currentNode->InsertEndChild(element);
+	currentNode->ToElement()->SetText(value);
 	endArrayElement();
 }
 

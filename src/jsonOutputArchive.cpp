@@ -101,13 +101,11 @@ void JSONOutputArchive::writeBool(bool value) {
 	writer->Bool(value);
 }
 
-void JSONOutputArchive::writeInt(const char* key, int value) {
-	writer->Key(key);
+void JSONOutputArchive::writeInt(int value) {
 	writer->Int(value);
 }
 
-void JSONOutputArchive::writeUInt(const char* key, unsigned int value) {
-	writer->Key(key);
+void JSONOutputArchive::writeUInt(unsigned int value) {
 	writer->Uint(value);
 }
 

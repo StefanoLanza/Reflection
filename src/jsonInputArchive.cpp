@@ -37,17 +37,20 @@ bool JSONInputArchive::readBool(bool& b) {
 	return false;
 }
 
-bool JSONInputArchive::readInt(const char* key, int& i) {
-	if (auto& value = getValue(key); value.IsInt()) {
-		i = value.GetInt();
+bool JSONInputArchive::readInt(int& i) {
+	assert(! stack.empty());
+	auto value = stack.top().value;
+	if (value->IsInt()) {
+		i = value->GetInt();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::readUInt(const char* key, unsigned int& ui) {
-	if (auto& value = getValue(key); value.IsUint()) {
-		ui = value.GetUint();
+bool JSONInputArchive::readUInt(unsigned int& ui) {
+	auto value = stack.top().value;
+	if (value->IsUint()) {
+		ui = value->GetUint();
 		return true;
 	}
 	return false;

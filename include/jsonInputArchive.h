@@ -33,8 +33,9 @@ public:
 	const char* currNodeText() override;
 
 	bool readBool(bool& value) override;
-	bool readInt(const char* key, int& value) override;
-	bool readUInt(const char* key, unsigned int& value) override;
+	bool readInt(int& value) override;
+	bool readUInt(unsigned int& value) override;
+	// FIXME
 	bool readInt64(const char* key, int64_t& value) override;
 	bool readUInt64(const char* key, uint64_t& value) override;
 	bool readFloat(const char* key, float& value) override;

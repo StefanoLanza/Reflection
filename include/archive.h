@@ -71,8 +71,8 @@ public:
 
 	// New API
 	virtual bool readBool(bool& value) = 0;
-	virtual bool readInt(const char* key, int& value) = 0;
-	virtual bool readUInt(const char* key, unsigned int& value) = 0;
+	virtual bool readInt(int& value) = 0;
+	virtual bool readUInt(unsigned int& value) = 0;
 	virtual bool readInt64(const char* key, int64_t& value) = 0;
 	virtual bool readUInt64(const char* key, uint64_t& value) = 0;
 	virtual bool readFloat(const char* key, float& value) = 0;
@@ -106,8 +106,9 @@ public:
 
 	// New API
 	virtual void writeBool(bool value) = 0;
-	virtual void writeInt(const char* key, int value) = 0;
-	virtual void writeUInt(const char* key, unsigned int value) = 0;
+	virtual void writeInt(int value) = 0;
+	virtual void writeUInt(unsigned int value) = 0;
+	// FIXME
 	virtual void writeInt64(const char* key, int64_t value) = 0;
 	virtual void writeUInt64(const char* key, uint64_t value) = 0;
 	virtual void writeFloat(const char* key, float value) = 0;

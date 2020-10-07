@@ -44,7 +44,7 @@ const char* XMLInputArchive::currNodeText() {
 
 bool XMLInputArchive::readBool(bool& value) {
 	bool res = false;
-	if (auto element = currentNode->ToElement(); element) { // FIXME FirstChild ?
+	if (auto element = currentNode->ToElement(); element) {
 		if (auto error = element->QueryBoolText(&value); error == tinyxml2::XML_SUCCESS) {
 			res = true;
 		}
@@ -52,9 +52,9 @@ bool XMLInputArchive::readBool(bool& value) {
 	return res;
 }
 
-bool XMLInputArchive::readInt(const char* key, int& value) {
+bool XMLInputArchive::readInt(int& value) {
 	bool res = false;
-	if (auto element = currentNode->FirstChildElement(key); element) {
+	if (auto element = currentNode->ToElement(); element) {
 		if (auto error = element->QueryIntText(&value); error == tinyxml2::XML_SUCCESS) {
 			res = true;
 		}
@@ -62,9 +62,9 @@ bool XMLInputArchive::readInt(const char* key, int& value) {
 	return res;
 }
 
-bool XMLInputArchive::readUInt(const char* key, unsigned int& value) {
+bool XMLInputArchive::readUInt(unsigned int& value) {
 	bool res = false;
-	if (auto element = currentNode->FirstChildElement(key); element) {
+	if (auto element = currentNode->ToElement(); element) {
 		if (auto error = element->QueryUnsignedText(&value); error == tinyxml2::XML_SUCCESS) {
 			res = true;
 		}
