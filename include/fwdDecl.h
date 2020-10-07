@@ -21,5 +21,6 @@ class OutputArchive;
 class XMLInputArchive;
 class XMLOutputArchive;
 class Variant;
+class Namespace;
 
 } // namespace Typhoon::Reflection

@@ -13,6 +13,7 @@
 #include "variant.h"
 #include "variantType.h"
 #include "writeObject.h"
+#include "namespace.h"
 
 #include "../src/registration.h"
 
@@ -64,5 +65,11 @@ const Type& getType(TypeId typeID);
  * @return
  */
 const Type* tryGetType(TypeId typeID);
+
+/**
+ * @brief
+ * @return the global namespace
+ */
+const Namespace& getGlobalNamespace();
 
 } // namespace Typhoon::Reflection

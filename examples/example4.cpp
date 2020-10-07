@@ -7,6 +7,7 @@
 #include <include/version.h>
 #include <iostream>
 #include <string>
+#include "utils.h"
 
 #define XML          0
 #define JSON         1
@@ -44,6 +45,7 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	CustomAllocator customAllocator;
 	refl::initReflection(customAllocator);
 	registerUserTypes();
+	printNamespace(refl::getGlobalNamespace());
 
 	const char* name = "Texture";
 	Texture     texture { "glossy.mat" };

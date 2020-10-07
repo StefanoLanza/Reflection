@@ -87,7 +87,7 @@ void registerUserTypes() {
 }
 
 void printRegisteredTypes() {
-	printRegisteredType(Typhoon::getTypeId<GameObject>());
+	printNamespace(refl::getGlobalNamespace());
 }
 
 GameObject makeGameObject() {

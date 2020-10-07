@@ -90,8 +90,7 @@ void registerUserTypes() {
 }
 
 void printRegisteredTypes() {
-	printRegisteredType<TestFlags>();
-	printRegisteredType<TestEnum>();
+	printNamespace(refl::getGlobalNamespace());
 }
 
 Builtins makeBuiltins() {

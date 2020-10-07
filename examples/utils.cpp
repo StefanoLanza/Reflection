@@ -1,52 +1,94 @@
 #include "utils.h"
+#include <cassert>
 #include <include/enumType.h>
+#include <include/namespace.h>
 #include <include/type.h>
+#include <include/structType.h>
 #include <include/visitor.h>
 #include <iomanip>
 #include <iostream>
 
 namespace {
 
-void printEnumerator(const refl::Enumerator& enumerator, const refl::Type& underlyingType) {
-	uint64_t uv = 0;
-	int64_t v = 0;
-	// TODO Handle signed
-	std::memcpy(&uv, enumerator.value, underlyingType.getSize());
-	std::cout << uv;
-}
-
-void printEnum(const refl::EnumType& enumType, std::streamsize indent) {
-	std::cout << std::endl;
-	const auto underlyingType = enumType.getUnderlyingType();
-	for (auto& enumerator : enumType.getEnumerators()) {
-		std::cout << std::setfill(' ') << std::setw(indent + 4) << ' ';
-		std::cout << enumerator.name << ": ";
-		printEnumerator(enumerator, underlyingType);
-		std::cout << std::endl;
+class Printer : public refl::Visitor {
+public:
+	void beginNamespace(const refl::Namespace& nameSpace) {
+		indent();
+		std::cout << "namespace " << nameSpace.getName() << " {" << std::endl;
+		indentation += 4;
 	}
-}
-
-} // namespace
-
-void printRegisteredType(Typhoon::TypeId typeId) {
-	refl::Visitor visitor = [](const refl::Type& type, const refl::VisitContext& context) {
-		std::streamsize indent = std::streamsize(context.level) * 4;
-		std::cout << std::setfill(' ') << std::setw(indent) << ' ';
-		if (type.getSubClass() == refl::Type::Subclass::Struct) {
-			std::cout << "struct ";
-		}
-		else if (type.getSubClass() == refl::Type::Subclass::Enum) {
+	void endNamespace() {
+		indentation -= 4;
+		indent();
+		std::cout << "}" << std::endl;
+	}
+	void visitType(const refl::Type& type) {
+		indent();
+		if (type.getSubClass() == refl::Type::Subclass::Enum) {
 			std::cout << "enum ";
 		}
 		std::cout << type.getName();
-		if (context.objectName) {
-			std::cout << " " << context.objectName;
-		}
 		if (type.getSubClass() == refl::Type::Subclass::Enum) {
-			printEnum(static_cast<const refl::EnumType&>(type), indent);
+			printEnum(static_cast<const refl::EnumType&>(type));
 		}
 		std::cout << std::endl;
-	};
+	}
+	void visitField(const char* fieldName, const refl::Type& type) {
+		indent();
+		std::cout << type.getName() << " " << fieldName << ";" << std::endl;
+	}
+
+	void beginClass(const refl::StructType& type) override {
+		indent();
+		std::cout << "struct " << type.getName() << " {" <<std::endl;
+		indentation += 4;
+	}
+	void endClass() override {
+		indentation -= 4;
+		indent();
+		std::cout << "};" << std::endl;
+	}
+
+private:
+	void indent() const {
+		std::cout << std::setfill(' ') << std::setw(indentation) << ' ';
+	}
+
+	void printEnum(const refl::EnumType& enumType) {
+		std::cout << std::endl;
+		indentation += 4;
+		const auto underlyingType = enumType.getUnderlyingType();
+		for (auto& enumerator : enumType.getEnumerators()) {
+			indent();
+			std::cout << enumerator.name << ": ";
+			printEnumerator(enumerator, underlyingType);
+			std::cout << std::endl;
+		}
+		indentation += 4;
+	}
+
+	void printEnumerator(const refl::Enumerator& enumerator, const refl::Type& underlyingType) const {
+		uint64_t uv = 0;
+		int64_t  v = 0;
+		// TODO Handle signed
+		assert(sizeof(uv) >= underlyingType.getSize());
+		std::memcpy(&uv, enumerator.value, underlyingType.getSize());
+		std::cout << uv;
+	}
+
+private:
+	std::streamsize indentation = 0;
+};
+
+} // namespace
+
+void printRegisteredType(const refl::Type& type) {
 	refl::VisitOptions visitorOptions;
-	refl::visitType(typeId, visitor, visitorOptions);
+	// refl::visitType(type, visitor, visitorOptions);
+}
+
+void printNamespace(const refl::Namespace& nameSpace) {
+	Printer            printer;
+	refl::VisitOptions options;
+	refl::visitNamespace(nameSpace, printer, options);
 }

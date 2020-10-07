@@ -100,6 +100,10 @@ const Type* tryGetType(TypeId typeID) {
 	return context.typeDB->tryGetType(typeID);
 }
 
+const Namespace& getGlobalNamespace() {
+	return context.typeDB->getGlobalNamespace();
+}
+
 namespace detail {
 
 Context& getContext() {

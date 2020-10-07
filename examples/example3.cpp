@@ -4,6 +4,7 @@
 #include <include/version.h>
 #include <iostream>
 #include <string>
+#include "utils.h"
 
 #define XML          0
 #define JSON         1
@@ -73,6 +74,7 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 
 	refl::initReflection();
 	registerUserTypes();
+	printNamespace(refl::getGlobalNamespace());
 
 	const char* element = "gameObject";
 	GameObject  obj = makeGameObject();

@@ -1,8 +1,6 @@
 #include <core/typeId.h>
+#include <include/fwdDecl.h>
 
-void printRegisteredType(Typhoon::TypeId typeId);
+void printRegisteredType(const refl::Type& type);
 
-template <class T>
-inline void printRegisteredType() {
-	printRegisteredType(Typhoon::getTypeId<T>());
-}
+void printNamespace(const refl::Namespace& nameSpace);
