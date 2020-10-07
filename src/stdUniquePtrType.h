@@ -8,15 +8,15 @@ namespace Typhoon::Reflection::detail {
 template <typename T>
 class StdUniquePointerType final : public PointerType {
 public:
-	StdUniquePointerType(TypeId typeID, size_t size, size_t alignment, const Type* pointedType);
+	StdUniquePointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType);
 
 	const void* resolvePointer(const void* ptr) const override;
 	void*       resolvePointer(void* ptr) const override;
 };
 
 template <typename T>
-inline StdUniquePointerType<T>::StdUniquePointerType(TypeId typeID, size_t size, size_t alignment, const Type* pointedType)
-    : PointerType { typeID, size, alignment, pointedType } {
+inline StdUniquePointerType<T>::StdUniquePointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType)
+    : PointerType { typeName, typeID, size, alignment, pointedType } {
 }
 
 template <typename T>
@@ -37,6 +37,8 @@ inline void* StdUniquePointerType<T>::resolvePointer(void* data) const {
 	return pointer;
 }
 
+const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc);
+
 // Specialization for std::unique_ptr
 template <class T>
 struct autoRegisterHelper<std::unique_ptr<T>> {
@@ -44,8 +46,9 @@ struct autoRegisterHelper<std::unique_ptr<T>> {
 		using PointerType = std::unique_ptr<T>;
 		const Type* valueType = autoRegisterType<T>(context);
 		assert(valueType);
-		auto type =
-		    context.scopedAllocator->make<StdUniquePointerType<T>>(getTypeId<PointerType>(), sizeof(PointerType), alignof(PointerType), valueType);
+		const char* typeName = decorateTypeName(valueType->getName(), "std::unique_ptr<", ">", *context.scopedAllocator);
+		auto        type = context.scopedAllocator->make<StdUniquePointerType<T>>(typeName, getTypeId<PointerType>(), sizeof(PointerType),
+                                                                           alignof(PointerType), valueType);
 		context.typeDB->registerType(type);
 		return type;
 	}

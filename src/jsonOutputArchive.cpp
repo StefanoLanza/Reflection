@@ -97,8 +97,7 @@ void JSONOutputArchive::write(const char* text) {
 	writer->String(text, static_cast<SizeType>(strlen(text)));
 }
 
-void JSONOutputArchive::writeBool(const char* key, bool value) {
-	writer->Key(key);
+void JSONOutputArchive::writeBool(bool value) {
 	writer->Bool(value);
 }
 

@@ -77,12 +77,7 @@ bool read(unsigned long long& data, InputArchive& archive) {
 }
 
 bool read(bool& data, InputArchive& archive) {
-	bool res = false;
-	if (const char* str = archive.currNodeText(); str) {
-		data = (! _stricmp(str, "true")) || (std::atoi(str) != 0);
-		res = true;
-	}
-	return res;
+	return archive.readBool(data);
 }
 
 bool read(float& data, InputArchive& archive) {
@@ -99,7 +94,7 @@ bool read(const char*& data, InputArchive& archive) {
 }
 
 bool write(bool data, OutputArchive& archive) {
-	archive.write(data ? "true" : "false");
+	archive.writeBool(data);
 	return true;
 }
 

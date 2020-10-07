@@ -27,9 +27,11 @@ const char* JSONInputArchive::currNodeText() {
 	return stack.top().value->GetString();
 }
 
-bool JSONInputArchive::readBool(const char* key, bool& b) {
-	if (auto& value = getValue(key); value.IsBool()) {
-		b = value.GetBool();
+bool JSONInputArchive::readBool(bool& b) {
+	assert(! stack.empty());
+	auto value = stack.top().value;
+	if (value->IsBool()) {
+		b = value->GetBool();
 		return true;
 	}
 	return false;

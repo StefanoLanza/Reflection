@@ -9,15 +9,15 @@ namespace Typhoon::Reflection::detail {
 template <typename T>
 class StdSharedPointerType final : public PointerType {
 public:
-	StdSharedPointerType(TypeId typeID, size_t size, size_t alignment, const Type* pointedType);
+	StdSharedPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType);
 
 	const void* resolvePointer(const void* ptr) const override;
 	void*       resolvePointer(void* ptr) const override;
 };
 
 template <typename T>
-inline StdSharedPointerType<T>::StdSharedPointerType(TypeId typeID, size_t size, size_t alignment, const Type* pointedType)
-    : PointerType { typeID, size, alignment, pointedType } {
+inline StdSharedPointerType<T>::StdSharedPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType)
+    : PointerType { typeName, typeID, size, alignment, pointedType } {
 }
 
 template <typename T>
@@ -38,6 +38,8 @@ inline void* StdSharedPointerType<T>::resolvePointer(void* data) const {
 	return pointer;
 }
 
+const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc);
+
 // Specialization for std::shared_ptr
 template <class T>
 struct autoRegisterHelper<std::shared_ptr<T>> {
@@ -45,8 +47,9 @@ struct autoRegisterHelper<std::shared_ptr<T>> {
 		using PointerType = std::shared_ptr<T>;
 		const Type* valueType = autoRegisterType<T>(context);
 		assert(valueType);
-		auto type =
-		    context.scopedAllocator->make<StdSharedPointerType<T>>(getTypeId<PointerType>(), sizeof(PointerType), alignof(PointerType), valueType);
+		const char* typeName = decorateTypeName(valueType->getName(), "std::shared_ptr<", ">", *context.scopedAllocator);
+		auto        type =
+		    context.scopedAllocator->make<StdSharedPointerType<T>>(typeName, getTypeId<PointerType>(), sizeof(PointerType), alignof(PointerType), valueType);
 		context.typeDB->registerType(type);
 		return type;
 	}

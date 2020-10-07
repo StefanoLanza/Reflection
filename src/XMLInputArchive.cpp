@@ -42,9 +42,9 @@ const char* XMLInputArchive::currNodeText() {
 	return res;
 }
 
-bool XMLInputArchive::readBool(const char* key, bool& value) {
+bool XMLInputArchive::readBool(bool& value) {
 	bool res = false;
-	if (auto element = currentNode->FirstChildElement(key); element) {
+	if (auto element = currentNode->ToElement(); element) { // FIXME FirstChild ?
 		if (auto error = element->QueryBoolText(&value); error == tinyxml2::XML_SUCCESS) {
 			res = true;
 		}
@@ -187,12 +187,12 @@ bool XMLInputArchive::beginElement(const char* name) {
 		return false;
 	}
 	tinyxml2::XMLElement* const element = currentNode->FirstChildElement(name);
-	if (! element) {
-		return false;
-	}
-	else {
+	if (element) {
 		currentNode = element;
 		return true;
+	}
+	else {
+		return false;
 	}
 }
 

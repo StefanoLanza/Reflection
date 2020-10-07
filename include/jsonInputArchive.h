@@ -32,7 +32,7 @@ public:
 
 	const char* currNodeText() override;
 
-	bool readBool(const char* key, bool& value) override;
+	bool readBool(bool& value) override;
 	bool readInt(const char* key, int& value) override;
 	bool readUInt(const char* key, unsigned int& value) override;
 	bool readInt64(const char* key, int64_t& value) override;

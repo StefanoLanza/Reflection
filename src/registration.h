@@ -60,6 +60,20 @@ Context& getContext();
 	while (false)        \
 	__pragma(warning(pop))
 
+#define BEGIN_NAMESPACE(nameSpace)                                                                    \
+	do {                                                                                              \
+		const auto newNamespace = scopedAllocator_.make<Namespace>(#nameSpace, std::ref(allocator_)); \
+		const auto parentNamespace = currNamespace;                                                   \
+		if (parentNamespace) {                                                                        \
+			parentNamespace->addNestedNamespace(newNamespace);                                        \
+		}                                                                                             \
+		currNamespace = newNamespace;
+
+#define END_NAMESPACE()              \
+	currNamespace = parentNamespace; \
+	}                                \
+	while (0)
+
 #define BEGIN_BASE_CLASS(class)                                                                                                               \
 	do {                                                                                                                                      \
 		using class_ = class;                                                                                                                 \
@@ -198,7 +212,7 @@ Context& getContext();
 #define END_ENUM()                                                                                                                              \
 	}                                                                                                                                           \
 	;                                                                                                                                           \
-	const Type& underlyingType = typeDB_.getType<std::underlying_type_t<enumClass_>>();                                                       \
+	const Type& underlyingType = typeDB_.getType<std::underlying_type_t<enumClass_>>();                                                         \
 	const auto  enumType = scopedAllocator_.make<EnumType>(enumName, Typhoon::getTypeId<enumClass_>(), sizeof(enumClass_), alignof(enumClass_), \
                                                           enumerators, _countof(enumerators), &underlyingType);                                \
 	typeDB_.registerType(enumType);                                                                                                             \

@@ -8,7 +8,7 @@
 
 #define XML  0
 #define JSON 1
-#if TY_REFLECTION_JSON
+#if 0 && TY_REFLECTION_JSON
 #define ARCHIVE_TYPE JSON
 #elif TY_REFLECTION_XML
 #define ARCHIVE_TYPE XML
@@ -32,9 +32,12 @@ enum class TestEnum {
 };
 
 struct Builtins {
+	bool        b;
 	int         i;
 	float       f;
 	double      d;
+	int64_t     i64;
+	uint64_t    ui64;
 	std::string str;
 	TestEnum    e;
 	TestFlags   flags;
@@ -95,9 +98,12 @@ void printRegisteredTypes() {
 
 Builtins makeBuiltins() {
 	Builtins b {};
+	b.b = true;
 	b.i = 10;
 	b.f = -123.f;
 	b.d = 3.14159265359;
+	b.i64 = -123456789;
+	b.ui64 = 123456789;
 	b.str = "Stefano";
 	b.e = TestEnum::left;
 	b.flags.value = TestFlags::visible | TestFlags::resizeable;
@@ -113,9 +119,12 @@ std::string writeBuiltins(const Builtins& obj, const char* element) {
 #endif
 	if (archive.beginElement(element)) {
 		archive.beginObject();
+		writeObject(obj.b, "b", archive);
 		writeObject(obj.i, "i", archive);
 		writeObject(obj.f, "f", archive);
 		writeObject(obj.d, "d", archive);
+		writeObject(obj.i64, "i64", archive);
+		writeObject(obj.ui64, "ui64", archive);
 		writeObject(obj.str, "str", archive);
 		writeObject(obj.e, "enum", archive);
 		writeObject(obj.flags, "flags", archive);
@@ -134,9 +143,12 @@ void readBuiltins(Builtins& obj, const std::string& content, const char* element
 #endif
 	if (refl::ParseResult res = archive.initialize(content.data()); res) {
 		if (archive.beginElement(element)) {
+			readObject(&obj.b, "b", archive);
 			readObject(&obj.i, "i", archive);
 			readObject(&obj.f, "f", archive);
 			readObject(&obj.d, "d", archive);
+			readObject(&obj.i64, "i64", archive);
+			readObject(&obj.ui64, "ui64", archive);
 			readObject(&obj.str, "str", archive);
 			readObject(&obj.e, "enum", archive);
 			readObject(&obj.flags, "flags", archive);

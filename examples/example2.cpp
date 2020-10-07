@@ -69,6 +69,8 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 void registerUserTypes() {
 	BEGIN_REFLECTION()
 
+	BEGIN_NAMESPACE(Test)
+
 	BEGIN_STRUCT(Coords);
 	FIELD(x);
 	FIELD(y);
@@ -82,6 +84,8 @@ void registerUserTypes() {
 	FIELD(position);
 	FIELD(velocity);
 	END_STRUCT();
+
+	END_NAMESPACE();
 
 	END_REFLECTION();
 }

@@ -119,11 +119,11 @@ void XMLOutputArchive::write(const char* text) {
 	endArrayElement();
 }
 
-void XMLOutputArchive::writeBool(const char* key, bool value) {
+void XMLOutputArchive::writeBool(bool value) {
 	beginArrayElement();
-	auto element = document->NewElement(key);
-	element->SetText(value);
-	currentNode->InsertEndChild(element);
+	static_cast<tinyxml2::XMLElement*>(currentNode)->SetText(value); //->InsertEndChild(document->NewText(value));
+//	element->SetText(value);
+//	currentNode->InsertEndChild(element);
 	endArrayElement();
 }
 
