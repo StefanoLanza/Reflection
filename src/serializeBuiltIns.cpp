@@ -1,32 +1,8 @@
 #include "serializeBuiltIns.h"
 #include "archive.h"
 #include <cassert>
-#include <cstdio>
 
 namespace Typhoon::Reflection {
-
-namespace {
-
-template <class T>
-bool scan(T* data, const char* fmt, InputArchive& archive) {
-	bool res = false;
-	if (const char* str = archive.currNodeText(); str) {
-		res = (sscanf_s(str, fmt, data) == 1);
-	}
-	return res;
-}
-
-template <class T>
-bool sprintf(T data, const char* fmt, OutputArchive& archive) {
-	char tmp[128];
-	bool ok = sprintf_s(tmp, fmt, data) >= 0;
-	if (ok) {
-		archive.write(tmp);
-	}
-	return ok;
-}
-
-} // namespace
 
 bool read(char& data, InputArchive& archive) {
 	int  i = 0;
@@ -79,19 +55,43 @@ bool read(unsigned int& data, InputArchive& archive) {
 }
 
 bool read(long& data, InputArchive& archive) {
-	return scan(&data, "%ld", archive);
+	int64_t i64;
+	bool    res = false;
+	if (archive.readInt64(i64)) {
+		data = static_cast<long>(i64);
+		res = true;
+	}
+	return res;
 }
 
 bool read(unsigned long& data, InputArchive& archive) {
-	return scan(&data, "%lu", archive);
+	uint64_t i64;
+	bool     res = false;
+	if (archive.readUInt64(i64)) {
+		data = static_cast<unsigned long>(i64);
+		res = true;
+	}
+	return res;
 }
 
 bool read(long long& data, InputArchive& archive) {
-	return scan(&data, "%lld", archive);
+	int64_t i64;
+	bool    res = false;
+	if (archive.readInt64(i64)) {
+		data = static_cast<long long>(i64);
+		res = true;
+	}
+	return res;
 }
 
 bool read(unsigned long long& data, InputArchive& archive) {
-	return scan(&data, "%llu", archive);
+	uint64_t i64;
+	bool     res = false;
+	if (archive.readUInt64(i64)) {
+		data = static_cast<unsigned long long>(i64);
+		res = true;
+	}
+	return res;
 }
 
 bool read(bool& data, InputArchive& archive) {
@@ -99,16 +99,15 @@ bool read(bool& data, InputArchive& archive) {
 }
 
 bool read(float& data, InputArchive& archive) {
-	return scan(&data, "%f", archive);
+	return archive.readFloat(data);
 }
 
 bool read(double& data, InputArchive& archive) {
-	return scan(&data, "%lf", archive);
+	return archive.readDouble(data);
 }
 
 bool read(const char*& data, InputArchive& archive) {
-	data = archive.currNodeText();
-	return data != nullptr;
+	return archive.readString(data);
 }
 
 bool write(bool data, OutputArchive& archive) {
@@ -147,32 +146,43 @@ bool write(unsigned int data, OutputArchive& archive) {
 }
 
 bool write(long data, OutputArchive& archive) {
-	return sprintf(data, "%ld", archive);
+	if constexpr (sizeof(long) == sizeof(int64_t)) {
+		archive.writeInt64(data);
+	}
+	else {
+		archive.writeInt(data);
+	}
+	return true;
 }
 
 bool write(unsigned long data, OutputArchive& archive) {
-	return sprintf(data, "%lu", archive);
+	archive.writeUInt64(data);
+	return true;
 }
 
 bool write(long long data, OutputArchive& archive) {
-	return sprintf(data, "%lld", archive);
+	archive.writeInt64(data);
+	return true;
 }
 
 bool write(unsigned long long data, OutputArchive& archive) {
-	return sprintf(data, "%llu", archive);
+	archive.writeUInt64(data);
+	return true;
 }
 
 bool write(float data, OutputArchive& archive) {
-	return sprintf(data, "%f", archive);
+	archive.writeFloat(data);
+	return true;
 }
 
 bool write(double data, OutputArchive& archive) {
-	return sprintf(data, "%lf", archive);
+	archive.writeDouble(data);
+	return true;
 }
 
 bool write(const char* str, OutputArchive& archive) {
 	assert(str);
-	archive.write(str);
+	archive.writeString(str);
 	return true;
 }
 

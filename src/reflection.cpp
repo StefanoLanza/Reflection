@@ -24,8 +24,9 @@ bool writeBuiltin(const void* data, OutputArchive& archive) {
 
 template <>
 void readBuiltin<std::string>(void* data, InputArchive& archive) {
-	if (const char* str = archive.currNodeText(); str) {
-		*static_cast<std::string*>(data) = str;
+	const char* cstr = nullptr;
+	if (archive.readString(cstr)) {
+		*static_cast<std::string*>(data) = cstr;
 	}
 }
 

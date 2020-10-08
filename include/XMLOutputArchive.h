@@ -43,11 +43,11 @@ public:
 	void             writeBool(bool value) override;
 	void             writeInt(int value) override;
 	void             writeUInt(unsigned int value) override;
-	void             writeInt64(const char* key, int64_t value) override;
-	void             writeUInt64(const char* key, uint64_t value) override;
-	void             writeFloat(const char* key, float value) override;
-	void             writeDouble(const char* key, double value) override;
-	void             writeString(const char* key, const char* str) override;
+	void             writeInt64(int64_t value) override;
+	void             writeUInt64(uint64_t value) override;
+	void             writeFloat(float value) override;
+	void             writeDouble(double value) override;
+	void             writeString(const char* str) override;
 
 private:
 	void beginArrayElement();

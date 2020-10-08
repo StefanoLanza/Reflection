@@ -15,10 +15,10 @@ public:
 	void beginNamespace(const refl::Namespace& nameSpace) {
 		indent();
 		std::cout << "namespace " << nameSpace.getName() << " {" << std::endl;
-		indentation += 4;
+		indentation += whitespace;
 	}
 	void endNamespace() {
-		indentation -= 4;
+		indentation -= whitespace;
 		indent();
 		std::cout << "}" << std::endl;
 	}
@@ -28,10 +28,10 @@ public:
 			std::cout << "enum ";
 		}
 		std::cout << type.getName();
+		std::cout << std::endl;
 		if (type.getSubClass() == refl::Type::Subclass::Enum) {
 			printEnum(static_cast<const refl::EnumType&>(type));
 		}
-		std::cout << std::endl;
 	}
 	void visitField(const char* fieldName, const refl::Type& type) {
 		indent();
@@ -41,10 +41,10 @@ public:
 	void beginClass(const refl::StructType& type) override {
 		indent();
 		std::cout << "struct " << type.getName() << " {" <<std::endl;
-		indentation += 4;
+		indentation += whitespace;
 	}
 	void endClass() override {
-		indentation -= 4;
+		indentation -= whitespace;
 		indent();
 		std::cout << "};" << std::endl;
 	}
@@ -55,8 +55,7 @@ private:
 	}
 
 	void printEnum(const refl::EnumType& enumType) {
-		std::cout << std::endl;
-		indentation += 4;
+		indentation += whitespace;
 		const auto underlyingType = enumType.getUnderlyingType();
 		for (auto& enumerator : enumType.getEnumerators()) {
 			indent();
@@ -64,7 +63,7 @@ private:
 			printEnumerator(enumerator, underlyingType);
 			std::cout << std::endl;
 		}
-		indentation += 4;
+		indentation -= whitespace;
 	}
 
 	void printEnumerator(const refl::Enumerator& enumerator, const refl::Type& underlyingType) const {
@@ -78,6 +77,7 @@ private:
 
 private:
 	std::streamsize indentation = 0;
+	static constexpr std::streamsize whitespace = 4;
 };
 
 } // namespace

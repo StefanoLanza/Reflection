@@ -109,33 +109,28 @@ void JSONOutputArchive::writeUInt(unsigned int value) {
 	writer->Uint(value);
 }
 
-void JSONOutputArchive::writeInt64(const char* key, int64_t value) {
-	writer->Key(key);
+void JSONOutputArchive::writeInt64(int64_t value) {
 	writer->Int64(value);
 }
 
-void JSONOutputArchive::writeUInt64(const char* key, uint64_t value) {
-	writer->Key(key);
+void JSONOutputArchive::writeUInt64(uint64_t value) {
 	writer->Uint64(value);
 }
 
-void JSONOutputArchive::writeFloat(const char* key, float value) {
-	writer->Key(key);
+void JSONOutputArchive::writeFloat(float value) {
 	writer->Double(value);
 }
 
-void JSONOutputArchive::writeDouble(const char* key, double value) {
-	writer->Key(key);
+void JSONOutputArchive::writeDouble(double value) {
 	writer->Double(value);
 }
 
-void JSONOutputArchive::writeString(const char* key, const char* str) {
-	writer->Key(key);
+void JSONOutputArchive::writeString(const char* str) {
 	writer->String(str);
 }
 
 void JSONOutputArchive::writeAttributeKey(const char* key) const {
-	char tmp[64];
+	char tmp[256];
 	tmp[0] = '@';
 	strcpy_s(tmp + 1, sizeof(tmp) - 1, key);
 	writer->Key(tmp);

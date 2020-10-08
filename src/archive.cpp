@@ -34,4 +34,22 @@ WriteTag::operator bool() const {
 	return isValid;
 }
 
+bool InputArchive::readString(const char* key, const char*& str) {
+	bool res = false;
+	if (beginElement(key)) {
+		res = readString(str);
+		endElement();
+	}
+	return res;
+}
+
+bool OutputArchive::writeString(const char* key, const char* str) {
+	bool res = false;
+	if (beginElement(key)) {
+		writeString(str);
+		endElement();
+	}
+	return res;
+}
+
 } // namespace Typhoon::Reflection

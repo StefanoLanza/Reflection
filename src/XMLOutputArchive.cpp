@@ -113,11 +113,13 @@ void XMLOutputArchive::writeAttribute(const char* name, double value) {
 	currentNode->ToElement()->SetAttribute(name, value);
 }
 
+#if TY_REFLECTION_DEPRECATED
 void XMLOutputArchive::write(const char* text) {
 	beginArrayElement(); // insert "element" node for array
 	currentNode->InsertEndChild(document->NewText(text));
 	endArrayElement();
 }
+#endif
 
 void XMLOutputArchive::writeBool(bool value) {
 	beginArrayElement();
@@ -137,43 +139,33 @@ void XMLOutputArchive::writeUInt(unsigned int value) {
 	endArrayElement();
 }
 
-void XMLOutputArchive::writeInt64(const char* key, int64_t value) {
+void XMLOutputArchive::writeInt64(int64_t value) {
 	beginArrayElement();
-	auto element = document->NewElement(key);
-	element->SetText(value);
-	currentNode->InsertEndChild(element);
+	currentNode->ToElement()->SetText(value);
 	endArrayElement();
 }
 
-void XMLOutputArchive::writeUInt64(const char* key, uint64_t value) {
+void XMLOutputArchive::writeUInt64(uint64_t value) {
 	beginArrayElement();
-	auto element = document->NewElement(key);
-	element->SetText(value);
-	currentNode->InsertEndChild(element);
+	currentNode->ToElement()->SetText(value);
 	endArrayElement();
 }
 
-void XMLOutputArchive::writeFloat(const char* key, float value) {
+void XMLOutputArchive::writeFloat(float value) {
 	beginArrayElement();
-	auto element = document->NewElement(key);
-	element->SetText(value);
-	currentNode->InsertEndChild(element);
+	currentNode->ToElement()->SetText(value);
 	endArrayElement();
 }
 
-void XMLOutputArchive::writeDouble(const char* key, double value) {
+void XMLOutputArchive::writeDouble(double value) {
 	beginArrayElement();
-	auto element = document->NewElement(key);
-	element->SetText(value);
-	currentNode->InsertEndChild(element);
+	currentNode->ToElement()->SetText(value);
 	endArrayElement();
 }
 
-void XMLOutputArchive::writeString(const char* key, const char* str) {
+void XMLOutputArchive::writeString(const char* str) {
 	beginArrayElement();
-	auto element = document->NewElement(key);
-	element->SetText(str);
-	currentNode->InsertEndChild(element);
+	currentNode->ToElement()->SetText(str);
 	endArrayElement();
 }
 

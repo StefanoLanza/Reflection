@@ -59,25 +59,27 @@ public:
 #if TY_REFLECTION_DEPRECATED
 	virtual bool iterateChild(ArchiveIterator&, const char* name) = 0; // TODO remove
 #endif
-	virtual bool        beginObject(const char* key) = 0;
-	virtual bool        beginArray(const char* key) = 0;
-	virtual bool        readAttribute(const char* name, bool& value) = 0;
-	virtual bool        readAttribute(const char* name, int& value) = 0;
-	virtual bool        readAttribute(const char* name, unsigned int& value) = 0;
-	virtual bool        readAttribute(const char* name, float& value) = 0;
-	virtual bool        readAttribute(const char* name, double& value) = 0;
-	virtual bool        readAttribute(const char* name, const char*& str) = 0;
-	virtual const char* currNodeText() = 0;
+	virtual bool beginObject(const char* key) = 0;
+	virtual bool beginArray(const char* key) = 0;
+	virtual bool readAttribute(const char* name, bool& value) = 0;
+	virtual bool readAttribute(const char* name, int& value) = 0;
+	virtual bool readAttribute(const char* name, unsigned int& value) = 0;
+	virtual bool readAttribute(const char* name, float& value) = 0;
+	virtual bool readAttribute(const char* name, double& value) = 0;
+	virtual bool readAttribute(const char* name, const char*& str) = 0;
+#if TY_REFLECTION_DEPRECATED
+	virtual const char* currNodeText() const = 0;
+#endif
+	virtual bool readBool(bool& value) const = 0;
+	virtual bool readInt(int& value) const = 0;
+	virtual bool readUInt(unsigned int& value) const = 0;
+	virtual bool readInt64(int64_t& value) const = 0;
+	virtual bool readUInt64(uint64_t& value) const = 0;
+	virtual bool readFloat(float& value) const = 0;
+	virtual bool readDouble(double& value) const = 0;
+	virtual bool readString(const char*& str) const = 0;
 
-	// New API
-	virtual bool readBool(bool& value) = 0;
-	virtual bool readInt(int& value) = 0;
-	virtual bool readUInt(unsigned int& value) = 0;
-	virtual bool readInt64(const char* key, int64_t& value) = 0;
-	virtual bool readUInt64(const char* key, uint64_t& value) = 0;
-	virtual bool readFloat(const char* key, float& value) = 0;
-	virtual bool readDouble(const char* key, double& value) = 0;
-	virtual bool readString(const char* key, const char*& str) = 0;
+	bool readString(const char* key, const char*& str);
 
 	template <class T>
 	T readObject(const char* tag, T&& defaultValue);
@@ -102,18 +104,17 @@ public:
 	virtual void             endObject() = 0;
 	virtual bool             beginArray() = 0;
 	virtual void             endArray() = 0;
-	virtual void             write(const char* data) = 0;
-
-	// New API
+#if TY_REFLECTION_DEPRECATED
+	virtual void write(const char* data) = 0;
+#endif
 	virtual void writeBool(bool value) = 0;
 	virtual void writeInt(int value) = 0;
 	virtual void writeUInt(unsigned int value) = 0;
-	// FIXME
-	virtual void writeInt64(const char* key, int64_t value) = 0;
-	virtual void writeUInt64(const char* key, uint64_t value) = 0;
-	virtual void writeFloat(const char* key, float value) = 0;
-	virtual void writeDouble(const char* key, double value) = 0;
-	virtual void writeString(const char* key, const char* str) = 0;
+	virtual void writeInt64(int64_t value) = 0;
+	virtual void writeUInt64(uint64_t value) = 0;
+	virtual void writeFloat(float value) = 0;
+	virtual void writeDouble(double value) = 0;
+	virtual void writeString(const char* str) = 0;
 
 	// Serialization of attributes
 	virtual void writeAttribute(const char* name, bool value) = 0;
@@ -122,6 +123,8 @@ public:
 	virtual void writeAttribute(const char* name, float value) = 0;
 	virtual void writeAttribute(const char* name, double value) = 0;
 	virtual void writeAttribute(const char* name, const char* str) = 0;
+
+	bool writeString(const char* key, const char* str);
 };
 
 template <typename T>

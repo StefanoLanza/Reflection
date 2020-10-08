@@ -28,19 +28,17 @@ public:
 	bool        iterateChild(ArchiveIterator& it) override;
 #if TY_REFLECTION_DEPRECATED
 	bool iterateChild(ArchiveIterator& it, const char* name) override;
+	const char* currNodeText() const override;
 #endif
 
-	const char* currNodeText() override;
-
-	bool readBool(bool& value) override;
-	bool readInt(int& value) override;
-	bool readUInt(unsigned int& value) override;
-	// FIXME
-	bool readInt64(const char* key, int64_t& value) override;
-	bool readUInt64(const char* key, uint64_t& value) override;
-	bool readFloat(const char* key, float& value) override;
-	bool readDouble(const char* key, double& value) override;
-	bool readString(const char* key, const char*& str) override;
+	bool readBool(bool& value) const override;
+	bool readInt(int& value) const override;
+	bool readUInt(unsigned int& value) const override;
+	bool readInt64(int64_t& value) const override;
+	bool readUInt64(uint64_t& value) const override;
+	bool readFloat(float& value) const override;
+	bool readDouble(double& value) const override;
+	bool readString(const char*& str) const override;
 
 	bool readAttribute(const char* name, bool& value) override;
 	bool readAttribute(const char* name, int& value) override;

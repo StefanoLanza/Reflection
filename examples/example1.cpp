@@ -8,7 +8,7 @@
 
 #define XML  0
 #define JSON 1
-#if 0 && TY_REFLECTION_JSON
+#if TY_REFLECTION_JSON
 #define ARCHIVE_TYPE JSON
 #elif TY_REFLECTION_XML
 #define ARCHIVE_TYPE XML

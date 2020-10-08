@@ -22,75 +22,74 @@ ParseResult JSONInputArchive::initialize(const char* buffer) {
 	return { ! result.IsError(), GetParseError_En(result.Code()), static_cast<int>(result.Offset()) };
 }
 
-const char* JSONInputArchive::currNodeText() {
+#if TY_REFLECTION_DEPRECATED
+
+const char* JSONInputArchive::currNodeText() const {
 	assert(! stack.empty());
 	return stack.top().value->GetString();
 }
 
-bool JSONInputArchive::readBool(bool& b) {
-	assert(! stack.empty());
-	auto value = stack.top().value;
-	if (value->IsBool()) {
+#endif
+
+bool JSONInputArchive::readBool(bool& b) const {
+	if (auto value = stack.top().value; value->IsBool()) {
 		b = value->GetBool();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::readInt(int& i) {
-	assert(! stack.empty());
-	auto value = stack.top().value;
-	if (value->IsInt()) {
+bool JSONInputArchive::readInt(int& i) const {
+	if (auto value = stack.top().value; value->IsInt()) {
 		i = value->GetInt();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::readUInt(unsigned int& ui) {
-	auto value = stack.top().value;
-	if (value->IsUint()) {
+bool JSONInputArchive::readUInt(unsigned int& ui) const {
+	if (auto value = stack.top().value; value->IsUint()) {
 		ui = value->GetUint();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::readInt64(const char* key, int64_t& i64) {
-	if (auto& value = getValue(key); value.IsInt64()) {
-		i64 = value.GetInt64();
+bool JSONInputArchive::readInt64(int64_t& i64) const {
+	if (auto value = stack.top().value; value->IsInt64()) {
+		i64 = value->GetInt64();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::readUInt64(const char* key, uint64_t& ui64) {
-	if (auto& value = getValue(key); value.IsUint64()) {
-		ui64 = value.GetUint64();
+bool JSONInputArchive::readUInt64(uint64_t& ui64) const {
+	if (auto value = stack.top().value; value->IsUint64()) {
+		ui64 = value->GetUint64();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::readFloat(const char* key, float& f) {
-	if (auto& value = getValue(key); value.IsFloat()) {
-		f = value.GetFloat();
+bool JSONInputArchive::readFloat(float& f) const {
+	if (auto value = stack.top().value; value->IsFloat()) {
+		f = value->GetFloat();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::readDouble(const char* key, double& d) {
-	if (auto& value = getValue(key); value.IsDouble()) {
-		d = value.GetDouble();
+bool JSONInputArchive::readDouble(double& d) const{
+	if (auto value = stack.top().value; value->IsDouble()) {
+		d = value->GetDouble();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::readString(const char* key, const char*& str) {
-	if (auto& value = getValue(key); value.IsString()) {
-		str = value.GetString();
+bool JSONInputArchive::readString(const char*& str) const{
+	if (auto value = stack.top().value; value->IsString()) {
+		str = value->GetString();
 		return true;
 	}
 	return false;
