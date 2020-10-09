@@ -19,100 +19,82 @@ Context& getContext();
 
 namespace {
 
-void visitType(const Type& type, Visitor& visitor, const VisitOptions& options, const TypeDB& typeDB, VisitContext& context);
+void visitType(const Type& type, TypeVisitor& visitor, const VisitOptions& options, const TypeDB& typeDB);
 
-void visitFundamental(const Type& type, Visitor& visitor, [[maybe_unused]] const VisitOptions& options, [[maybe_unused]] const TypeDB& typeDB,
-                      VisitContext& context) {
-	visitor.visitType(type);//, context);
+void visitFundamental(const Type& type, TypeVisitor& visitor, [[maybe_unused]] const VisitOptions& options, [[maybe_unused]] const TypeDB& typeDB) {
+	visitor.visitType(type);
 }
 
-void visitStruct(const Type& type, Visitor& visitor, const VisitOptions& options, const TypeDB& typeDB, VisitContext& context) {
+void visitStruct(const Type& type, TypeVisitor& visitor, const VisitOptions& options, const TypeDB& typeDB) {
 	const StructType* structType = static_cast<const StructType*>(&type);
 	visitor.beginClass(*structType);
 	do {
 		for (const auto& property : structType->getProperties()) {
 			const Type& valueType = property.getValueType();
-			context.objectName = property.getName();
 			visitor.visitField(property.getName(), valueType);
-			//visitType(valueType, visitor, options, typeDB, context);
+			// visitType(valueType, visitor, options, typeDB, context);
 		}
 		structType = structType->getParentType();
 	} while (structType);
 	visitor.endClass();
 }
 
-void visitEnum(const Type& type, Visitor& visitor, const VisitOptions& options, const TypeDB& typeDB, VisitContext& context) {
-	visitor.visitType(type);//, context);
+void visitEnum(const Type& type, TypeVisitor& visitor, const VisitOptions& options, const TypeDB& typeDB) {
+	visitor.visitType(type);
 }
 
-void visitBitMask(const Type& type, Visitor& visitor, const VisitOptions& options, const TypeDB& typeDB, VisitContext& context) {
-	visitor.visitType(type);//, context);
+void visitBitMask(const Type& type, TypeVisitor& visitor, const VisitOptions& options, const TypeDB& typeDB) {
+	visitor.visitType(type);
 }
 
-void visitContainer(const Type& type, Visitor& visitor, const VisitOptions& options, const TypeDB& typeDB, VisitContext& context) {
-	visitor.visitType(type);//, context);
+void visitContainer(const Type& type, TypeVisitor& visitor, const VisitOptions& options, const TypeDB& typeDB) {
+	visitor.visitType(type);
 }
 
-void visitPointer(const Type& type, Visitor& visitor, const VisitOptions& options, const TypeDB& typeDB, VisitContext& context) {
+void visitPointer(const Type& type, TypeVisitor& visitor, const VisitOptions& options, const TypeDB& typeDB) {
 }
 
-void visitReference(const Type& type, Visitor& visitor, const VisitOptions& options, const TypeDB& typeDB, VisitContext& context) {
+void visitReference(const Type& type, TypeVisitor& visitor, const VisitOptions& options, const TypeDB& typeDB) {
 }
 
-void visitVariant(const Type& type, Visitor& visitor, const VisitOptions& options, const TypeDB& typeDB, VisitContext& context) {
-	visitor.visitType(type);//, context);
+void visitVariant(const Type& type, TypeVisitor& visitor, const VisitOptions& options, const TypeDB& typeDB) {
+	visitor.visitType(type);
 }
 
-using VisitFunc = void (*)(const Type& type, Visitor& visitor, const VisitOptions& options, const TypeDB& typeDB, VisitContext& context);
+using VisitFunc = void (*)(const Type& type, TypeVisitor& visitor, const VisitOptions& options, const TypeDB& typeDB);
 constexpr VisitFunc perClassVisitors[] = {
 	visitFundamental, visitStruct, visitEnum, visitBitMask, visitContainer, visitPointer, visitReference, visitVariant,
 };
 
-void visitType(const Type& type, Visitor& visitor, const VisitOptions& options, const TypeDB& typeDB, VisitContext& context) {
-	perClassVisitors[(int)type.subClass](type, visitor, options, typeDB, context);
+void visitType(const Type& type, TypeVisitor& visitor, const VisitOptions& options, const TypeDB& typeDB) {
+	perClassVisitors[(int)type.subClass](type, visitor, options, typeDB);
 }
 
-void visitObject(void* object, const Type& type, Visitor& visitor, const VisitOptions& options, const TypeDB& typeDB,
-                 const VisitContext& context) {
-	// perClassVisitors[(int)type.subClass](type, visitor, options, typeDB, level);
-}
-
-void visitNamespaceRecursive(const Namespace& nameSpace, Visitor& visitor, const VisitOptions& options, VisitContext& context) {
+void visitNamespaceRecursive(const Namespace& nameSpace, TypeVisitor& visitor, const VisitOptions& options) {
 	visitor.beginNamespace(nameSpace);
 	for (const auto& type : nameSpace.getTypes()) {
 		visitType(*type, visitor, options);
 	}
 	for (const auto& nestedNamespace : nameSpace.getNestedNamespaces()) {
-		visitNamespaceRecursive(*nestedNamespace, visitor, options, context);
+		visitNamespaceRecursive(*nestedNamespace, visitor, options);
 	}
-	visitor.endNamespace();
+	visitor.endNamespace(nameSpace);
 }
 
 } // namespace
 
-void visitType(TypeId typeId, Visitor& visitor, const VisitOptions& options) {
+void visitType(TypeId typeId, TypeVisitor& visitor, const VisitOptions& options) {
 	const TypeDB& typeDB = *detail::getContext().typeDB;
 	visitType(typeDB.getType(typeId), visitor, options);
 }
 
-void visitType(const Type& type, Visitor& visitor, const VisitOptions& options) {
+void visitType(const Type& type, TypeVisitor& visitor, const VisitOptions& options) {
 	const TypeDB& typeDB = *detail::getContext().typeDB;
-	VisitContext  context;
-	context.objectName = nullptr;
-	visitType(type, visitor, options, typeDB, context);
+	visitType(type, visitor, options, typeDB);
 }
 
-void visitObject(void* object, const TypeId typeId, Visitor& visitor, const VisitOptions& options) {
-	const TypeDB& typeDB = *detail::getContext().typeDB;
-	VisitContext  context;
-	context.objectName = nullptr;
-	visitObject(object, typeDB.getType(typeId), visitor, options, typeDB, context);
-}
-
-void visitNamespace(const Namespace& nameSpace, Visitor& visitor, const VisitOptions& options) {
-	VisitContext context;
-	context.objectName = nullptr;
-	visitNamespaceRecursive(nameSpace, visitor, options, context);
+void visitNamespace(const Namespace& nameSpace, TypeVisitor& visitor, const VisitOptions& options) {
+	visitNamespaceRecursive(nameSpace, visitor, options);
 }
 
 } // namespace Typhoon::Reflection

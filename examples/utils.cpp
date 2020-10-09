@@ -10,19 +10,23 @@
 
 namespace {
 
-class Printer : public refl::Visitor {
+class Printer : public refl::TypeVisitor {
 public:
-	void beginNamespace(const refl::Namespace& nameSpace) {
-		indent();
-		std::cout << "namespace " << nameSpace.getName() << " {" << std::endl;
-		indentation += whitespace;
+	void beginNamespace(const refl::Namespace& nameSpace) override {
+		if (nameSpace.getName()) { // nullptr for global 
+			indent();
+			std::cout << "namespace " << nameSpace.getName() << " {" << std::endl;
+			indentation += whitespace;
+		}
 	}
-	void endNamespace() {
-		indentation -= whitespace;
-		indent();
-		std::cout << "}" << std::endl;
+	void endNamespace(const refl::Namespace& nameSpace) override {
+		if (nameSpace.getName()) { // nullptr for global 
+			indentation -= whitespace;
+			indent();
+			std::cout << "}" << std::endl;
+		}
 	}
-	void visitType(const refl::Type& type) {
+	void visitType(const refl::Type& type) override {
 		indent();
 		if (type.getSubClass() == refl::Type::Subclass::Enum) {
 			std::cout << "enum ";
@@ -33,7 +37,7 @@ public:
 			printEnum(static_cast<const refl::EnumType&>(type));
 		}
 	}
-	void visitField(const char* fieldName, const refl::Type& type) {
+	void visitField(const char* fieldName, const refl::Type& type) override {
 		indent();
 		std::cout << type.getName() << " " << fieldName << ";" << std::endl;
 	}
@@ -51,7 +55,10 @@ public:
 
 private:
 	void indent() const {
-		std::cout << std::setfill(' ') << std::setw(indentation) << ' ';
+		for (std::streamsize i = 0; i < indentation; ++i) {
+			std::cout << ' ';
+		}
+		//std::cout << std::left << std::setfill(' ') << std::setw(indentation);
 	}
 
 	void printEnum(const refl::EnumType& enumType) {
