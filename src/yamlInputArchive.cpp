@@ -19,10 +19,6 @@ std::string YAMLInputArchive::getErrorDesc() const {
 	return {};
 }
 
-const char* YAMLInputArchive::currNodeText() {
-	return nullptr;
-}
-
 void YAMLInputArchive::endElement() {
 }
 

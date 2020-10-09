@@ -37,15 +37,11 @@ public:
 #if TY_REFLECTION_DEPRECATED
 	bool iterateChild(ArchiveIterator& it, const char* name) override;
 #endif
-	const char* currNodeText() const override;
 	bool        readBool(bool& value) const override;
 	bool        readInt(int& value) const override;
 	bool        readUInt(unsigned int& value) const override;
 	bool        readInt64(int64_t& value) const override;
 	bool        readUInt64(uint64_t& value) const override;
-
-	// FIXME
-
 	bool        readFloat(float& value) const override;
 	bool        readDouble(double& value) const override;
 	bool        readString(const char*& str) const override;

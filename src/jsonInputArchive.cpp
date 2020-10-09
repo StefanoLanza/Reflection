@@ -22,15 +22,6 @@ ParseResult JSONInputArchive::initialize(const char* buffer) {
 	return { ! result.IsError(), GetParseError_En(result.Code()), static_cast<int>(result.Offset()) };
 }
 
-#if TY_REFLECTION_DEPRECATED
-
-const char* JSONInputArchive::currNodeText() const {
-	assert(! stack.empty());
-	return stack.top().value->GetString();
-}
-
-#endif
-
 bool JSONInputArchive::readBool(bool& b) const {
 	if (auto value = stack.top().value; value->IsBool()) {
 		b = value->GetBool();
@@ -99,8 +90,7 @@ bool JSONInputArchive::beginElement(const char* name) {
 	assert(! stack.empty());
 	const StackItem& top = stack.top();
 	if (top.value->IsObject()) {
-		auto memberItr = name ? top.value->FindMember(name) : top.value->MemberBegin();
-		if (memberItr != top.value->MemberEnd()) {
+		if (auto memberItr = name ? top.value->FindMember(name) : top.value->MemberBegin(); memberItr != top.value->MemberEnd()) {
 			stack.push({ &memberItr->value });
 			return true;
 		}

@@ -168,7 +168,7 @@ bool readEnum(void* dstData, const Type& type, Semantic /*semantic*/, const Type
               LinearAllocator& /*stackAllocator*/) {
 	const EnumType& enumType = static_cast<const EnumType&>(type);
 	bool            res = false;
-	if (const char* name = archive.currNodeText(); name) {
+	if (const char* name = nullptr; archive.readString(name)) {
 		const Enumerator* constant = enumType.findEnumeratorByName(name);
 		if (constant) {
 			// Cast the type to an enum and retrieve the value
@@ -187,7 +187,7 @@ bool readBitMask(void* dstData, const Type& type, Semantic /*semantic*/, const T
 	const BitMaskType& bitMaskType = static_cast<const BitMaskType&>(type);
 	assert(bitMaskType.size <= sizeof(BitMaskStorageType));
 	bool res = false;
-	if (const char* maskStr = archive.currNodeText(); maskStr) {
+	if (const char* maskStr = nullptr; archive.readString(maskStr)) {
 		BitMaskStorageType bitMask = 0;
 		for (const BitMaskConstant& enumerator : bitMaskType.getEnumerators()) {
 			if (strstr(maskStr, enumerator.name)) {

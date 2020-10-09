@@ -21,8 +21,6 @@ public:
 	bool        iterateChild(ArchiveIterator& it) override;
 	bool        iterateChild(ArchiveIterator& it, const char* name) override;
 
-	const char* currNodeText() override;
-
 	bool readAttribute(const char* name, bool& value) override;
 	bool readAttribute(const char* name, char& value) override;
 	bool readAttribute(const char* name, unsigned char& value) override;

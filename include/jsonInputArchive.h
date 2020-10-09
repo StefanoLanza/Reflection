@@ -28,7 +28,6 @@ public:
 	bool        iterateChild(ArchiveIterator& it) override;
 #if TY_REFLECTION_DEPRECATED
 	bool iterateChild(ArchiveIterator& it, const char* name) override;
-	const char* currNodeText() const override;
 #endif
 
 	bool readBool(bool& value) const override;

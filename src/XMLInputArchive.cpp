@@ -30,21 +30,6 @@ ParseResult XMLInputArchive::initialize(const char* buffer) {
 	}
 }
 
-const char* XMLInputArchive::currNodeText() const {
-#if 1
-	if (const tinyxml2::XMLNode* const textNode = currentNode->FirstChild(); textNode) {
-		if (const tinyxml2::XMLText* const text = textNode->ToText(); text) {
-			return text->Value();
-		}
-	}
-#else
-	if (auto text = currentNode->ToText(); text) {
-		return text->Value();
-	}
-#endif
-	return nullptr;
-}
-
 bool XMLInputArchive::readBool(bool& value) const {
 	bool res = false;
 	if (auto element = currentNode->ToElement(); element) {
@@ -188,8 +173,7 @@ bool XMLInputArchive::beginElement(const char* name) {
 	if (! currentNode) {
 		return false;
 	}
-	tinyxml2::XMLElement* const element = currentNode->FirstChildElement(name);
-	if (element) {
+	if (auto element = currentNode->FirstChildElement(name); element) {
 		currentNode = element;
 		return true;
 	}

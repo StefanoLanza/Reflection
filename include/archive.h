@@ -67,9 +67,6 @@ public:
 	virtual bool readAttribute(const char* name, float& value) = 0;
 	virtual bool readAttribute(const char* name, double& value) = 0;
 	virtual bool readAttribute(const char* name, const char*& str) = 0;
-#if TY_REFLECTION_DEPRECATED
-	virtual const char* currNodeText() const = 0;
-#endif
 	virtual bool readBool(bool& value) const = 0;
 	virtual bool readInt(int& value) const = 0;
 	virtual bool readUInt(unsigned int& value) const = 0;
