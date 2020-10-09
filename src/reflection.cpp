@@ -42,6 +42,7 @@ void createBuiltin(Context& context, const char* typeName) {
 	type->setCustomReader(&readBuiltin<T>);
 	type->setCustomWriter(&writeBuiltin<T>);
 	context.typeDB->registerType(type);
+	context.typeDB->getGlobalNamespace().addType(type);
 }
 
 #define CREATE_BUILTIN(type, context) createBuiltin<type>(context, #type)
@@ -63,7 +64,9 @@ void registerBuiltinTypes(Context& context) {
 	CREATE_BUILTIN(const char*, context);
 	CREATE_BUILTIN(std::string, context);
 
-	context.typeDB->registerType(context.scopedAllocator->make<VariantType>());
+	auto variantType = context.scopedAllocator->make<VariantType>();
+	context.typeDB->registerType(variantType);
+	context.typeDB->getGlobalNamespace().addType(variantType);
 }
 
 HeapAllocator defaultAllocator;

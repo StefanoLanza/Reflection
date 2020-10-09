@@ -1,10 +1,11 @@
 #include "namespace.h"
+#include <cassert>
 
 namespace Typhoon::Reflection {
 
 Namespace::Namespace(const char* name, Allocator& allocator)
     : name(name)
-    , nestedNamespaces(stdAllocator<const Namespace*>(allocator))
+    , nestedNamespaces(stdAllocator<Namespace*>(allocator))
     , types(stdAllocator<const Type*>(allocator)) {
 }
 
@@ -18,11 +19,21 @@ span<const Type* const> Namespace::getTypes() const {
 	return { types.data(), types.size() };
 }
 
-span<const Namespace* const> Namespace::getNestedNamespaces() const {
+span<Namespace* const> Namespace::getNestedNamespaces() const {
 	return { nestedNamespaces.data(), nestedNamespaces.size() };
 }
 
-void Namespace::addNestedNamespace(const Namespace* nestedNamespace) {
+Namespace* Namespace::getNestedNamespace(const char* nestedName) const {
+	assert(nestedName);
+	for (auto n : nestedNamespaces) {
+		if (! strcmp(n->getName(), nestedName)) {
+			return n;
+		}
+	}
+	return nullptr;
+}
+
+void Namespace::addNestedNamespace(Namespace* nestedNamespace) {
 	nestedNamespaces.push_back(nestedNamespace);
 }
 

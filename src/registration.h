@@ -60,13 +60,14 @@ Context& getContext();
 	while (false)        \
 	__pragma(warning(pop))
 
-#define BEGIN_NAMESPACE(nameSpace)                                                                    \
-	do {                                                                                              \
-		const auto newNamespace = scopedAllocator_.make<Namespace>(#nameSpace, std::ref(allocator_)); \
-		const auto parentNamespace = currNamespace;                                                   \
-		if (parentNamespace) {                                                                        \
-			parentNamespace->addNestedNamespace(newNamespace);                                        \
-		}                                                                                             \
+#define BEGIN_NAMESPACE(name)                                                             \
+	do {                                                                                  \
+		const auto parentNamespace = currNamespace;                                       \
+		Namespace* newNamespace = parentNamespace->getNestedNamespace(#name);             \
+		if (! newNamespace) {                                                             \
+			newNamespace = scopedAllocator_.make<Namespace>(#name, std::ref(allocator_)); \
+			parentNamespace->addNestedNamespace(newNamespace);                            \
+		}                                                                                 \
 		currNamespace = newNamespace;
 
 #define END_NAMESPACE()              \

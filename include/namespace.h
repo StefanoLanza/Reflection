@@ -15,18 +15,22 @@ public:
 	Namespace(const char* name, Allocator& allocator);
 	~Namespace();
 
+	static constexpr char* global = nullptr;
+	static constexpr char  unnamed[] = "";
+
 	const char*             getName() const;
 	span<const Type* const> getTypes() const;
-	span<const Namespace* const> getNestedNamespaces() const;
-	void addNestedNamespace(const Namespace* nestedNamespace);
+	span<Namespace* const>  getNestedNamespaces() const;
+	Namespace*              getNestedNamespace(const char* name) const;
+	void                    addNestedNamespace(Namespace* nestedNamespace);
 	void                    addType(const Type* type);
 
 private:
 	using TypeVector = std::vector<const Type*, stdAllocator<const Type*>>;
-	using NamespaceVector = std::vector<const Namespace*, stdAllocator<const Namespace*>>;
-	const char* name;
+	using NamespaceVector = std::vector<Namespace*, stdAllocator<Namespace*>>;
+	const char*     name;
 	NamespaceVector nestedNamespaces;
-	TypeVector  types;
+	TypeVector      types;
 };
 
 } // namespace Typhoon::Reflection

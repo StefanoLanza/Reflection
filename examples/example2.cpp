@@ -76,8 +76,11 @@ void registerUserTypes() {
 	FIELD(y);
 	FIELD(z);
 	END_STRUCT();
+	END_NAMESPACE();
 
-	BEGIN_STRUCT(GameObject);
+	BEGIN_NAMESPACE(Test)
+
+		BEGIN_STRUCT(GameObject);
 	FIELD(name);
 	C_SETTER(lives, setLives);
 	C_GETTER("remainingLives", getRemainingLives);

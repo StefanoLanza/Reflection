@@ -7,7 +7,7 @@ platforms { "x86", "x86_64" }
 language "C++"
 location (workspacePath)
 characterset "MBCS"
-flags   { "MultiProcessorCompile", }
+flags   { "MultiProcessorCompile", } --"ConformanceMode", }
 startproject "UnitTest"
 exceptionhandling "Off"
 defines { "_HAS_EXCEPTIONS=0" }
@@ -15,7 +15,7 @@ cppdialect "c++17"
 rtti "Off"
 buildoptions
 {	
-	"/permissive-",
+	"/permissive-", -- conformance mode
 }
 system "Windows"
 
