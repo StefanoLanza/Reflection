@@ -3,10 +3,10 @@
 #if TY_REFLECTION_JSON
 
 #include <cassert>
-#include <rapidjson-master/include/rapidjson/document.h>
-#include <rapidjson-master/include/rapidjson/prettywriter.h>
-#include <rapidjson-master/include/rapidjson/rapidjson.h>
-#include <rapidjson-master/include/rapidjson/stringbuffer.h>
+#include <rapidjson/include/rapidjson/document.h>
+#include <rapidjson/include/rapidjson/prettywriter.h>
+#include <rapidjson/include/rapidjson/rapidjson.h>
+#include <rapidjson/include/rapidjson/stringbuffer.h>
 
 using namespace rapidjson;
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../src/typeDB.h"
 #include "type.h"
+#include "typeDB.h"
 
 namespace Typhoon::Reflection {
 

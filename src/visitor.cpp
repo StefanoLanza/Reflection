@@ -1,5 +1,3 @@
-#pragma once
-
 #include <include/visitor.h>
 
 #include "context.h"

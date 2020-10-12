@@ -15,7 +15,7 @@
 #include "writeObject.h"
 #include "namespace.h"
 
-#include "../src/registration.h"
+#include "registration.h"
 
 #ifdef TY_REFLECTION_XML
 #include "XMLInputArchive.h"

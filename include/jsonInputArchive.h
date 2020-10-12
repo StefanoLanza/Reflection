@@ -6,7 +6,7 @@
 
 #include "archive.h"
 #include <memory>
-#include "../external/rapidjson-master/include/rapidjson/fwd.h"
+#include <rapidjson/include/rapidjson/fwd.h>
 #include <stack>
 
 namespace Typhoon::Reflection {

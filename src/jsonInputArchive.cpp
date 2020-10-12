@@ -3,8 +3,8 @@
 #if TY_REFLECTION_JSON
 
 #include <cassert>
-#include <rapidjson-master/include/rapidjson/document.h>
-#include <rapidjson-master/include/rapidjson/error/en.h>
+#include <rapidjson/include/rapidjson/document.h>
+#include <rapidjson/include/rapidjson/error/en.h>
 
 namespace Typhoon::Reflection {
 

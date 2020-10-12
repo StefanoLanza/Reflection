@@ -79,7 +79,7 @@ Context& getContext();
 	do {                                                                                                                                      \
 		using class_ = class;                                                                                                                 \
 		constexpr bool isClass = true;                                                                                                        \
-		const auto     structType = scopedAllocator_.make<StructType>(Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
                                                                   MethodTable {}, std::ref(allocator_));
 
 #define BEGIN_STRUCT(class)                                                                                                                           \

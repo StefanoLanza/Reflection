@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../src/context.h"
-#include "../src/typeDB.h"
+#include "context.h"
+#include "typeDB.h"
 #include "type.h"
 #include <core/scopedAllocator.h>
 
