@@ -1,6 +1,7 @@
 #pragma once
 
 #include "config.h"
+#include <stddef.h>
 
 namespace Typhoon::Reflection {
 

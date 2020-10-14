@@ -1,6 +1,7 @@
 #pragma once
 
-#include <cstddef>
+#include <stddef.h>
+#include <cstdint>
 
 namespace Typhoon {
 
