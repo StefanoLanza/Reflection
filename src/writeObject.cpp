@@ -123,7 +123,7 @@ bool writeBitMask(const void* data, const Type& type, const TypeDB& /*typeDB*/, 
 	for (const BitMaskConstant& enumerator : bitMaskType.getEnumerators()) {
 		if ((bitMask & enumerator.mask) == enumerator.mask) {
 			// Append enumerator name
-			const int r = sprintf_s(str + length, std::size(str) - length, "%s|", enumerator.name);
+			const int r = snprintf(str + length, std::size(str) - length, "%s|", enumerator.name);
 			if (r < 0) {
 				res = false;
 				break;

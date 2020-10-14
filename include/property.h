@@ -6,6 +6,7 @@
 #include <core/stdAllocator.h>
 #include <cstdint>
 #include <functional>
+#include <vector>
 
 namespace Typhoon::Reflection {
 

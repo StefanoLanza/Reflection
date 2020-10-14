@@ -1,6 +1,7 @@
 #include "typeId.h"
 #include <cassert>
 #include <unordered_map>
+#include <vector>
 #include <map>
 
 namespace Typhoon {
@@ -35,8 +36,8 @@ TypeId typeNameToId(const char* typeName) {
 
 void registerTypeName(TypeId id, const char* typeName) {
 	TypeNameStorage s;
-	const auto      err = strncpy_s(s.string, std::size(s.string), typeName, _TRUNCATE);
-	assert(err != STRUNCATE);
+	strncpy(s.string, typeName, std::size(s.string));
+    assert(s.string[std::size(s.string) - 1] == 0);
 	auto r = idToName.insert({ id.impl, s });
 	assert(r.second);
 	nameToId.push_back({ s, id });
