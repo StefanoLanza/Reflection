@@ -36,8 +36,8 @@ TypeId typeNameToId(const char* typeName) {
 
 void registerTypeName(TypeId id, const char* typeName) {
 	TypeNameStorage s;
-	strncpy(s.string, typeName, std::size(s.string));
-    assert(s.string[std::size(s.string) - 1] == 0);
+    assert(strlen(typeName) < std::size(s.string));
+	strlcpy(s.string, typeName, std::size(s.string));
 	auto r = idToName.insert({ id.impl, s });
 	assert(r.second);
 	nameToId.push_back({ s, id });

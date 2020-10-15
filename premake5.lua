@@ -25,6 +25,7 @@ filter "action:vs*"
 
 filter "action:xcode*"
 	system "macosx"
+	systemversion("10.12") -- MACOSX_DEPLOYMENT_TARGET
 
 filter "platforms:x86"
 	architecture "x86"

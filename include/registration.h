@@ -214,7 +214,7 @@ Context& getContext();
 	;                                                                                                                                           \
 	const Type& underlyingType = typeDB_.getType<std::underlying_type_t<enumClass_>>();                                                         \
 	const auto  enumType = scopedAllocator_.make<EnumType>(enumName, Typhoon::getTypeId<enumClass_>(), sizeof(enumClass_), alignof(enumClass_), \
-                                                          enumerators, _countof(enumerators), &underlyingType);                                \
+                                                          enumerators, std::size(enumerators), &underlyingType);                                \
 	typeDB_.registerType(enumType);                                                                                                             \
 	currNamespace->addType(enumType);                                                                                                           \
 	}                                                                                                                                           \
