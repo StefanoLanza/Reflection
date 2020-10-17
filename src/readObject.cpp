@@ -58,7 +58,7 @@ bool readObject(void* object, TypeId typeId, InputArchive& archive, Semantic sem
 	bool        res = false;
 	const Type* type = detail::getTypeDB().tryGetType(typeId);
 	if (type) {
-		char            stack[stackSize];
+		char            stack[Defaults::stackSize];
 		LinearAllocator stackAllocator(stack, std::size(stack), nullptr);
 		res = readObject(object, *type, semantic, detail::getTypeDB(), archive, stackAllocator);
 	}
@@ -74,7 +74,7 @@ std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementT
 	bool            res = false;
 	size_t          count = 0;
 	void*           destPtr = array;
-	char            stack[stackSize];
+	char            stack[Defaults::stackSize];
 	LinearAllocator stackAllocator(stack, std::size(stack), nullptr);
 	if (archive.beginElement(arrayName)) {
 		res = true;
@@ -97,7 +97,7 @@ std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementT
 
 bool readContainer(void* container, const char* containerName, const ContainerType& type, InputArchive& archive) {
 	bool            res = false;
-	char            stack[stackSize];
+	char            stack[Defaults::stackSize];
 	LinearAllocator stackAllocator(stack, std::size(stack), nullptr);
 	if (archive.beginElement(containerName)) {
 		res = readContainer(container, type, Semantic::none, detail::getTypeDB(), archive, stackAllocator);

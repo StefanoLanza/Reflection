@@ -43,7 +43,7 @@ ErrorCode cloneObject(void* dstObject, const void* srcObject, TypeId typeId) {
 			errorCode = ErrorCode::ok;
 		}
 		else {
-			char            stack[stackSize];
+			char            stack[Defaults::stackSize];
 			LinearAllocator stackAllocator(stack, std::size(stack), nullptr);
 			errorCode = cloneObjectImpl(dstObject, srcObject, *type, stackAllocator);
 		}
