@@ -22,7 +22,6 @@ filter "action:vs*"
 	system "Windows"
 	-- systemversion "10.0.17134.0"
 
-
 filter "action:xcode*"
 	system "macosx"
 	systemversion("10.12") -- MACOSX_DEPLOYMENT_TARGET
