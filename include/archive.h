@@ -169,12 +169,12 @@ private:
 // Specialized
 template <class T>
 bool read(T& object, InputArchive& archive) {
-	static_assert(false, "Not implemented");
+	//static_assert(false, "Not implemented");
 }
 
 template <class T>
 bool write(const T& object, OutputArchive& archive) {
-	static_assert(false, "Not implemented");
+	//static_assert(false, "Not implemented");
 }
 
 template <class T>

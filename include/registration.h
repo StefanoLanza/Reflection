@@ -45,7 +45,7 @@ Context& getContext();
 // Macro-based reflection
 
 #define BEGIN_REFLECTION()                                              \
-	__pragma(warning(push)) __pragma(warning(disable : 4127)) do {      \
+	do {      \
 		using namespace refl;                                           \
 		using namespace Typhoon;                                        \
 		Context&         context = detail::getContext();                \
@@ -58,7 +58,6 @@ Context& getContext();
 #define END_REFLECTION() \
 	}                    \
 	while (false)        \
-	__pragma(warning(pop))
 
 #define BEGIN_NAMESPACE(name)                                                             \
 	do {                                                                                  \
@@ -215,7 +214,7 @@ Context& getContext();
 	;                                                                                                                                           \
 	const Type& underlyingType = typeDB_.getType<std::underlying_type_t<enumClass_>>();                                                         \
 	const auto  enumType = scopedAllocator_.make<EnumType>(enumName, Typhoon::getTypeId<enumClass_>(), sizeof(enumClass_), alignof(enumClass_), \
-                                                          enumerators, _countof(enumerators), &underlyingType);                                \
+                                                          enumerators, std::size(enumerators), &underlyingType);                                \
 	typeDB_.registerType(enumType);                                                                                                             \
 	currNamespace->addType(enumType);                                                                                                           \
 	}                                                                                                                                           \

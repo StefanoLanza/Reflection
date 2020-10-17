@@ -276,7 +276,7 @@ bool JSONInputArchive::readAttribute(const char* name, const char*& str) {
 bool JSONInputArchive::beginAttribute(const char* name) {
 	char tmp[64];
 	tmp[0] = '@';
-	strcpy_s(tmp + 1, sizeof(tmp) - 1, name);
+	strncpy(tmp + 1, name, sizeof(tmp) - 1);
 	return beginElement(tmp);
 }
 

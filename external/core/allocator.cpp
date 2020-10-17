@@ -22,11 +22,11 @@ void HeapAllocator::free(void* ptr, size_t /*size*/) {
 #endif
 }
 
-void* HeapAllocator::realloc(void* ptr, size_t bytes, size_t alignment) {
+void* HeapAllocator::realloc(void* ptr, size_t bytes, [[maybe_unused]] size_t alignment) {
 #ifdef _MSC_VER
 	return _aligned_realloc(ptr, bytes, alignment);
 #else
-	::realloc(ptr);
+	return ::realloc(ptr, bytes);
 #endif
 }
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stddef.h> // size_t
+
 // Set to 1/0 to enable/disable XML serialization support
 #ifndef TY_REFLECTION_XML
 #define TY_REFLECTION_XML 1
