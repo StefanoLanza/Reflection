@@ -1,6 +1,7 @@
 #pragma once
 
 #include <core/typeId.h>
+#include <core/uncopyable.h>
 #include <functional>
 #include <type_traits>
 
@@ -108,7 +109,7 @@ using CustomWriter = std::function<bool(const void*, OutputArchive&)>;
 using CustomReader = std::function<void(void*, InputArchive&)>;
 using CustomCloner = std::function<void(void*, const void*)>;
 
-class Type {
+class Type : Uncopyable {
 public:
 	enum class Subclass { Builtin, Struct, Enum, BitMask, Container, Pointer, Reference, Variant };
 

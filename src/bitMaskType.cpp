@@ -4,10 +4,13 @@
 
 namespace Typhoon::Reflection {
 
-BitMaskType::BitMaskType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const BitMaskConstant enumerators[], size_t numEnumerators)
-    : Type(typeName, typeID, Subclass::BitMask, size, alignment, {})
+BitMaskType::BitMaskType(const char* typeName, TypeId typeID, const Type* underlyingType, const BitMaskConstant enumerators[],
+                         size_t numEnumerators)
+    : Type(typeName, typeID, Subclass::BitMask, underlyingType->getSize(), underlyingType->getAlignment(), {})
+    , underlyingType(underlyingType)
     , enumerators(enumerators)
-    , numEnumerators(numEnumerators) {
+    , numEnumerators(numEnumerators)
+{
 }
 
 span<const BitMaskConstant> BitMaskType::getEnumerators() const {
@@ -31,6 +34,10 @@ BitMaskStorageType BitMaskType::findConstantByName(const char* enumeratorName) c
 		}
 	}
 	return 0;
+}
+
+const Type& BitMaskType::getUnderlyingType() const {
+	return *underlyingType;
 }
 
 } // namespace Typhoon::Reflection

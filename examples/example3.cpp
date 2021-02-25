@@ -74,6 +74,7 @@ int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 
 	refl::initReflection();
 	registerUserTypes();
+	std::cout << "Registered types:" << std::endl;
 	printNamespace(refl::getGlobalNamespace());
 
 	const char* element = "gameObject";

@@ -232,8 +232,9 @@ Context& getContext();
 #define END_BITMASK()                                                                                                                                \
 	}                                                                                                                                                \
 	;                                                                                                                                                \
-	const auto bitmaskType = scopedAllocator_.make<BitMaskType>(typeName, Typhoon::getTypeId<bitMaskStruct_>(), sizeof(bitMaskStruct_::StorageType), \
-	                                                            alignof(bitMaskStruct_::StorageType), enumerators, std::size(enumerators));          \
+	const Type& underlyingType = typeDB_.getType<bitMaskStruct_::StorageType>();                                                               \
+	const auto  bitmaskType = scopedAllocator_.make<BitMaskType>(typeName, Typhoon::getTypeId<bitMaskStruct_>(), &underlyingType, \
+	                                                            enumerators, std::size(enumerators));          \
 	typeDB_.registerType(bitmaskType);                                                                                                               \
 	currNamespace->addType(bitmaskType);                                                                                                             \
 	}                                                                                                                                                \

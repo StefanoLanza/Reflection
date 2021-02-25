@@ -16,13 +16,16 @@ struct BitMaskConstant {
 
 class BitMaskType : public Type {
 public:
-	BitMaskType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const BitMaskConstant enumerators[], size_t numEnumerators);
+	BitMaskType(const char* typeName, TypeId typeID, const Type* underlyingType, const BitMaskConstant enumerators[],
+	            size_t numEnumerators);
 
 	span<const BitMaskConstant> getEnumerators() const;
 	const char*                 findConstantByValue(BitMaskStorageType value) const;
 	BitMaskStorageType          findConstantByName(const char* enumeratorName) const;
+	const Type&                 getUnderlyingType() const;
 
 private:
+	const Type*            underlyingType;
 	const BitMaskConstant* enumerators;
 	size_t                 numEnumerators;
 };
