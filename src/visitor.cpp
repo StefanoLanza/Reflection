@@ -65,7 +65,7 @@ constexpr VisitFunc perClassVisitors[] = {
 };
 
 void visitType(const Type& type, TypeVisitor& visitor, const VisitOptions& options, const TypeDB& typeDB) {
-	perClassVisitors[(int)type.subClass](type, visitor, options, typeDB);
+	perClassVisitors[(int)type.getSubClass()](type, visitor, options, typeDB);
 }
 
 void visitNamespaceRecursive(const Namespace& nameSpace, TypeVisitor& visitor, const VisitOptions& options) {

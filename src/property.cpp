@@ -54,7 +54,7 @@ void Property::copyValue(void* dstSelf, const void* srcSelf) const {
 	char   stack[256];
 	void*  dst = stack;
 	size_t size = sizeof stack;
-	void*  temporary = std::align(valueType->alignment, valueType->size, dst, size);
+	void*  temporary = std::align(valueType->getAlignment(), valueType->getSize(), dst, size);
 	assert(temporary);
 	if (temporary) {
 		valueType->constructObject(temporary);

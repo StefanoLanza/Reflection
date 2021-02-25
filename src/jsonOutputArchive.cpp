@@ -132,7 +132,12 @@ void JSONOutputArchive::writeString(const char* str) {
 void JSONOutputArchive::writeAttributeKey(const char* key) const {
 	char tmp[256];
 	tmp[0] = '@';
+#ifdef _MSC_VER
+	strncpy_s(tmp + 1, sizeof(tmp) - 1, key, sizeof(tmp) - 2);
+	tmp[sizeof(tmp) - 1] = 0;
+#else
 	strncpy(tmp + 1, key, sizeof(tmp) - 1);
+#endif
 	writer->Key(tmp);
 }
 

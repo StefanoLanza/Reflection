@@ -28,7 +28,7 @@ Variant::Variant(const void* data, TypeId typeId, std::string_view name)
     : typeId { typeId }
     , name { name } {
 	const auto& type = getType();
-	assert(type.size <= sizeof storage);
+	assert(type.getSize() <= sizeof storage);
 	type.copyConstructObject(&storage, data);
 }
 
@@ -36,7 +36,7 @@ Variant::Variant(TypeId typeId, std::string_view name)
     : typeId { typeId }
     , name { name } {
 	const auto& type = getType();
-	assert(type.size <= sizeof storage);
+	assert(type.getSize() <= sizeof storage);
 	type.constructObject(&storage);
 }
 

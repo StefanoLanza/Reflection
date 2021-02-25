@@ -33,7 +33,7 @@ const Type& TypeDB::getType(TypeId typeID) const {
 const Type* TypeDB::tryGetType(TypeId typeID) const {
 	// TODO O(n), optimize
 	for (const auto& type : types) {
-		if (type->typeID == typeID) {
+		if (type->getTypeId() == typeID) {
 			return type;
 		}
 	}

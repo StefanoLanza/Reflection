@@ -134,12 +134,11 @@ public:
 	void                setCustomCloner(CustomCloner loader);
 	const CustomCloner& getCustomCloner() const;
 
-	TypeId   typeID;
-	size_t   size;
-	size_t   alignment;
-	Subclass subClass;
-
 private:
+	TypeId       typeID;
+	size_t       size;
+	size_t       alignment;
+	Subclass     subClass;
 	const char*  typeName;
 	MethodTable  methods;
 	CustomWriter customWriter;

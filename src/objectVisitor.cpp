@@ -62,7 +62,7 @@ constexpr VisitorFunc perClassVisitors[] = {
 };
 
 bool visitObjectImpl(void* data, const Type& type, const TypeDB& typeDB, ObjectVisitor& visitor, LinearAllocator& stackAllocator) {
-	return perClassVisitors[(int)type.subClass](data, type, typeDB, visitor, stackAllocator);
+	return perClassVisitors[(int)type.getSubClass()](data, type, typeDB, visitor, stackAllocator);
 }
 
 

@@ -106,7 +106,7 @@ Context& getContext();
 		static_assert(! std::is_same_v<parentClass, class>, #parentClass " and " #class " are the same class");                           \
 		static_assert(std::is_base_of_v<parentClass, class>, #parentClass " is not a base class of " #class);                             \
 		const StructType& parentType = static_cast<const StructType&>(typeDB_.getType<parentClass>());                                    \
-		assert(parentType.subClass == Type::Subclass::Struct);                                                                            \
+		assert(parentType.getSubClass() == Type::Subclass::Struct);                                                                       \
 		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_),  \
 		                                                          &parentType, detail::buildMethodTable<class_>(), std::ref(allocator_)); \
 		do {                                                                                                                              \

@@ -45,7 +45,7 @@ struct ParseResult {
 	}
 };
 
-class InputArchive {
+class InputArchive : Uncopyable {
 public:
 	virtual ~InputArchive() = default;
 
@@ -88,7 +88,7 @@ public:
 	bool readObject(T& object);
 };
 
-class OutputArchive {
+class OutputArchive : Uncopyable {
 public:
 	virtual ~OutputArchive() = default;
 
