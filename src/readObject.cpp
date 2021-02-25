@@ -87,7 +87,7 @@ std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementT
 				res = false;
 				break;
 			}
-			destPtr = advancePointer(destPtr, elementType->size);
+			destPtr = advancePointer(destPtr, elementType->getSize());
 			++count;
 		}
 		archive.endElement();
@@ -125,7 +125,7 @@ bool readObject(void* data, const Type& type, Semantic semantic, const TypeDB& t
 		res = true; // TODO error code ?
 	}
 	else {
-		res = perClassReaders[(int)type.subClass](data, type, semantic, typeDB, archive, stackAllocator);
+		res = perClassReaders[(int)type.getSubClass()](data, type, semantic, typeDB, archive, stackAllocator);
 	}
 	return res;
 }
@@ -172,7 +172,7 @@ bool readEnum(void* dstData, const Type& type, Semantic /*semantic*/, const Type
 		const Enumerator* constant = enumType.findEnumeratorByName(name);
 		if (constant) {
 			// Cast the type to an enum and retrieve the value
-			std::memcpy(dstData, &constant->value, enumType.size);
+			std::memcpy(dstData, &constant->value, enumType.getSize());
 			res = true;
 		}
 	}
@@ -185,7 +185,7 @@ bool readEnum(void* dstData, const Type& type, Semantic /*semantic*/, const Type
 bool readBitMask(void* dstData, const Type& type, Semantic /*semantic*/, const TypeDB& /*typeDB*/, InputArchive& archive,
                  LinearAllocator& /*stackAllocator*/) {
 	const BitMaskType& bitMaskType = static_cast<const BitMaskType&>(type);
-	assert(bitMaskType.size <= sizeof(BitMaskStorageType));
+	assert(bitMaskType.getSize() <= sizeof(BitMaskStorageType));
 	bool res = false;
 	if (const char* maskStr = nullptr; archive.readString(maskStr)) {
 		BitMaskStorageType bitMask = 0;
@@ -195,7 +195,7 @@ bool readBitMask(void* dstData, const Type& type, Semantic /*semantic*/, const T
 			}
 		}
 		// (Narrow) cast bitMask to the destination data
-		std::memcpy(dstData, &bitMask, type.size);
+		std::memcpy(dstData, &bitMask, type.getSize());
 		res = true;
 	}
 	return res;
@@ -216,7 +216,7 @@ bool readContainer(void* data, const Type& type, Semantic semantic, const TypeDB
 			if (key_type) {
 				// Construct a temporary for the key
 				ScopedAllocator scopedAllocator(stackAllocator);
-				void* const     key = scopedAllocator.alloc(key_type->size, key_type->alignment);
+				void* const     key = scopedAllocator.alloc(key_type->getSize(), key_type->getAlignment());
 				assert(key);
 				key_type->constructObject(key);
 				// read key

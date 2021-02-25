@@ -58,7 +58,7 @@ namespace {
 
 ErrorCode cloneObjectImpl(void* dstData, const void* srcData, const Type& type, LinearAllocator& stackAllocator) {
 	const TypeDB&        typeDB = detail::getTypeDB();
-	const Type::Subclass subclass = type.subClass;
+	const Type::Subclass subclass = type.getSubClass();
 	if (subclass == Type::Subclass::Builtin) {
 		cloneBuiltin(dstData, srcData, static_cast<const BuiltinType&>(type));
 	}
@@ -104,11 +104,11 @@ void cloneBuiltin(void* data, const void* srcData, const BuiltinType& type) {
 }
 
 void cloneEnum(void* data, const void* srcData, const EnumType& type) {
-	std::memcpy(data, srcData, type.size);
+	std::memcpy(data, srcData, type.getSize());
 }
 
 void cloneBitMask(void* data, const void* srcData, const BitMaskType& type) {
-	std::memcpy(data, srcData, type.size);
+	std::memcpy(data, srcData, type.getSize());
 }
 
 void cloneContainer(void* dstContainer, const void* srcContainer, const ContainerType& type, LinearAllocator& stackAllocator) {

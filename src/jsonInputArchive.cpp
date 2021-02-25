@@ -15,7 +15,7 @@ JSONInputArchive::JSONInputArchive()
 JSONInputArchive::~JSONInputArchive() = default;
 
 ParseResult JSONInputArchive::initialize(const char* buffer) {
-	const rapidjson::ParseResult result = document->Parse(buffer);
+	const rapidjson::ParseResult result = document->Parse<rapidjson::kParseCommentsFlag | rapidjson::kParseTrailingCommasFlag>(buffer);
 	if (! result.IsError()) {
 		stack.push({ document.get() });
 	}
@@ -274,9 +274,14 @@ bool JSONInputArchive::readAttribute(const char* name, const char*& str) {
 }
 
 bool JSONInputArchive::beginAttribute(const char* name) {
-	char tmp[64];
+	char tmp[256];
 	tmp[0] = '@';
+#ifdef _MSC_VER
+	strncpy_s(tmp + 1, sizeof(tmp) - 1, name, sizeof(tmp) - 2);
+	tmp[sizeof(tmp) - 1] = 0;
+#else
 	strncpy(tmp + 1, name, sizeof(tmp) - 1);
+#endif
 	return beginElement(tmp);
 }
 

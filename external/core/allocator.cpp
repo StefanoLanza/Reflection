@@ -65,6 +65,7 @@ void* LinearAllocator::alloc(size_t size, size_t alignment) {
 
 void LinearAllocator::free(void* ptr, size_t size) {
 	if (ptr >= buffer && ptr < buffer + bufferSize) {
+		assert(static_cast<char*>(ptr) + size <= buffer + bufferSize);
 		if (static_cast<char*>(ptr) + size == offset) {
 			offset = advancePointer(offset, -static_cast<ptrdiff_t>(size));
 			freeSize += size;

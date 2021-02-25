@@ -27,7 +27,7 @@ public:
 		return static_cast<T*>(alloc(sizeof(T) * count, alignof(T)));	
 	}
 
-	static constexpr size_t defaultAlignment = 4;
+	static constexpr size_t defaultAlignment = alignof(void *);
 };
 
 /**

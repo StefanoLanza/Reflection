@@ -61,7 +61,7 @@ bool writeObjectImpl(const void* data, const Type& type, const TypeDB& typeDB, O
 		res = customWriter(data, archive);
 	}
 	else {
-		res = perClasswriters[(int)type.subClass](data, type, typeDB, archive, stackAllocator);
+		res = perClasswriters[(int)type.getSubClass()](data, type, typeDB, archive, stackAllocator);
 	}
 	return res;
 }
@@ -100,7 +100,7 @@ bool writeStruct(const void* data, const Type& type, [[maybe_unused]] const Type
 
 bool writeEnum(const void* data, const Type& type, const TypeDB& /*typeDB*/, OutputArchive& archive, LinearAllocator& /*stackAllocator*/) {
 	const EnumType&   enumType = static_cast<const EnumType&>(type);
-	const Enumerator* enumerator = enumType.findEnumeratorByValue(data, enumType.size);
+	const Enumerator* enumerator = enumType.findEnumeratorByValue(data, enumType.getSize());
 	bool              res = false;
 	if (enumerator) {
 		res = true;
@@ -113,7 +113,7 @@ bool writeBitMask(const void* data, const Type& type, const TypeDB& /*typeDB*/, 
 	const BitMaskType& bitMaskType = static_cast<const BitMaskType&>(type);
 	// Cast the source type to an uint64_t
 	BitMaskStorageType bitMask = 0;
-	std::memcpy(&bitMask, data, type.size);
+	std::memcpy(&bitMask, data, type.getSize());
 
 	char str[1024];
 	str[0] = 0;
