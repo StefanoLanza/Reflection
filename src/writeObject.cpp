@@ -45,9 +45,7 @@ bool writeObject(const void* data, const char* name, const Type& type, OutputArc
 
 	bool res = false;
 	if (archive.beginElement(name)) {
-		char            stack[Defaults::stackSize];
-		LinearAllocator stackAllocator(stack, std::size(stack), nullptr);
-		res = writeObjectImpl(data, type, typeDB, archive, stackAllocator);
+		res = writeObjectImpl(data, type, typeDB, archive, *detail::getContext().pagedAllocator);
 		archive.endElement();
 	}
 	return res;

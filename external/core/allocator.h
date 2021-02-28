@@ -43,32 +43,44 @@ public:
 /**
  * @brief Linear allocator
  */
-class LinearAllocator final : public Allocator {
+class LinearAllocator {
 public:
-	LinearAllocator(char* buffer, size_t bufferSize, Allocator* backup);
-	LinearAllocator(Allocator& allocator, size_t bufferSize, Allocator* backup);
+	LinearAllocator(char* initialBuffer, size_t initialBufferSize, Allocator& allocator, size_t pageSize);
+	LinearAllocator(char* initialBuffer, size_t initialBufferSize);
+	LinearAllocator(Allocator& allocator, size_t pageSize);
 	~LinearAllocator();
 
-	void*  alloc(size_t size, size_t alignment) override;
-	void   free(void* ptr, size_t size) override;
-	void*  realloc(void* ptr, size_t bytes, size_t alignment) override;
+	void*  alloc(size_t size, size_t alignment);
 	void   rewind();
 	void   rewind(void* ptr);
 	void*  getBuffer() const;
 	void*  getOffset() const;
-	size_t getPointerOffset(const void*) const;
+
+	static constexpr size_t defaultPageSize = 65536;
 
 private:
-	char*      buffer;
-	void*      offset;
-	size_t     bufferSize;
+
+	struct Page;
+	Page*  allocPage();
+	void* allocFromPage(Page& page, size_t size, size_t alignment);
+
+private:
+	struct Page {
+		Page* next;
+		Page* prev;
+		void* buffer;
+		void*  offset;
+		size_t size;
+	};
+	Allocator* allocator;
+	size_t     pageSize;
+	Page       rootPage;
+	Page*      currPage;
 	size_t     freeSize;
-	Allocator* backup;
-	Allocator* parent;
 };
 
 inline void* LinearAllocator::getOffset() const {
-	return offset;
+	return currPage->offset;
 }
 
 } // namespace Typhoon

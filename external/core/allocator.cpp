@@ -30,80 +30,120 @@ void* HeapAllocator::realloc(void* ptr, size_t bytes, [[maybe_unused]] size_t al
 #endif
 }
 
-LinearAllocator::LinearAllocator(char* buffer, size_t bufferSize, Allocator* backup)
-    : buffer(buffer)
-    , offset(buffer)
-    , bufferSize(bufferSize)
+LinearAllocator::LinearAllocator(char* buffer, size_t bufferSize, Allocator& allocator, size_t pageSize)
+    : allocator(&allocator)
+    , pageSize(pageSize)
+	, currPage(&rootPage)
     , freeSize(bufferSize)
-    , backup(backup)
-    , parent(nullptr) {
+{
+	rootPage.buffer = buffer;
+	rootPage.offset = buffer;
+	rootPage.next = nullptr;
+	rootPage.prev = nullptr;
+	rootPage.size = bufferSize;
 }
 
-LinearAllocator::LinearAllocator(Allocator& allocator, size_t bufferSize, Allocator* backup)
-    : LinearAllocator(static_cast<char*>(allocator.alloc(bufferSize, 1)), bufferSize, backup) {
-	parent = &allocator;
+LinearAllocator::LinearAllocator(char* buffer, size_t bufferSize)
+	: allocator(nullptr)
+    , pageSize(0)
+	, currPage(&rootPage)
+    , freeSize(bufferSize)
+{
+	rootPage.buffer = buffer;
+	rootPage.offset = buffer;
+	rootPage.next = nullptr;
+	rootPage.prev = nullptr;
+	rootPage.size = bufferSize;
+}
+
+   LinearAllocator::LinearAllocator(Allocator& allocator, size_t pageSize)
+    : allocator(&allocator)
+    , pageSize(pageSize)
+    , currPage(&rootPage)
+    , freeSize(0)
+ {
+	rootPage.buffer = nullptr;
+	rootPage.offset = nullptr;
+	rootPage.next = nullptr;
+	rootPage.prev = nullptr;
+	rootPage.size = 0;
 }
 
 LinearAllocator::~LinearAllocator() {
-	if (parent) {
-		parent->free(buffer, bufferSize);
+	for (Page* page = rootPage.next; page; page = page->next) {
+		allocator->free(page->buffer, page->size);
 	}
 }
 
 void* LinearAllocator::alloc(size_t size, size_t alignment) {
-	void* result = std::align(alignment, size, offset, freeSize);
-	if (result) {
-		offset = advancePointer(result, size);
-		freeSize = reinterpret_cast<uintptr_t>(buffer) + bufferSize - reinterpret_cast<uintptr_t>(offset);
+	if (void* result = allocFromPage(*currPage, size, alignment); result) {
+		return result;
 	}
-	else if (backup) {
-		result = backup->alloc(size, alignment);
+	if (size > pageSize) {
+		return nullptr;
 	}
-	assert(result);
-	return result;
-}
-
-void LinearAllocator::free(void* ptr, size_t size) {
-	if (ptr >= buffer && ptr < buffer + bufferSize) {
-		assert(static_cast<char*>(ptr) + size <= buffer + bufferSize);
-		if (static_cast<char*>(ptr) + size == offset) {
-			offset = advancePointer(offset, -static_cast<ptrdiff_t>(size));
-			freeSize += size;
+	Page* newPage = allocPage();
+	if (newPage) {
+		newPage->prev = currPage;
+		currPage->next = newPage;
+		currPage = newPage;
+		freeSize = pageSize;
+		if (void* result = allocFromPage(*newPage, size, alignment); result) {
+			return result;
 		}
 	}
-	else if (backup) {
-		backup->free(ptr, size);
-	}
-	else {
-		assert(false); // Not allocated by this allocator or its backup
-	}
-}
-
-void* LinearAllocator::realloc(void* ptr, size_t bytes, size_t alignment) {
-	// TODO possibly reuse last allocation
-	free(ptr, bytes);
-	return alloc(bytes, alignment);
+	return nullptr;
 }
 
 void LinearAllocator::rewind() {
-	offset = buffer;
-	freeSize = bufferSize;
+	for (Page* page = currPage; page; page = page->prev) {
+		page->offset = page->buffer;
+	}
+	freeSize = rootPage.size;
+	currPage = &rootPage;
 }
 
 void LinearAllocator::rewind(void* ptr) {
 	if (ptr) {
-		offset = ptr;
-		freeSize = reinterpret_cast<uintptr_t>(buffer) + bufferSize - reinterpret_cast<uintptr_t>(ptr);
-		assert(freeSize <= bufferSize);
+		for (Page* page = currPage; page; page = page->prev) {
+			if (ptr >= page->buffer && ptr < static_cast<const char*>(page->buffer) + page->size) {
+				page->offset = ptr;
+				freeSize = reinterpret_cast<uintptr_t>(page->buffer) + page->size - reinterpret_cast<uintptr_t>(ptr);
+				assert(freeSize <= page->size);
+				currPage = page;
+				break;
+			}
+		}
 	}
 }
 
 void* LinearAllocator::getBuffer() const {
-	return buffer;
+	return currPage->buffer;
 }
 
-size_t LinearAllocator::getPointerOffset(const void* ptr) const {
-	return reinterpret_cast<intptr_t>(ptr) - reinterpret_cast<intptr_t>(buffer);
+LinearAllocator::Page* LinearAllocator::allocPage() {
+	void* buffer = allocator->alloc(pageSize, Allocator::defaultAlignment);
+	if (buffer) {
+		Page newPage;
+		newPage.next = nullptr;
+		newPage.prev = nullptr;
+		newPage.buffer = buffer;
+		newPage.offset = static_cast<char*>(buffer) + sizeof(Page);
+		newPage.size = pageSize - sizeof(Page);
+		std::memcpy(buffer, &newPage, sizeof newPage);
+		return static_cast<Page*>(buffer);
+	}
+	return nullptr;
 }
+
+void* LinearAllocator::allocFromPage(Page& page, size_t size, size_t alignment) {
+	void* result = std::align(alignment, size, page.offset, freeSize);
+	if (result) {
+		page.offset = advancePointer(result, size);
+		freeSize = reinterpret_cast<uintptr_t>(page.buffer) + page.size - reinterpret_cast<uintptr_t>(page.offset);
+	}
+	return result;
+}
+
 
 } // namespace Typhoon

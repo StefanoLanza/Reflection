@@ -71,9 +71,7 @@ bool visitObjectImpl(void* data, const Type& type, const TypeDB& typeDB, ObjectV
 bool visitObject(void* object, const TypeId typeId, ObjectVisitor& visitor) {
 	const TypeDB&   typeDB = *detail::getContext().typeDB;
 	const Type&     type = typeDB.getType(typeId);
-	char            stack[Defaults::stackSize];
-	LinearAllocator stackAllocator(stack, std::size(stack), nullptr);
-	return visitObjectImpl(object, type, typeDB, visitor, stackAllocator);
+	return visitObjectImpl(object, type, typeDB, visitor, *detail::getContext().pagedAllocator);
 }
 
 } // namespace Typhoon::Reflection

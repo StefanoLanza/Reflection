@@ -70,6 +70,7 @@ void registerBuiltinTypes(Context& context) {
 }
 
 HeapAllocator defaultAllocator;
+LinearAllocator linearAllocator(defaultAllocator, 4096);
 Context       context {};
 
 } // namespace
@@ -82,7 +83,8 @@ void initReflection(Allocator& allocator) {
 	assert(! context.typeDB);
 
 	context.allocator = &allocator;
-	context.scopedAllocator = new (allocator.alloc<ScopedAllocator>()) ScopedAllocator(allocator);
+	context.pagedAllocator = new (allocator.alloc<LinearAllocator>()) LinearAllocator(allocator, LinearAllocator::defaultPageSize);
+	context.scopedAllocator = new (allocator.alloc<ScopedAllocator>()) ScopedAllocator(*context.pagedAllocator);
 	context.typeDB = context.scopedAllocator->make<TypeDB>(std::ref(allocator), std::ref(*context.scopedAllocator));
 	registerBuiltinTypes(context);
 }
@@ -91,6 +93,7 @@ void deinitReflection() {
 	assert(context.scopedAllocator);
 	context.scopedAllocator->~ScopedAllocator();
 	context.allocator->free(context.scopedAllocator, sizeof(ScopedAllocator));
+	context.allocator->free(context.pagedAllocator, sizeof(LinearAllocator));
 	context.scopedAllocator = nullptr;
 	context.typeDB = nullptr;
 	context.allocator = nullptr;

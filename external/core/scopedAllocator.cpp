@@ -9,7 +9,7 @@ struct ScopedAllocator::Finalizer {
 	size_t     objSize;
 };
 
-ScopedAllocator::ScopedAllocator(Allocator& allocator)
+ScopedAllocator::ScopedAllocator(LinearAllocator& allocator)
     : allocator(allocator)
     , finalizerHead(nullptr) {
 }
@@ -22,9 +22,7 @@ ScopedAllocator::~ScopedAllocator() {
 		next = f->next;
 		// Important: free finalizer first
 		void*  obj = f->obj;
-		size_t objSize = f->objSize;
-		allocator.free(f, sizeof(Finalizer));
-		allocator.free(obj, objSize);
+		allocator.rewind(obj);
 	}
 }
 

@@ -20,6 +20,13 @@
 
 namespace Typhoon::Reflection {
 
+namespace detail {
+
+Context& getContext();
+
+} // namespace detail
+
+
 namespace {
 
 bool readObject(void* data, const char* name, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive,
@@ -58,9 +65,7 @@ bool readObject(void* object, TypeId typeId, InputArchive& archive, Semantic sem
 	bool        res = false;
 	const Type* type = detail::getTypeDB().tryGetType(typeId);
 	if (type) {
-		char            stack[Defaults::stackSize];
-		LinearAllocator stackAllocator(stack, std::size(stack), nullptr);
-		res = readObject(object, *type, semantic, detail::getTypeDB(), archive, stackAllocator);
+		res = readObject(object, *type, semantic, detail::getTypeDB(), archive, *detail::getContext().pagedAllocator);
 	}
 	return res;
 }
@@ -74,14 +79,12 @@ std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementT
 	bool            res = false;
 	size_t          count = 0;
 	void*           destPtr = array;
-	char            stack[Defaults::stackSize];
-	LinearAllocator stackAllocator(stack, std::size(stack), nullptr);
 	if (archive.beginElement(arrayName)) {
 		res = true;
 		ArchiveIterator iter;
 		while (archive.iterateChild(iter)) {
 			if (count < arraySize) {
-				readObject(destPtr, *elementType, Semantic::none, typeDB, archive, stackAllocator);
+				readObject(destPtr, *elementType, Semantic::none, typeDB, archive, *detail::getContext().pagedAllocator);
 			}
 			else {
 				res = false;
@@ -97,10 +100,8 @@ std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementT
 
 bool readContainer(void* container, const char* containerName, const ContainerType& type, InputArchive& archive) {
 	bool            res = false;
-	char            stack[Defaults::stackSize];
-	LinearAllocator stackAllocator(stack, std::size(stack), nullptr);
 	if (archive.beginElement(containerName)) {
-		res = readContainer(container, type, Semantic::none, detail::getTypeDB(), archive, stackAllocator);
+		res = readContainer(container, type, Semantic::none, detail::getTypeDB(), archive, *detail::getContext().pagedAllocator);
 		archive.endElement();
 	}
 	return res;
