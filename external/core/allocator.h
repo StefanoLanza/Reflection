@@ -45,42 +45,74 @@ public:
  */
 class LinearAllocator {
 public:
-	LinearAllocator(char* initialBuffer, size_t initialBufferSize, Allocator& allocator, size_t pageSize);
-	LinearAllocator(char* initialBuffer, size_t initialBufferSize);
-	LinearAllocator(Allocator& allocator, size_t pageSize);
-	~LinearAllocator();
+	virtual ~LinearAllocator() = default;
 
-	void*  alloc(size_t size, size_t alignment);
-	void   rewind();
-	void   rewind(void* ptr);
-	void*  getBuffer() const;
-	void*  getOffset() const;
+	virtual void*  alloc(size_t size, size_t alignment) = 0;
+	virtual void  rewind() = 0;
+	virtual void   rewind(void* ptr) = 0;
+};
+
+/**
+ * @brief Buffer allocator
+ */
+class BufferAllocator : public LinearAllocator {
+public:
+	BufferAllocator(char* buffer, size_t bufferSize);
+
+	void* alloc(size_t size, size_t alignment) override;
+	void  rewind() override;
+	void  rewind(void* ptr) override;
+	void* getBuffer() const;
+	void* getOffset() const;
+
+private:
+	void*      buffer;
+	void*  offset;
+	size_t bufferSize;
+	size_t     freeSize;
+};
+
+inline void* BufferAllocator::getBuffer() const {
+	return buffer;
+}
+
+inline void* BufferAllocator::getOffset() const {
+	return offset;
+}
+
+/**
+ * @brief Paged allocator
+ */
+
+class PagedAllocator : public LinearAllocator {
+public:
+	PagedAllocator(Allocator& parentAllocator, size_t pageSize);
+	~PagedAllocator();
+
+	void* alloc(size_t size, size_t alignment) override;
+	void  rewind() override;
+	void  rewind(void* ptr) override;
 
 	static constexpr size_t defaultPageSize = 65536;
 
 private:
-
 	struct Page;
-	Page*  allocPage();
+	Page* allocPage();
 	void* allocFromPage(Page& page, size_t size, size_t alignment);
 
 private:
 	struct Page {
-		Page* next;
-		Page* prev;
-		void* buffer;
+		Page*  next;
+		Page*  prev;
+		void*  buffer;
 		void*  offset;
 		size_t size;
 	};
 	Allocator* allocator;
 	size_t     pageSize;
-	Page       rootPage;
+	Page*      rootPage;
 	Page*      currPage;
 	size_t     freeSize;
 };
-
-inline void* LinearAllocator::getOffset() const {
-	return currPage->offset;
-}
 
 } // namespace Typhoon
