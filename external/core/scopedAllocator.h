@@ -36,7 +36,7 @@ private:
 private:
 	struct Finalizer;
 	LinearAllocator& allocator;
-	Finalizer* finalizerHead;
+	Finalizer*       finalizerHead;
 };
 
 } // namespace Typhoon

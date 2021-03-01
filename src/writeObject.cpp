@@ -69,6 +69,7 @@ void writeStructProperties(ConstDataPtr data, const StructType& structType, Outp
 		if (property.getFlags() & Flags::writeable) {
 			const Type& valueType = property.getValueType();
 			// Allocate a temporary for the value
+			void*       allocOffs = tempAllocator.getOffset();
 			void* const temporary = tempAllocator.alloc(valueType.getSize(), valueType.getAlignment());
 			if (temporary) {
 				valueType.constructObject(temporary);
@@ -76,7 +77,7 @@ void writeStructProperties(ConstDataPtr data, const StructType& structType, Outp
 				property.getValue(self, temporary);
 				writeObject(temporary, property.getName(), valueType, archive);
 				valueType.destructObject(temporary);
-				tempAllocator.rewind(temporary);
+				tempAllocator.rewind(allocOffs);
 			}
 		}
 	}

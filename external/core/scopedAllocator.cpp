@@ -21,7 +21,7 @@ ScopedAllocator::~ScopedAllocator() {
 		}
 		next = f->next;
 		// Important: free finalizer first
-		void*  obj = f->obj;
+		void* obj = f->obj;
 		allocator.rewind(obj);
 	}
 }

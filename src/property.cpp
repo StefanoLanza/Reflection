@@ -51,6 +51,7 @@ void Property::getValue(ConstDataPtr self, DataPtr value) const {
 }
 
 void Property::copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator& alloc) const {
+	void* allocOffs = alloc.getOffset();
 	void* temporary = alloc.alloc(valueType->getSize(), valueType->getAlignment());
 	assert(temporary);
 	if (temporary) {
@@ -58,7 +59,7 @@ void Property::copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator&
 		const void* value = getter(srcSelf, temporary);
 		setter(dstSelf, value);
 		valueType->destructObject(temporary);
-		alloc.rewind(temporary);
+		alloc.rewind(allocOffs);
 	}
 }
 

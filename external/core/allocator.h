@@ -1,7 +1,7 @@
 #pragma once
 
-#include <type_traits>
 #include <cstddef>
+#include <type_traits>
 
 namespace Typhoon {
 
@@ -24,10 +24,10 @@ public:
 	template <class T>
 	T* allocArray(size_t count) {
 		static_assert(std::is_pod_v<T>);
-		return static_cast<T*>(alloc(sizeof(T) * count, alignof(T)));	
+		return static_cast<T*>(alloc(sizeof(T) * count, alignof(T)));
 	}
 
-	static constexpr size_t defaultAlignment = alignof(void *);
+	static constexpr size_t defaultAlignment = alignof(void*);
 };
 
 /**
@@ -47,9 +47,10 @@ class LinearAllocator {
 public:
 	virtual ~LinearAllocator() = default;
 
-	virtual void*  alloc(size_t size, size_t alignment) = 0;
+	virtual void* alloc(size_t size, size_t alignment) = 0;
 	virtual void  rewind() = 0;
-	virtual void   rewind(void* ptr) = 0;
+	virtual void  rewind(void* ptr) = 0;
+	virtual void* getOffset() const = 0;
 };
 
 /**
@@ -62,22 +63,22 @@ public:
 	void* alloc(size_t size, size_t alignment) override;
 	void  rewind() override;
 	void  rewind(void* ptr) override;
+	void* getOffset() const override;
 	void* getBuffer() const;
-	void* getOffset() const;
 
 private:
-	void*      buffer;
+	void*  buffer;
 	void*  offset;
 	size_t bufferSize;
-	size_t     freeSize;
+	size_t freeSize;
 };
-
-inline void* BufferAllocator::getBuffer() const {
-	return buffer;
-}
 
 inline void* BufferAllocator::getOffset() const {
 	return offset;
+}
+
+inline void* BufferAllocator::getBuffer() const {
+	return buffer;
 }
 
 /**
@@ -92,6 +93,7 @@ public:
 	void* alloc(size_t size, size_t alignment) override;
 	void  rewind() override;
 	void  rewind(void* ptr) override;
+	void* getOffset() const override;
 
 	static constexpr size_t defaultPageSize = 65536;
 

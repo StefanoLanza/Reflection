@@ -215,6 +215,7 @@ bool readContainer(DataPtr data, const Type& type, Semantic semantic, const Type
 		if (containerIterator->isValid()) {
 			if (key_type) {
 				// Construct a temporary for the key
+				void*       allocOffs = tempAllocator.getOffset();
 				void* const key = tempAllocator.alloc(key_type->getSize(), key_type->getAlignment());
 				assert(key);
 				key_type->constructObject(key);
@@ -227,7 +228,7 @@ bool readContainer(DataPtr data, const Type& type, Semantic semantic, const Type
 				}
 				// Destruct key
 				key_type->destructObject(key);
-				tempAllocator.rewind(key);
+				tempAllocator.rewind(allocOffs);
 			}
 			else {
 				// TODO insert on success only with a move

@@ -2,45 +2,44 @@
 
 /* For compatibility with Clang's __has_builtin() */
 #ifndef __has_builtin
-#  define __has_builtin(x) 0
+#define __has_builtin(x) 0
 #endif
 
 /**
  * __builtin_expect macros
  */
-#if !defined(HAVE___BUILTIN_EXPECT)
-#  define __builtin_expect(x, y) (x)
+#if ! defined(HAVE___BUILTIN_EXPECT)
+#define __builtin_expect(x, y) (x)
 #endif
 
 #ifndef likely
-#  ifdef HAVE___BUILTIN_EXPECT
-#    define likely(x)   __builtin_expect(!!(x), 1)
-#    define unlikely(x) __builtin_expect(!!(x), 0)
-#  else
-#    define likely(x)   (x)
-#    define unlikely(x) (x)
-#  endif
+#ifdef HAVE___BUILTIN_EXPECT
+#define likely(x)   __builtin_expect(! ! (x), 1)
+#define unlikely(x) __builtin_expect(! ! (x), 0)
+#else
+#define likely(x)   (x)
+#define unlikely(x) (x)
 #endif
-
+#endif
 
 /**
  * Unreachable macro. Useful for suppressing "control reaches end of non-void
  * function" warnings.
  */
 #if defined(HAVE___BUILTIN_UNREACHABLE) || __has_builtin(__builtin_unreachable)
-#define unreachable(str)    \
-do {                        \
-   assert(!str);            \
-   __builtin_unreachable(); \
-} while (0)
-#elif defined (_MSC_VER)
-#define unreachable(str)    \
-do {                        \
-   assert(!str);            \
-   __assume(0);             \
-} while (0)
+#define unreachable(str)         \
+	do {                         \
+		assert(! str);           \
+		__builtin_unreachable(); \
+	} while (0)
+#elif defined(_MSC_VER)
+#define unreachable(str) \
+	do {                 \
+		assert(! str);   \
+		__assume(0);     \
+	} while (0)
 #else
-#define unreachable(str) assert(!str)
+#define unreachable(str) assert(! str)
 #endif
 
 /**
@@ -48,32 +47,29 @@ do {                        \
  * typically for purposes of silencing warnings.
  */
 #if __has_builtin(__builtin_assume)
-#define assume(expr)       \
-do {                       \
-   assert(expr);           \
-   __builtin_assume(expr); \
-} while (0)
+#define assume(expr)            \
+	do {                        \
+		assert(expr);           \
+		__builtin_assume(expr); \
+	} while (0)
 #elif defined HAVE___BUILTIN_UNREACHABLE
-#define assume(expr) ((expr) ? ((void) 0) \
-                             : (assert(!"assumption failed"), \
-                                __builtin_unreachable()))
-#elif defined (_MSC_VER)
+#define assume(expr) ((expr) ? ((void)0) : (assert(! "assumption failed"), __builtin_unreachable()))
+#elif defined(_MSC_VER)
 #define assume(expr) __assume(expr)
 #else
 #define assume(expr) assert(expr)
 #endif
 
-
 /* Forced function inlining */
 /* Note: Clang also sets __GNUC__ (see other cases below) */
 #ifndef ALWAYS_INLINE
-#  if defined(__GNUC__)
-#    define ALWAYS_INLINE inline __attribute__((always_inline))
-#  elif defined(_MSC_VER)
-#    define ALWAYS_INLINE __forceinline
-#  else
-#    define ALWAYS_INLINE inline
-#  endif
+#if defined(__GNUC__)
+#define ALWAYS_INLINE inline __attribute__((always_inline))
+#elif defined(_MSC_VER)
+#define ALWAYS_INLINE __forceinline
+#else
+#define ALWAYS_INLINE inline
+#endif
 #endif
 
 /**

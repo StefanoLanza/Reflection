@@ -125,6 +125,10 @@ void PagedAllocator::rewind(void* ptr) {
 	}
 }
 
+inline void* PagedAllocator::getOffset() const {
+	return currPage ? currPage->offset : nullptr;
+}
+
 PagedAllocator::Page* PagedAllocator::allocPage() {
 	void* buffer = allocator->alloc(pageSize, Allocator::defaultAlignment);
 	if (buffer) {
