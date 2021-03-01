@@ -21,16 +21,16 @@ namespace Typhoon::Reflection {
 
 namespace {
 
-bool writeObjectImpl(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator);
-bool writeStruct(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator);
-bool writeEnum(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator);
-bool writeBitMask(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator);
-bool writeContainer(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator);
-bool writePointer(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator);
-bool writeReference(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator);
-bool writeVariant(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator);
+bool writeObjectImpl(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator);
+bool writeStruct(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator);
+bool writeEnum(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator);
+bool writeBitMask(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator);
+bool writeContainer(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator);
+bool writePointer(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator);
+bool writeReference(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator);
+bool writeVariant(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator);
 
-using Writer = bool (*)(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive&, LinearAllocator&);
+using Writer = bool (*)(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive&, LinearAllocator&);
 constexpr Writer perClasswriters[] = {
 	nullptr, // built-ins use per-type savers
 	writeStruct, writeEnum, writeBitMask, writeContainer, writePointer, writeReference, writeVariant,
@@ -38,7 +38,7 @@ constexpr Writer perClasswriters[] = {
 
 } // namespace
 
-bool writeObject(const void* data, const char* name, const Type& type, OutputArchive& archive) {
+bool writeObject(ConstDataPtr data, const char* name, const Type& type, OutputArchive& archive) {
 	assert(data);
 	assert(name);
 	TypeDB& typeDB = *detail::getContext().typeDB;
@@ -53,41 +53,40 @@ bool writeObject(const void* data, const char* name, const Type& type, OutputArc
 
 namespace {
 
-bool writeObjectImpl(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator) {
+bool writeObjectImpl(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
 	bool res = false;
 	if (const CustomWriter& customWriter = type.getCustomWriter(); customWriter) {
 		res = customWriter(data, archive);
 	}
 	else {
-		res = perClasswriters[(int)type.getSubClass()](data, type, typeDB, archive, stackAllocator);
+		res = perClasswriters[(int)type.getSubClass()](data, type, typeDB, archive, tempAllocator);
 	}
 	return res;
 }
 
-void writeStructProperties(const void* data, const StructType& structType, OutputArchive& archive, LinearAllocator& stackAllocator) {
+void writeStructProperties(ConstDataPtr data, const StructType& structType, OutputArchive& archive, LinearAllocator& tempAllocator) {
 	for (const auto& property : structType.getProperties()) {
 		if (property.getFlags() & Flags::writeable) {
 			const Type& valueType = property.getValueType();
-
 			// Allocate a temporary for the value
-			ScopedAllocator scopedAllocator(stackAllocator);
-			void* const     temporary = scopedAllocator.alloc(valueType.getSize(), valueType.getAlignment());
+			void* const temporary = tempAllocator.alloc(valueType.getSize(), valueType.getAlignment());
 			if (temporary) {
 				valueType.constructObject(temporary);
-				const void* const self = data;
+				ConstDataPtr const self = data;
 				property.getValue(self, temporary);
 				writeObject(temporary, property.getName(), valueType, archive);
 				valueType.destructObject(temporary);
+				tempAllocator.rewind(temporary);
 			}
 		}
 	}
 }
 
-bool writeStruct(const void* data, const Type& type, [[maybe_unused]] const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator) {
+bool writeStruct(ConstDataPtr data, const Type& type, [[maybe_unused]] const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
 	if (archive.beginObject()) {
 		const StructType* structType = static_cast<const StructType*>(&type);
 		do {
-			writeStructProperties(data, *structType, archive, stackAllocator);
+			writeStructProperties(data, *structType, archive, tempAllocator);
 			structType = structType->getParentType();
 		} while (structType);
 		archive.endObject();
@@ -96,18 +95,16 @@ bool writeStruct(const void* data, const Type& type, [[maybe_unused]] const Type
 	return false;
 }
 
-bool writeEnum(const void* data, const Type& type, const TypeDB& /*typeDB*/, OutputArchive& archive, LinearAllocator& /*stackAllocator*/) {
-	const EnumType&   enumType = static_cast<const EnumType&>(type);
-	const Enumerator* enumerator = enumType.findEnumeratorByValue(data, enumType.getSize());
-	bool              res = false;
-	if (enumerator) {
-		res = true;
+bool writeEnum(ConstDataPtr data, const Type& type, const TypeDB& /*typeDB*/, OutputArchive& archive, LinearAllocator& /*tempAllocator*/) {
+	const EnumType& enumType = static_cast<const EnumType&>(type);
+	if (const Enumerator* enumerator = enumType.findEnumeratorByValue(data, enumType.getSize()); enumerator) {
 		archive.write(enumerator->name);
+		return true;
 	}
-	return res;
+	return false;
 }
 
-bool writeBitMask(const void* data, const Type& type, const TypeDB& /*typeDB*/, OutputArchive& archive, LinearAllocator& /*stackAllocator*/) {
+bool writeBitMask(ConstDataPtr data, const Type& type, const TypeDB& /*typeDB*/, OutputArchive& archive, LinearAllocator& /*tempAllocator*/) {
 	const BitMaskType& bitMaskType = static_cast<const BitMaskType&>(type);
 	// Cast the source type to an uint64_t
 	BitMaskStorageType bitMask = 0;
@@ -135,7 +132,7 @@ bool writeBitMask(const void* data, const Type& type, const TypeDB& /*typeDB*/, 
 	return res;
 }
 
-bool writeContainer(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator) {
+bool writeContainer(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
 	const ContainerType& containerType = static_cast<const ContainerType&>(type);
 	const Type*          keyType = containerType.getKeyType();
 	const Type*          valueType = containerType.getValueType();
@@ -144,7 +141,7 @@ bool writeContainer(const void* data, const Type& type, const TypeDB& typeDB, Ou
 		return false;
 	}
 
-	ScopedAllocator scopedAllocator(stackAllocator);
+	ScopedAllocator scopedAllocator(tempAllocator);
 	ReadIterator*   iterator = containerType.newReadIterator(data, scopedAllocator);
 	while (iterator->isValid()) {
 		if (keyType) {
@@ -156,7 +153,7 @@ bool writeContainer(const void* data, const Type& type, const TypeDB& typeDB, Ou
 			}
 		}
 		else {
-			writeObjectImpl(iterator->getValue(), *valueType, typeDB, archive, stackAllocator);
+			writeObjectImpl(iterator->getValue(), *valueType, typeDB, archive, tempAllocator);
 		}
 
 		iterator->gotoNext();
@@ -166,25 +163,25 @@ bool writeContainer(const void* data, const Type& type, const TypeDB& typeDB, Ou
 	return true;
 }
 
-bool writePointer(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator) {
+bool writePointer(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
 	const PointerType& pointerType = static_cast<const PointerType&>(type);
-	const void*        pointer = pointerType.resolvePointer(data);
+	ConstDataPtr       pointer = pointerType.resolvePointer(data);
 	bool               res = true;
 	if (pointer) {
-		res = writeObjectImpl(pointer, pointerType.getPointedType(), typeDB, archive, stackAllocator);
+		res = writeObjectImpl(pointer, pointerType.getPointedType(), typeDB, archive, tempAllocator);
 	}
 	return res;
 }
 
-bool writeReference(const void* data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator) {
+bool writeReference(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
 	const ReferenceType& referenceType = static_cast<const ReferenceType&>(type);
-	const void*          pointerToData = *static_cast<void* const*>(data);
+	ConstDataPtr         pointerToData = referenceType.resolvePointer(data);
 	assert(pointerToData); // cannot have a null reference
-	return writeObjectImpl(pointerToData, referenceType.getReferencedType(), typeDB, archive, stackAllocator);
+	return writeObjectImpl(pointerToData, referenceType.getReferencedType(), typeDB, archive, tempAllocator);
 }
 
-bool writeVariant(const void* data, const Type& /*type*/, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& stackAllocator) {
-	const Variant* variant = static_cast<const Variant*>(data);
+bool writeVariant(ConstDataPtr data, const Type& /*type*/, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
+	const Variant* variant = castPointer<Variant>(data);
 	const Type&    type = typeDB.getType(variant->getTypeId());
 	const char*    typeName = variant->getType().getName();
 	if (! typeName) {
@@ -194,7 +191,7 @@ bool writeVariant(const void* data, const Type& /*type*/, const TypeDB& typeDB, 
 	archive.writeString("type", typeName);
 	archive.writeString("name", variant->getName());
 	archive.beginElement("value");
-	writeObjectImpl(variant->getStorage(), type, typeDB, archive, stackAllocator);
+	writeObjectImpl(variant->getStorage(), type, typeDB, archive, tempAllocator);
 	archive.endElement();
 	archive.endObject();
 	return true;

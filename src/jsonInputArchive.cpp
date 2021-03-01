@@ -70,7 +70,7 @@ bool JSONInputArchive::readFloat(float& f) const {
 	return false;
 }
 
-bool JSONInputArchive::readDouble(double& d) const{
+bool JSONInputArchive::readDouble(double& d) const {
 	if (auto value = stack.top().value; value->IsDouble()) {
 		d = value->GetDouble();
 		return true;
@@ -78,7 +78,7 @@ bool JSONInputArchive::readDouble(double& d) const{
 	return false;
 }
 
-bool JSONInputArchive::readString(const char*& str) const{
+bool JSONInputArchive::readString(const char*& str) const {
 	if (auto value = stack.top().value; value->IsString()) {
 		str = value->GetString();
 		return true;

@@ -98,7 +98,6 @@ private:
 	using WriteIteratorType = StdMapWriteIterator<MAP_TYPE>;
 };
 
-
 const char* buildTemplateTypeName(const char* typeNames[], const char* prefix, const char* suffix, ScopedAllocator& alloc);
 
 // std::map specialization
@@ -112,7 +111,7 @@ struct autoRegisterHelper<std::map<_Kty, T>> {
 		const Type*      mappedType = autoRegisterType<MappedType>(context);
 		constexpr TypeId typeID = getTypeId<ContainerType>();
 		const char*      innerTypeNames[] = { keyType->getName(), mappedType->getName(), nullptr };
-		const char*      typeName = buildTemplateTypeName(innerTypeNames, "std::map<", ">", *context.scopedAllocator);	
+		const char*      typeName = buildTemplateTypeName(innerTypeNames, "std::map<", ">", *context.scopedAllocator);
 		auto             type = context.scopedAllocator->make<StdMapContainer<ContainerType>>(typeName, typeID, keyType, mappedType);
 		context.typeDB->registerType(type);
 		return type;

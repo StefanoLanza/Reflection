@@ -13,7 +13,6 @@ class StructType;
 
 class TypeVisitor {
 public:
-
 	~TypeVisitor() = default;
 
 	virtual void beginNamespace(const Namespace&) = 0;

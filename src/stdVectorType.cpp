@@ -23,7 +23,7 @@ const char* decorateTypeName(const char* typeName, const char* prefix, const cha
 
 const char* buildTemplateTypeName(const char* typeNames[], const char* prefix, const char* suffix, ScopedAllocator& alloc) {
 	size_t tl = 0;
-	
+
 	for (int i = 0; typeNames[i]; ++i) {
 		tl += std::strlen(typeNames[i]) + 1; // + 1: ,
 	}

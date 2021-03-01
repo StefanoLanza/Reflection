@@ -1,6 +1,3 @@
 #include "attribute.h"
 
-namespace Typhoon::Reflection {
-
-
-}
+namespace Typhoon::Reflection {}

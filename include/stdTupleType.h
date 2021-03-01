@@ -49,7 +49,7 @@ struct autoRegisterHelper<std::tuple<Args...>> {
 	static const Type* autoRegister(Context& context) {
 		using Tuple = std::tuple<Args...>;
 
-		constexpr TypeId  typeId = getTypeId<Tuple>();
+		constexpr TypeId typeId = getTypeId<Tuple>();
 		// TODO typeName
 		const char*       typeName = "std::tuple";
 		StructType* const tupleType = context.scopedAllocator->make<StructType>(typeName, typeId, sizeof(Tuple), alignof(Tuple), nullptr,

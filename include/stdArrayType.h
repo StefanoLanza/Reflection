@@ -104,7 +104,7 @@ struct autoRegisterHelper<std::array<T, N>> {
 		using container_type = std::array<T, N>;
 		const Type*      elementType = autoRegisterType<element_type>(context);
 		constexpr TypeId typeID = getTypeId<container_type>();
-		const char*      typeName = decorateTypeName(elementType->getName(), "std::array<", ">", *context.scopedAllocator);	
+		const char*      typeName = decorateTypeName(elementType->getName(), "std::array<", ">", *context.scopedAllocator);
 		auto             type = context.scopedAllocator->make<StdArrayContainer<element_type, N>>(typeName, typeID, elementType);
 		context.typeDB->registerType(type);
 		return type;

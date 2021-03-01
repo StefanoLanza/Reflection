@@ -10,8 +10,8 @@ class StdUniquePointerType final : public PointerType {
 public:
 	StdUniquePointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType);
 
-	const void* resolvePointer(const void* ptr) const override;
-	void*       resolvePointer(void* ptr) const override;
+	ConstDataPtr resolvePointer(ConstDataPtr ptr) const override;
+	DataPtr     resolvePointer(DataPtr ptr) const override;
 };
 
 template <typename T>
@@ -20,18 +20,18 @@ inline StdUniquePointerType<T>::StdUniquePointerType(const char* typeName, TypeI
 }
 
 template <typename T>
-inline const void* StdUniquePointerType<T>::resolvePointer(const void* data) const {
-	const void* pointer = nullptr;
-	const auto& uniquePtr = *reinterpret_cast<const std::unique_ptr<T>*>(data);
+inline ConstDataPtr StdUniquePointerType<T>::resolvePointer(ConstDataPtr data) const {
+	ConstDataPtr pointer = nullptr;
+	const auto& uniquePtr = *castPointer<std::unique_ptr<T>> (data);
 	const T*    srcPtr = uniquePtr.get();
 	std::memcpy(&pointer, &srcPtr, sizeof pointer);
 	return pointer;
 }
 
 template <typename T>
-inline void* StdUniquePointerType<T>::resolvePointer(void* data) const {
-	void*    pointer = nullptr;
-	auto&    uniquePtr = *reinterpret_cast<std::unique_ptr<T>*>(data);
+inline DataPtr StdUniquePointerType<T>::resolvePointer(DataPtr data) const {
+	DataPtr  pointer = nullptr;
+	auto&    uniquePtr = *castPointer<std::unique_ptr<T>>(data);
 	const T* srcPtr = uniquePtr.get();
 	std::memcpy(&pointer, &srcPtr, sizeof pointer);
 	return pointer;

@@ -8,7 +8,8 @@ namespace Typhoon::Reflection {
 
 class Type;
 
-enum class ObjectVisitorResult {
+enum class ObjectVisitorResult
+{
 	success = 0,
 	error = 1,
 	terminate = 2,

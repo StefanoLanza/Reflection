@@ -65,12 +65,11 @@ bool visitObjectImpl(void* data, const Type& type, const TypeDB& typeDB, ObjectV
 	return perClassVisitors[(int)type.getSubClass()](data, type, typeDB, visitor, stackAllocator);
 }
 
-
 } // namespace
 
 bool visitObject(void* object, const TypeId typeId, ObjectVisitor& visitor) {
-	const TypeDB&   typeDB = *detail::getContext().typeDB;
-	const Type&     type = typeDB.getType(typeId);
+	const TypeDB& typeDB = *detail::getContext().typeDB;
+	const Type&   type = typeDB.getType(typeId);
 	return visitObjectImpl(object, type, typeDB, visitor, *detail::getContext().pagedAllocator);
 }
 

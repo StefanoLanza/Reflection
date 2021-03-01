@@ -38,4 +38,3 @@ namespace Typhoon::Reflection {}
 // Namespace alias
 namespace refl = Typhoon::Reflection;
 #endif
-

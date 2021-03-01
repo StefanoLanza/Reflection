@@ -1,8 +1,8 @@
 #pragma once
 
 #include "context.h"
-#include "typeDB.h"
 #include "type.h"
+#include "typeDB.h"
 #include <core/scopedAllocator.h>
 
 namespace Typhoon::Reflection {
@@ -13,8 +13,8 @@ public:
 	virtual ~PointerType() = default;
 
 	const Type&         getPointedType() const;
-	virtual const void* resolvePointer(const void* ptr) const = 0;
-	virtual void*       resolvePointer(void* ptr) const = 0;
+	virtual ConstDataPtr resolvePointer(ConstDataPtr ptr) const = 0;
+	virtual DataPtr     resolvePointer(DataPtr ptr) const = 0;
 
 private:
 	const Type* pointedType;
@@ -26,8 +26,8 @@ class RawPointerType final : public PointerType {
 public:
 	RawPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType);
 
-	const void* resolvePointer(const void* ptr) const override;
-	void*       resolvePointer(void* ptr) const override;
+	ConstDataPtr resolvePointer(ConstDataPtr ptr) const override;
+	DataPtr     resolvePointer(DataPtr ptr) const override;
 };
 
 const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc);

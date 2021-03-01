@@ -1,5 +1,6 @@
 #pragma once
 
+#include "dataPtr.h"
 #include "errorCodes.h"
 #include "semantics.h"
 #include "stdVectorType.h"
@@ -18,8 +19,8 @@ namespace detail {
 TypeDB& getTypeDB();
 }
 
-bool readObject(void* object, TypeId typeId, InputArchive& archive, Semantic semantic = Semantic::none);
-bool readObject(void* object, TypeId typeId, const char* name, InputArchive& archive, Semantic semantic = Semantic::none);
+bool readObject(DataPtr object, TypeId typeId, InputArchive& archive, Semantic semantic = Semantic::none);
+bool readObject(DataPtr object, TypeId typeId, const char* name, InputArchive& archive, Semantic semantic = Semantic::none);
 
 template <typename T>
 bool readObject(T* object, const char* name, InputArchive& archive, Semantic semantic = Semantic::none) {
@@ -31,7 +32,7 @@ bool readObject(T* object, InputArchive& archive, Semantic semantic = Semantic::
 	return readObject(object, getTypeId<T>(), archive, semantic);
 }
 
-std::pair<bool, size_t> readArray(void* array, size_t arraySize, TypeId elementType, const char* arrayName, InputArchive& archive);
+std::pair<bool, size_t> readArray(DataPtr array, size_t arraySize, TypeId elementType, const char* arrayName, InputArchive& archive);
 
 template <class T, size_t size>
 bool readArray(std::array<T, size>& array, const char* elementName, InputArchive& archive) {
@@ -45,7 +46,7 @@ std::pair<bool, size_t> readArray(T array[], size_t arraySize, const char* array
 
 class ContainerType;
 
-bool readContainer(void* container, const char* containerName, const ContainerType& type, InputArchive& archive);
+bool readContainer(DataPtr container, const char* containerName, const ContainerType& type, InputArchive& archive);
 
 // Utility to read a std::vector from an archive
 template <class T>

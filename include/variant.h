@@ -54,7 +54,7 @@ public:
 	bool operator!=(const Variant& other) const;
 
 private:
-	void        destruct();
+	void destruct();
 
 private:
 	TypeId                     typeId;

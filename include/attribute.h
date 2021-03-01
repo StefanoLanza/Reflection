@@ -1,14 +1,15 @@
 #pragma once
 
-#include <core/typeId.h>
 #include <cassert>
+#include <core/typeId.h>
 
 namespace Typhoon::Reflection {
 
 class Attribute {
 public:
 	Attribute(TypeId typeId)
-	    : typeId(typeId) {}
+	    : typeId(typeId) {
+	}
 
 	template <class T>
 	const T* tryCast() const;
@@ -44,6 +45,7 @@ public:
 	float getMin() const {
 		return min;
 	}
+
 private:
 	float min;
 };

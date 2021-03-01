@@ -1,5 +1,6 @@
 #pragma once
 
+#include "dataPtr.h"
 #include "type.h"
 #include "typeDB.h"
 
@@ -15,7 +16,8 @@ public:
 	bool isConst() const {
 		return bIsConst;
 	}
-	void* resolvePointer(void* data) const;
+	DataPtr      resolvePointer(DataPtr data) const;
+	ConstDataPtr resolvePointer(ConstDataPtr data) const;
 
 private:
 	const Type* referencedType;

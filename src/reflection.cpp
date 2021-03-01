@@ -69,9 +69,9 @@ void registerBuiltinTypes(Context& context) {
 	context.typeDB->getGlobalNamespace().addType(variantType);
 }
 
-HeapAllocator defaultAllocator;
+HeapAllocator  defaultAllocator;
 PagedAllocator pagedAllocator(defaultAllocator, PagedAllocator::defaultPageSize);
-Context       context {};
+Context        context {};
 
 } // namespace
 
