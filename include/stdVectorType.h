@@ -17,10 +17,10 @@ public:
 	    , iter(container->begin()) {
 	}
 
-	const void* getKey() override {
+	ConstDataPtr getKey() override {
 		return nullptr;
 	}
-	const void* getValue() override {
+	ConstDataPtr getValue() override {
 		return &*iter;
 	}
 	size_t getCount() const override {
@@ -46,13 +46,13 @@ public:
 	    , iter(container->begin()) {
 	}
 
-	void* insert(const void* key) override {
+	DataPtr insert(ConstDataPtr key) override {
 		assert(false);
 		(void)key;
 		return nullptr;
 	}
 
-	void* pushBack() override {
+	DataPtr pushBack() override {
 		container->resize(container->size() + 1);
 		return &container->back();
 	}
@@ -73,20 +73,20 @@ public:
 	    : ContainerType(typeName, typeID, sizeof(VECTOR_TYPE), nullptr, valueType, buildMethodTable<VECTOR_TYPE>()) {
 	}
 
-	bool isEmpty(const void* container) const override {
+	bool isEmpty(ConstDataPtr container) const override {
 		return reinterpret_cast<const VECTOR_TYPE*>(container)->empty();
 	}
 
-	ReadIterator* newReadIterator(const void* container, ScopedAllocator& allocator) const override {
-		return allocator.make<ReadIteratorType>(reinterpret_cast<const VECTOR_TYPE*>(container));
+	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
+		return allocator.make<ReadIteratorType>(castPointer<VECTOR_TYPE>(container));
 	}
 
-	WriteIterator* newWriteIterator(void* container, ScopedAllocator& allocator) const override {
-		return allocator.make<WriteIteratorType>(reinterpret_cast<VECTOR_TYPE*>(container));
+	WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const override {
+		return allocator.make<WriteIteratorType>(castPointer<VECTOR_TYPE>(container));
 	}
 
-	void clear(void* container) const override {
-		reinterpret_cast<VECTOR_TYPE*>(container)->clear();
+	void clear(DataPtr container) const override {
+		castPointer<VECTOR_TYPE>(container)->clear();
 	}
 
 private:

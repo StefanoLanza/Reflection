@@ -12,9 +12,9 @@ public:
 	PointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType);
 	virtual ~PointerType() = default;
 
-	const Type&         getPointedType() const;
+	const Type&          getPointedType() const;
 	virtual ConstDataPtr resolvePointer(ConstDataPtr ptr) const = 0;
-	virtual DataPtr     resolvePointer(DataPtr ptr) const = 0;
+	virtual DataPtr      resolvePointer(DataPtr ptr) const = 0;
 
 private:
 	const Type* pointedType;
@@ -27,7 +27,7 @@ public:
 	RawPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType);
 
 	ConstDataPtr resolvePointer(ConstDataPtr ptr) const override;
-	DataPtr     resolvePointer(DataPtr ptr) const override;
+	DataPtr      resolvePointer(DataPtr ptr) const override;
 };
 
 const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc);

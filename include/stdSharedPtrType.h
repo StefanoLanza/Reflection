@@ -12,7 +12,7 @@ public:
 	StdSharedPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType);
 
 	ConstDataPtr resolvePointer(ConstDataPtr ptr) const override;
-	void*       resolvePointer(void* ptr) const override;
+	void*        resolvePointer(void* ptr) const override;
 };
 
 template <typename T>
@@ -23,8 +23,8 @@ inline StdSharedPointerType<T>::StdSharedPointerType(const char* typeName, TypeI
 template <typename T>
 inline ConstDataPtr StdSharedPointerType<T>::resolvePointer(ConstDataPtr data) const {
 	ConstDataPtr pointer = nullptr;
-	const auto& sharedPtr = *castPointer<const std::shared_ptr<T>>(data);
-	const T*    srcPtr = sharedPtr.get();
+	const auto&  sharedPtr = *castPointer<const std::shared_ptr<T>>(data);
+	const T*     srcPtr = sharedPtr.get();
 	std::memcpy(&pointer, &srcPtr, sizeof pointer);
 	return pointer;
 }
