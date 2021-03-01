@@ -94,7 +94,7 @@ template <class T>
 inline bool Variant::tryGet(T* valuePtr) const {
 	assert(valuePtr);
 	if (typeId == Typhoon::getTypeId<T>()) {
-		*valuePtr = *static_cast<const T*>(&storage);
+		*valuePtr = *reinterpret_cast<const T*>(&storage);
 		return true;
 	}
 	return false;

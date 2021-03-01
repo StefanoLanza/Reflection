@@ -75,8 +75,7 @@ public:
 	    : ContainerType(typeName, typeID, sizeof(array_type), nullptr, valueType, buildMethodTable<array_type>()) {
 	}
 
-	bool isEmpty(ConstDataPtr container) const override {
-		(void)container;
+	bool isEmpty([[maybe_unused]] ConstDataPtr container) const override {
 		return L == 0;
 	}
 

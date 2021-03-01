@@ -74,7 +74,7 @@ public:
 	}
 
 	bool isEmpty(ConstDataPtr container) const override {
-		return reinterpret_cast<const VECTOR_TYPE*>(container)->empty();
+		return castPointer<VECTOR_TYPE>(container)->empty();
 	}
 
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {

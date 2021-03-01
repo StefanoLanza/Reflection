@@ -79,7 +79,7 @@ public:
 	}
 
 	bool isEmpty(ConstDataPtr container) const override {
-		return reinterpret_cast<const MAP_TYPE*>(container)->empty();
+		return castPointer<MAP_TYPE>(container)->empty();
 	}
 
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {

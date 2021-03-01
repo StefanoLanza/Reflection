@@ -45,9 +45,8 @@ public:
 	    , position(0) {
 	}
 
-	DataPtr insert(ConstDataPtr key) override {
+	DataPtr insert([[maybe_unused]] ConstDataPtr key) override {
 		assert(false);
-		(void)key;
 		return nullptr;
 	}
 	DataPtr pushBack() override {
@@ -72,7 +71,7 @@ public:
 	    : ContainerType(typeName, typeID, sizeof(TYPE) * LENGTH, nullptr, valueType, {}) {
 	}
 
-	bool isEmpty(ConstDataPtr /*container*/) const override {
+	bool isEmpty([[maybe_unused]] ConstDataPtr container) const override {
 		return LENGTH == 0;
 	}
 
