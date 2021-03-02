@@ -19,14 +19,14 @@ RawPointerType::RawPointerType(const char* typeName, TypeId typeID, size_t size,
     : PointerType { typeName, typeID, size, alignment, pointedType } {
 }
 
-const void* RawPointerType::resolvePointer(const void* data) const {
-	const void* pointer = nullptr;
+ConstDataPtr RawPointerType::resolvePointer(ConstDataPtr data) const {
+	ConstDataPtr pointer = nullptr;
 	std::memcpy(&pointer, data, sizeof pointer);
 	return pointer;
 }
 
-void* RawPointerType::resolvePointer(void* data) const {
-	void* pointer = nullptr;
+DataPtr RawPointerType::resolvePointer(DataPtr data) const {
+	DataPtr pointer = nullptr;
 	std::memcpy(&pointer, data, sizeof pointer);
 	return pointer;
 }

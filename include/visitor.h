@@ -32,8 +32,6 @@ void visitType(TypeId typeId, TypeVisitor& visitor, const VisitOptions& options)
 
 void visitType(const Type& type, TypeVisitor& visitor, const VisitOptions& options);
 
-void visitObject(void* object, const TypeId typeId, TypeVisitor& visitor, const VisitOptions& options);
-
 // Helper
 template <class T>
 inline void visitType(TypeVisitor& visitor, const VisitOptions& options) {

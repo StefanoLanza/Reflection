@@ -68,17 +68,16 @@ void writeStructProperties(ConstDataPtr data, const StructType& structType, Outp
 	for (const auto& property : structType.getProperties()) {
 		if (property.getFlags() & Flags::writeable) {
 			const Type& valueType = property.getValueType();
-			// Allocate a temporary for the value
 			void*       allocOffs = tempAllocator.getOffset();
-			void* const temporary = tempAllocator.alloc(valueType.getSize(), valueType.getAlignment());
-			if (temporary) {
+			// Allocate a temporary for the value
+			if (void* temporary = tempAllocator.alloc(valueType.getSize(), valueType.getAlignment()); temporary) {
 				valueType.constructObject(temporary);
 				ConstDataPtr const self = data;
 				property.getValue(self, temporary);
 				writeObject(temporary, property.getName(), valueType, archive);
 				valueType.destructObject(temporary);
-				tempAllocator.rewind(allocOffs);
 			}
+			tempAllocator.rewind(allocOffs);
 		}
 	}
 }
@@ -156,7 +155,6 @@ bool writeContainer(ConstDataPtr data, const Type& type, const TypeDB& typeDB, O
 		else {
 			writeObjectImpl(iterator->getValue(), *valueType, typeDB, archive, tempAllocator);
 		}
-
 		iterator->gotoNext();
 	}
 
@@ -182,7 +180,7 @@ bool writeReference(ConstDataPtr data, const Type& type, const TypeDB& typeDB, O
 }
 
 bool writeVariant(ConstDataPtr data, const Type& /*type*/, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
-	const Variant* variant = castPointer<Variant>(data);
+	const Variant* variant = cast<Variant>(data);
 	const Type&    type = typeDB.getType(variant->getTypeId());
 	const char*    typeName = variant->getType().getName();
 	if (! typeName) {

@@ -22,7 +22,7 @@ inline StdUniquePointerType<T>::StdUniquePointerType(const char* typeName, TypeI
 template <typename T>
 inline ConstDataPtr StdUniquePointerType<T>::resolvePointer(ConstDataPtr data) const {
 	ConstDataPtr pointer = nullptr;
-	const auto&  uniquePtr = *castPointer<std::unique_ptr<T>>(data);
+	const auto&  uniquePtr = *cast<std::unique_ptr<T>>(data);
 	const T*     srcPtr = uniquePtr.get();
 	std::memcpy(&pointer, &srcPtr, sizeof pointer);
 	return pointer;
@@ -31,7 +31,7 @@ inline ConstDataPtr StdUniquePointerType<T>::resolvePointer(ConstDataPtr data) c
 template <typename T>
 inline DataPtr StdUniquePointerType<T>::resolvePointer(DataPtr data) const {
 	DataPtr  pointer = nullptr;
-	auto&    uniquePtr = *castPointer<std::unique_ptr<T>>(data);
+	auto&    uniquePtr = *cast<std::unique_ptr<T>>(data);
 	const T* srcPtr = uniquePtr.get();
 	std::memcpy(&pointer, &srcPtr, sizeof pointer);
 	return pointer;

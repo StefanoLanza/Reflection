@@ -16,15 +16,15 @@ Property tupleElementProperty(const char* name, Context& context) {
 	using E = std::tuple_element_t<index, C>;
 	const Type* varType = autoRegisterType<E>(context);
 
-	auto getter = [](const void* self, void* temporary) {
-		const C* tuple = reinterpret_cast<const C*>(self);
-		*static_cast<E*>(temporary) = std::get<index>(*tuple);
+	auto getter = [](ConstDataPtr self, DataPtr temporary) {
+		const C* tuple = cast<C>(self);
+		*cast<E>(temporary) = std::get<index>(*tuple);
 		return temporary;
 	};
 
-	auto setter = [](void* self, const void* value) {
-		C* tuple = reinterpret_cast<C*>(self);
-		std::get<index>(*tuple) = *static_cast<const E*>(value);
+	auto setter = [](DataPtr self, ConstDataPtr value) {
+		C* tuple = cast<C>(self);
+		std::get<index>(*tuple) = *cast<E>(value);
 	};
 
 	return { setter, getter, name, varType, Flags::all, Semantic::none, *context.allocator };

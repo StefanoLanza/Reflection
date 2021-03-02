@@ -74,19 +74,19 @@ public:
 	}
 
 	bool isEmpty(ConstDataPtr container) const override {
-		return castPointer<VECTOR_TYPE>(container)->empty();
+		return cast<VECTOR_TYPE>(container)->empty();
 	}
 
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
-		return allocator.make<ReadIteratorType>(castPointer<VECTOR_TYPE>(container));
+		return allocator.make<ReadIteratorType>(cast<VECTOR_TYPE>(container));
 	}
 
 	WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const override {
-		return allocator.make<WriteIteratorType>(castPointer<VECTOR_TYPE>(container));
+		return allocator.make<WriteIteratorType>(cast<VECTOR_TYPE>(container));
 	}
 
 	void clear(DataPtr container) const override {
-		castPointer<VECTOR_TYPE>(container)->clear();
+		cast<VECTOR_TYPE>(container)->clear();
 	}
 
 private:

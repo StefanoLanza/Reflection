@@ -47,12 +47,12 @@ public:
 	    , position(0) {
 	}
 
-	void* insert(ConstDataPtr key) override {
+	DataPtr insert(ConstDataPtr key) override {
 		assert(false);
 		(void)key;
 		return nullptr;
 	}
-	void* pushBack() override {
+	DataPtr pushBack() override {
 		assert(position < L);
 		++position;
 		return &container[position - 1];
@@ -80,13 +80,13 @@ public:
 	}
 
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
-		return allocator.make<ReadIteratorType>(castPointer<T>(container));
+		return allocator.make<ReadIteratorType>(cast<T>(container));
 	}
 
 	WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const override {
-		return allocator.make<WriteIteratorType>(castPointer<T>(container));
+		return allocator.make<WriteIteratorType>(cast<T>(container));
 	}
-	void clear([[maybe_unused]] void* container) const override {
+	void clear([[maybe_unused]] DataPtr container) const override {
 	}
 
 private:

@@ -27,9 +27,9 @@ class WriteIterator {
 public:
 	virtual ~WriteIterator() = default;
 
-	virtual void* pushBack() = 0;
-	virtual void* insert(ConstDataPtr key) = 0;
-	virtual bool  isValid() const = 0;
+	virtual DataPtr pushBack() = 0;
+	virtual DataPtr insert(ConstDataPtr key) = 0;
+	virtual bool    isValid() const = 0;
 };
 
 class ContainerType : public Type {
@@ -46,8 +46,8 @@ public:
 
 	virtual bool           isEmpty(ConstDataPtr container) const = 0;
 	virtual ReadIterator*  newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const = 0;
-	virtual WriteIterator* newWriteIterator(void* container, ScopedAllocator& allocator) const = 0;
-	virtual void           clear(void* container) const = 0;
+	virtual WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const = 0;
+	virtual void           clear(DataPtr container) const = 0;
 
 private:
 	const Type* keyType;

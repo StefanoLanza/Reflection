@@ -76,11 +76,11 @@ public:
 	}
 
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
-		return allocator.make<ReadIteratorType>(castPointer<TYPE>(container));
+		return allocator.make<ReadIteratorType>(cast<TYPE>(container));
 	}
 
 	WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const override {
-		return allocator.make<WriteIteratorType>(castPointer<TYPE>(container));
+		return allocator.make<WriteIteratorType>(cast<TYPE>(container));
 	}
 	void clear([[maybe_unused]] DataPtr container) const override {
 	}

@@ -135,11 +135,9 @@ void readStructProperties(DataPtr data, const StructType& type, const TypeDB& ty
 		if (property.getFlags() & Flags::readable) {
 			if (archive.beginElement(property.getName())) {
 				const Type& valueType = property.getValueType();
-
-				ScopedAllocator scopedAllocator(tempAllocator);
+				void*       allocOffs = tempAllocator.getOffset();
 				// Allocate a temporary for the value
-				void* const temporary = scopedAllocator.alloc(valueType.getSize(), valueType.getAlignment());
-				if (temporary) {
+				if (void* temporary = tempAllocator.alloc(valueType.getSize(), valueType.getAlignment()); temporary) {
 					valueType.constructObject(temporary);
 					const DataPtr self = data;
 					// First set temporary value using getter as readObject might fail or partly fill the data
@@ -148,6 +146,7 @@ void readStructProperties(DataPtr data, const StructType& type, const TypeDB& ty
 					property.setValue(self, temporary);
 					valueType.destructObject(temporary);
 				}
+				tempAllocator.rewind(allocOffs);
 				archive.endElement();
 			}
 		}
@@ -222,7 +221,7 @@ bool readContainer(DataPtr data, const Type& type, Semantic semantic, const Type
 				// read key
 				if (readObject(key, "key", *key_type, Semantic::none, typeDB, archive, tempAllocator)) {
 					// Create value using key
-					void* value = containerIterator->insert(key);
+					DataPtr value = containerIterator->insert(key);
 					readObject(value, "value", *value_type, semantic, typeDB, archive, tempAllocator);
 					// TODO insert on success only ?
 				}
@@ -277,7 +276,7 @@ bool readVariant(DataPtr data, const Type& /*type*/, Semantic semantic, const Ty
 			return false;
 		}
 
-		Variant* variant = castPointer<Variant>(data);
+		Variant* variant = cast<Variant>(data);
 		*variant = Variant(type->getTypeId(), name);
 		res = readObject(variant->getStorage(), "value", *type, semantic, typeDB, archive, tempAllocator);
 

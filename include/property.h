@@ -15,7 +15,7 @@ class Type;
 class Attribute;
 
 using Getter = std::function<ConstDataPtr(ConstDataPtr self, DataPtr temporary)>;
-using Setter = std::function<void(DataPtr self, ConstDataPtr value)>; // TODO void* value to allow move?
+using Setter = std::function<void(DataPtr self, ConstDataPtr value)>; // TODO DataPtr value to allow move?
 
 class Property {
 public:

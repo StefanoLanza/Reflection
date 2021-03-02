@@ -144,16 +144,16 @@ void clonePointer(DataPtr data, ConstDataPtr srcData, const PointerType& type, L
 }
 
 void cloneReference(DataPtr data, ConstDataPtr srcData, const ReferenceType& type, LinearAllocator& allocator) {
-	DataPtr      dstPointer = *castPointer<DataPtr>(data);
-	ConstDataPtr srcPointer = *castPointer<ConstDataPtr>(srcData);
+	DataPtr      dstPointer = *cast<DataPtr>(data);
+	ConstDataPtr srcPointer = *cast<ConstDataPtr>(srcData);
 	assert(dstPointer); // cannot be null
 	assert(srcPointer);
 	cloneObjectImpl(dstPointer, srcPointer, type.getReferencedType(), allocator);
 }
 
 void cloneVariant(DataPtr dstData, ConstDataPtr srcData, const TypeDB& /*typeDB*/) {
-	const Variant* srcVariant = castPointer<Variant>(srcData);
-	Variant*       dstVariant = castPointer<Variant>(dstData);
+	const Variant* srcVariant = cast<Variant>(srcData);
+	Variant*       dstVariant = cast<Variant>(dstData);
 	*dstVariant = *srcVariant;
 }
 

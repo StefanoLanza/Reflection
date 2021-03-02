@@ -52,14 +52,7 @@ void        readBuiltins(Builtins& b, const std::string& xmlString, const char* 
 int __cdecl main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
 
-#if _DEBUG
 	refl::initReflection();
-#else
-	char                     buffer[8192];
-	Typhoon::HeapAllocator   heapAllocator;
-	Typhoon::LinearAllocator linearAllocator(buffer, std::size(buffer), &heapAllocator);
-	refl::initReflection(linearAllocator);
-#endif
 	registerUserTypes();
 	printRegisteredTypes();
 

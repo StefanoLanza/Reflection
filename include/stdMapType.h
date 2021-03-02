@@ -57,7 +57,7 @@ public:
 	DataPtr insert(ConstDataPtr key) override {
 		// Insert a temporary value
 		mapped_type               tmp;
-		std::pair<iterator, bool> res = container->insert(std::make_pair(*castPointer<key_type>(key), tmp));
+		std::pair<iterator, bool> res = container->insert(std::make_pair(*cast<key_type>(key), tmp));
 		// Return pointer to mapped value
 		return &res.first->second;
 	}
@@ -79,18 +79,18 @@ public:
 	}
 
 	bool isEmpty(ConstDataPtr container) const override {
-		return castPointer<MAP_TYPE>(container)->empty();
+		return cast<MAP_TYPE>(container)->empty();
 	}
 
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
-		return allocator.make<ReadIteratorType>(castPointer<MAP_TYPE>(container));
+		return allocator.make<ReadIteratorType>(cast<MAP_TYPE>(container));
 	}
 
 	WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const override {
-		return allocator.make<WriteIteratorType>(castPointer<MAP_TYPE>(container));
+		return allocator.make<WriteIteratorType>(cast<MAP_TYPE>(container));
 	}
 	void clear(DataPtr container) const override {
-		castPointer<MAP_TYPE>(container)->clear();
+		cast<MAP_TYPE>(container)->clear();
 	}
 
 private:
