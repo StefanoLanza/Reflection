@@ -70,7 +70,6 @@ void registerBuiltinTypes(Context& context) {
 }
 
 HeapAllocator  defaultAllocator;
-PagedAllocator pagedAllocator(defaultAllocator, PagedAllocator::defaultPageSize);
 Context        context {};
 
 } // namespace
@@ -93,6 +92,7 @@ void deinitReflection() {
 	assert(context.scopedAllocator);
 	context.scopedAllocator->~ScopedAllocator();
 	context.allocator->free(context.scopedAllocator, sizeof(ScopedAllocator));
+	context.pagedAllocator->~LinearAllocator();
 	context.allocator->free(context.pagedAllocator, sizeof(PagedAllocator));
 	context.scopedAllocator = nullptr;
 	context.typeDB = nullptr;

@@ -1,4 +1,5 @@
 #include "scopedAllocator.h"
+#include <cassert>
 
 namespace Typhoon {
 
@@ -34,6 +35,7 @@ void* ScopedAllocator::alloc(size_t size, size_t alignment) {
 
 void ScopedAllocator::registerObject(void* obj, size_t objSize, Destructor destructor) {
 	Finalizer* f = static_cast<Finalizer*>(allocator.alloc(sizeof(Finalizer), alignof(Finalizer)));
+	assert(f);
 	f->destructor = destructor;
 	f->obj = obj;
 	f->objSize = objSize;

@@ -61,21 +61,29 @@ void BufferAllocator::rewind(void* ptr) {
 	}
 }
 
-PagedAllocator::PagedAllocator(Allocator& parentAllocator, size_t pageSize)
+PagedAllocator::PagedAllocator(Allocator& parentAllocator, size_t pageSize, size_t maxPages)
     : allocator(&parentAllocator)
     , pageSize(pageSize)
+    , maxPages(maxPages ? maxPages : std::numeric_limits<size_t>::max())
     , rootPage(nullptr)
     , currPage(nullptr)
-    , freeSize(0) {
+    , freeSize(0)
+    , pageCount(0) {
+	assert(pageSize > sizeof(Page));
 }
 
 PagedAllocator::~PagedAllocator() {
-	for (Page* page = rootPage; page; page = page->next) {
+	for (Page* page = rootPage; page; ) {
+		Page* next = page->next; // Fetch before freeing page
 		allocator->free(page->buffer, page->size);
+		page = next;
 	}
 }
 
 void* PagedAllocator::alloc(size_t size, size_t alignment) {
+	if (size > pageSize - sizeof(Page)) {
+		return nullptr;
+	}
 	if (! rootPage) {
 		rootPage = allocPage();
 		if (! rootPage) {
@@ -83,12 +91,14 @@ void* PagedAllocator::alloc(size_t size, size_t alignment) {
 		}
 		currPage = rootPage;
 	}
-	if (void* result = allocFromPage(*currPage, size, alignment); result) {
-		return result;
+
+	for (Page* page = currPage; page != nullptr; page = page->next) {
+		if (void* result = allocFromPage(*page, size, alignment); result) {
+			currPage = page;
+			return result;
+		}
 	}
-	if (size > pageSize) {
-		return nullptr;
-	}
+
 	Page* newPage = allocPage();
 	if (newPage) {
 		newPage->prev = currPage;
@@ -130,6 +140,9 @@ inline void* PagedAllocator::getOffset() const {
 }
 
 PagedAllocator::Page* PagedAllocator::allocPage() {
+	if (pageCount >= maxPages) {
+		return nullptr;
+	}
 	void* buffer = allocator->alloc(pageSize, Allocator::defaultAlignment);
 	if (buffer) {
 		Page newPage;
@@ -140,6 +153,7 @@ PagedAllocator::Page* PagedAllocator::allocPage() {
 		newPage.size = pageSize - sizeof(Page);
 		freeSize = pageSize;
 		std::memcpy(buffer, &newPage, sizeof newPage);
+		++pageCount;
 		return static_cast<Page*>(buffer);
 	}
 	return nullptr;

@@ -87,7 +87,7 @@ inline void* BufferAllocator::getBuffer() const {
 
 class PagedAllocator : public LinearAllocator {
 public:
-	PagedAllocator(Allocator& parentAllocator, size_t pageSize);
+	PagedAllocator(Allocator& parentAllocator, size_t pageSize, size_t maxPages = 0);
 	~PagedAllocator();
 
 	void* alloc(size_t size, size_t alignment) override;
@@ -112,9 +112,11 @@ private:
 	};
 	Allocator* allocator;
 	size_t     pageSize;
+	size_t     maxPages;
 	Page*      rootPage;
 	Page*      currPage;
 	size_t     freeSize;
+	size_t     pageCount;
 };
 
 } // namespace Typhoon
