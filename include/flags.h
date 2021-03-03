@@ -6,7 +6,8 @@ namespace Typhoon::Reflection {
 
 struct Flags {
 	using Type = uint32_t;
-	enum : Type {
+	enum : Type
+	{
 		none = 0,
 		edit = 1,
 		view = 2,

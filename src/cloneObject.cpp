@@ -21,19 +21,19 @@ namespace Typhoon::Reflection {
 
 namespace {
 
-ErrorCode cloneObjectImpl(void* dstData, const void* srcData, const Type& type, LinearAllocator& stackAllocator);
-void      cloneBuiltin(void* data, const void* srcData, const BuiltinType& type);
-void      cloneStruct(void* data, const void* srcData, const StructType& structType, const TypeDB& typeDB);
-void      cloneEnum(void* data, const void* srcData, const EnumType& type);
-void      cloneBitMask(void* data, const void* srcData, const BitMaskType& type);
-void      cloneContainer(void* data, const void* srcData, const ContainerType& type, LinearAllocator& stackAllocator);
-void      clonePointer(void* data, const void* srcData, const PointerType& type, LinearAllocator& stackAllocator);
-void      cloneReference(void* data, const void* srcData, const ReferenceType& type, LinearAllocator& stackAllocator);
-void      cloneVariant(void* dstData, const void* srcData, const TypeDB& typeDB);
+ErrorCode cloneObjectImpl(DataPtr dstData, ConstDataPtr srcData, const Type& type, LinearAllocator& allocator);
+void      cloneBuiltin(DataPtr data, ConstDataPtr srcData, const BuiltinType& type);
+void      cloneStruct(DataPtr data, ConstDataPtr srcData, const StructType& structType, const TypeDB& typeDB, LinearAllocator& allocator);
+void      cloneEnum(DataPtr data, ConstDataPtr srcData, const EnumType& type);
+void      cloneBitMask(DataPtr data, ConstDataPtr srcData, const BitMaskType& type);
+void      cloneContainer(DataPtr data, ConstDataPtr srcData, const ContainerType& type, LinearAllocator& allocator);
+void      clonePointer(DataPtr data, ConstDataPtr srcData, const PointerType& type, LinearAllocator& allocator);
+void      cloneReference(DataPtr data, ConstDataPtr srcData, const ReferenceType& type, LinearAllocator& allocator);
+void      cloneVariant(DataPtr dstData, ConstDataPtr srcData, const TypeDB& typeDB);
 
 } // namespace
 
-ErrorCode cloneObject(void* dstObject, const void* srcObject, TypeId typeId) {
+ErrorCode cloneObject(DataPtr dstObject, ConstDataPtr srcObject, TypeId typeId) {
 	const TypeDB& typeDB = detail::getTypeDB();
 	const Type*   type = typeDB.tryGetType(typeId);
 	ErrorCode     errorCode;
@@ -43,9 +43,7 @@ ErrorCode cloneObject(void* dstObject, const void* srcObject, TypeId typeId) {
 			errorCode = ErrorCode::ok;
 		}
 		else {
-			char            stack[Defaults::stackSize];
-			LinearAllocator stackAllocator(stack, std::size(stack), nullptr);
-			errorCode = cloneObjectImpl(dstObject, srcObject, *type, stackAllocator);
+			errorCode = cloneObjectImpl(dstObject, srcObject, *type, *detail::getContext().pagedAllocator);
 		}
 	}
 	else {
@@ -56,14 +54,14 @@ ErrorCode cloneObject(void* dstObject, const void* srcObject, TypeId typeId) {
 
 namespace {
 
-ErrorCode cloneObjectImpl(void* dstData, const void* srcData, const Type& type, LinearAllocator& stackAllocator) {
+ErrorCode cloneObjectImpl(DataPtr dstData, ConstDataPtr srcData, const Type& type, LinearAllocator& allocator) {
 	const TypeDB&        typeDB = detail::getTypeDB();
 	const Type::Subclass subclass = type.getSubClass();
 	if (subclass == Type::Subclass::Builtin) {
 		cloneBuiltin(dstData, srcData, static_cast<const BuiltinType&>(type));
 	}
 	else if (subclass == Type::Subclass::Struct) {
-		cloneStruct(dstData, srcData, static_cast<const StructType&>(type), typeDB);
+		cloneStruct(dstData, srcData, static_cast<const StructType&>(type), typeDB, allocator);
 	}
 	else if (subclass == Type::Subclass::Enum) {
 		cloneEnum(dstData, srcData, static_cast<const EnumType&>(type));
@@ -72,13 +70,13 @@ ErrorCode cloneObjectImpl(void* dstData, const void* srcData, const Type& type, 
 		cloneBitMask(dstData, srcData, static_cast<const BitMaskType&>(type));
 	}
 	else if (subclass == Type::Subclass::Container) {
-		cloneContainer(dstData, srcData, static_cast<const ContainerType&>(type), stackAllocator);
+		cloneContainer(dstData, srcData, static_cast<const ContainerType&>(type), allocator);
 	}
 	else if (subclass == Type::Subclass::Pointer) {
-		clonePointer(dstData, srcData, static_cast<const PointerType&>(type), stackAllocator);
+		clonePointer(dstData, srcData, static_cast<const PointerType&>(type), allocator);
 	}
 	else if (subclass == Type::Subclass::Reference) {
-		cloneReference(dstData, srcData, static_cast<const ReferenceType&>(type), stackAllocator);
+		cloneReference(dstData, srcData, static_cast<const ReferenceType&>(type), allocator);
 	}
 	else if (subclass == Type::Subclass::Variant) {
 		cloneVariant(dstData, srcData, typeDB);
@@ -86,77 +84,76 @@ ErrorCode cloneObjectImpl(void* dstData, const void* srcData, const Type& type, 
 	return ErrorCode::ok;
 }
 
-void cloneStruct(void* dstData, const void* srcData, const StructType& structType, const TypeDB& typeDB) {
+void cloneStruct(DataPtr dstData, ConstDataPtr srcData, const StructType& structType, const TypeDB& typeDB, LinearAllocator& allocator) {
 	for (const auto& property : structType.getProperties()) {
 		if (property.getFlags() & Flags::clonable) {
-			property.copyValue(dstData, srcData);
+			property.copyValue(dstData, srcData, allocator);
 		}
 	}
 
-	const StructType* parentType = structType.getParentType();
-	if (parentType) {
-		cloneStruct(dstData, srcData, *parentType, typeDB);
+	if (const StructType* parentType = structType.getParentType(); parentType) {
+		cloneStruct(dstData, srcData, *parentType, typeDB, allocator);
 	}
 }
 
-void cloneBuiltin(void* data, const void* srcData, const BuiltinType& type) {
+void cloneBuiltin(DataPtr data, ConstDataPtr srcData, const BuiltinType& type) {
 	type.copyObject(data, srcData);
 }
 
-void cloneEnum(void* data, const void* srcData, const EnumType& type) {
+void cloneEnum(DataPtr data, ConstDataPtr srcData, const EnumType& type) {
 	std::memcpy(data, srcData, type.getSize());
 }
 
-void cloneBitMask(void* data, const void* srcData, const BitMaskType& type) {
+void cloneBitMask(DataPtr data, ConstDataPtr srcData, const BitMaskType& type) {
 	std::memcpy(data, srcData, type.getSize());
 }
 
-void cloneContainer(void* dstContainer, const void* srcContainer, const ContainerType& type, LinearAllocator& stackAllocator) {
+void cloneContainer(DataPtr dstContainer, ConstDataPtr srcContainer, const ContainerType& type, LinearAllocator& allocator) {
 	const Type* key_type = type.getKeyType();
 	const Type* value_type = type.getValueType();
 
-	ScopedAllocator      scopedAllocator(stackAllocator);
+	ScopedAllocator      scopedAllocator(allocator);
 	WriteIterator* const writeIterator = type.newWriteIterator(dstContainer, scopedAllocator);
 	ReadIterator* const  readIterator = type.newReadIterator(srcContainer, scopedAllocator);
 	type.clear(dstContainer);
 
 	while (readIterator->isValid()) {
 		if (key_type) {
-			const void* key = readIterator->getKey();
-			const void* srcValue = readIterator->getValue();
-			void*       dstValue = writeIterator->insert(key);
+			ConstDataPtr key = readIterator->getKey();
+			ConstDataPtr srcValue = readIterator->getValue();
+			DataPtr      dstValue = writeIterator->insert(key);
 			// Clone value
-			cloneObjectImpl(dstValue, srcValue, *value_type, stackAllocator);
+			cloneObjectImpl(dstValue, srcValue, *value_type, allocator);
 		}
 		else {
-			const void* srcValue = readIterator->getValue();
-			void*       dstValue = writeIterator->pushBack();
+			ConstDataPtr srcValue = readIterator->getValue();
+			DataPtr      dstValue = writeIterator->pushBack();
 			// Clone value
-			cloneObjectImpl(dstValue, srcValue, *value_type, stackAllocator);
+			cloneObjectImpl(dstValue, srcValue, *value_type, allocator);
 		}
 		readIterator->gotoNext();
 	}
 }
 
-void clonePointer(void* data, const void* srcData, const PointerType& type, LinearAllocator& stackAllocator) {
-	void*       dstPointer = type.resolvePointer(data);
-	const void* srcPointer = type.resolvePointer(srcData);
+void clonePointer(DataPtr data, ConstDataPtr srcData, const PointerType& type, LinearAllocator& allocator) {
+	DataPtr      dstPointer = type.resolvePointer(data);
+	ConstDataPtr srcPointer = type.resolvePointer(srcData);
 	if (dstPointer && srcPointer) {
-		cloneObjectImpl(dstPointer, srcPointer, type.getPointedType(), stackAllocator);
+		cloneObjectImpl(dstPointer, srcPointer, type.getPointedType(), allocator);
 	}
 }
 
-void cloneReference(void* data, const void* srcData, const ReferenceType& type, LinearAllocator& stackAllocator) {
-	void*       dstPointer = *static_cast<void**>(data);
-	const void* srcPointer = *static_cast<void* const*>(srcData);
+void cloneReference(DataPtr data, ConstDataPtr srcData, const ReferenceType& type, LinearAllocator& allocator) {
+	DataPtr      dstPointer = *cast<DataPtr>(data);
+	ConstDataPtr srcPointer = *cast<ConstDataPtr>(srcData);
 	assert(dstPointer); // cannot be null
 	assert(srcPointer);
-	cloneObjectImpl(dstPointer, srcPointer, type.getReferencedType(), stackAllocator);
+	cloneObjectImpl(dstPointer, srcPointer, type.getReferencedType(), allocator);
 }
 
-void cloneVariant(void* dstData, const void* srcData, const TypeDB& /*typeDB*/) {
-	const Variant* srcVariant = static_cast<const Variant*>(srcData);
-	Variant*       dstVariant = static_cast<Variant*>(dstData);
+void cloneVariant(DataPtr dstData, ConstDataPtr srcData, const TypeDB& /*typeDB*/) {
+	const Variant* srcVariant = cast<Variant>(srcData);
+	Variant*       dstVariant = cast<Variant>(dstData);
 	*dstVariant = *srcVariant;
 }
 

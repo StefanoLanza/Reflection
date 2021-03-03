@@ -1,6 +1,7 @@
 #include "utils.h"
 #include <cassert>
 #include <include/enumType.h>
+#include <include/bitMaskType.h>
 #include <include/namespace.h>
 #include <include/type.h>
 #include <include/structType.h>
@@ -26,17 +27,55 @@ public:
 			std::cout << "}" << std::endl;
 		}
 	}
+
 	void visitType(const refl::Type& type) override {
-		indent();
 		if (type.getSubClass() == refl::Type::Subclass::Enum) {
-			std::cout << "enum ";
+			visitEnum(static_cast<const refl::EnumType&>(type));
+			return;
 		}
+		else if (type.getSubClass() == refl::Type::Subclass::BitMask) {
+			visitBitmask(static_cast<const refl::BitMaskType&>(type));
+			return;
+		}
+		indent();
 		std::cout << type.getName();
 		std::cout << std::endl;
-		if (type.getSubClass() == refl::Type::Subclass::Enum) {
-			printEnum(static_cast<const refl::EnumType&>(type));
-		}
 	}
+
+	void visitEnum(const refl::EnumType& type) {
+		indent();
+		std::cout << "enum ";
+		std::cout << type.getName();
+		std::cout << " {" << std::endl;
+		indentation += whitespace;
+		const auto& underlyingType = type.getUnderlyingType();
+		for (auto& enumerator : type.getEnumerators()) {
+			indent();
+			std::cout << enumerator.name << ": ";
+			printIntegerValue(enumerator.value, underlyingType);
+			std::cout << "," << std::endl;
+		}
+		std::cout << "}" << std::endl;
+		indentation -= whitespace;
+	}
+
+	void visitBitmask(const refl::BitMaskType& type) {
+		indent();
+		std::cout << "bitmask ";
+		std::cout << type.getName();
+		std::cout << " {" << std::endl;
+		indentation += whitespace;
+		const auto& underlyingType = type.getUnderlyingType();
+		for (auto& constant : type.getEnumerators()) {
+			indent();
+			std::cout << constant.name << " = ";
+			printIntegerValue(&constant.mask, underlyingType);
+			std::cout << "," << std::endl;
+		}
+		std::cout << "}" << std::endl;
+		indentation -= whitespace;
+	}
+
 	void visitField(const char* fieldName, const refl::Type& type) override {
 		indent();
 		std::cout << type.getName() << " " << fieldName << ";" << std::endl;
@@ -58,27 +97,14 @@ private:
 		for (std::streamsize i = 0; i < indentation; ++i) {
 			std::cout << ' ';
 		}
-		//std::cout << std::left << std::setfill(' ') << std::setw(indentation);
 	}
 
-	void printEnum(const refl::EnumType& enumType) {
-		indentation += whitespace;
-		const auto underlyingType = enumType.getUnderlyingType();
-		for (auto& enumerator : enumType.getEnumerators()) {
-			indent();
-			std::cout << enumerator.name << ": ";
-			printEnumerator(enumerator, underlyingType);
-			std::cout << std::endl;
-		}
-		indentation -= whitespace;
-	}
-
-	void printEnumerator(const refl::Enumerator& enumerator, const refl::Type& underlyingType) const {
+	void printIntegerValue(const void* value, const refl::Type& underlyingType) const {
 		uint64_t uv = 0;
-		int64_t  v = 0;
+//		int64_t  v = 0;
 		// TODO Handle signed
 		assert(sizeof(uv) >= underlyingType.getSize());
-		std::memcpy(&uv, enumerator.value, underlyingType.getSize());
+		std::memcpy(&uv, value, underlyingType.getSize());
 		std::cout << uv;
 	}
 
@@ -90,8 +116,9 @@ private:
 } // namespace
 
 void printRegisteredType(const refl::Type& type) {
+	Printer            printer;
 	refl::VisitOptions visitorOptions;
-	// refl::visitType(type, visitor, visitorOptions);
+	refl::visitType(type, printer, visitorOptions);
 }
 
 void printNamespace(const refl::Namespace& nameSpace) {

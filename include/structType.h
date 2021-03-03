@@ -14,7 +14,8 @@ class Attribute;
 
 class StructType : public Type {
 public:
-	StructType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const MethodTable& methods, Allocator& allocator);
+	StructType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const MethodTable& methods,
+	           Allocator& allocator);
 	~StructType();
 
 	const StructType*            getParentType() const;

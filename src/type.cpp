@@ -4,7 +4,7 @@ namespace Typhoon::Reflection {
 
 Type::Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods)
     : typeName(typeName)
-	, typeID(typeId)
+    , typeID(typeId)
     , size(size)
     , alignment(alignment)
     , subClass(subClass)
@@ -31,43 +31,43 @@ Type::Subclass Type::getSubClass() const {
 	return subClass;
 }
 
-void Type::constructObject(void* object) const {
+void Type::constructObject(DataPtr object) const {
 	if (methods.defaultConstructor) {
 		methods.defaultConstructor(object);
 	}
 }
 
-void Type::copyConstructObject(void* object, const void* src) const {
+void Type::copyConstructObject(DataPtr object, ConstDataPtr src) const {
 	if (methods.copyConstructor) {
 		methods.copyConstructor(object, src);
 	}
 }
 
-void Type::destructObject(void* object) const {
+void Type::destructObject(DataPtr object) const {
 	if (methods.destructor) {
 		methods.destructor(object);
 	}
 }
 
-void Type::copyObject(void* a, const void* b) const {
+void Type::copyObject(DataPtr a, ConstDataPtr b) const {
 	if (methods.copyAssignment) {
 		methods.copyAssignment(a, b);
 	}
 }
 
-void Type::moveConstructObject(void* object, void* src) const {
+void Type::moveConstructObject(DataPtr object, DataPtr src) const {
 	if (methods.moveConstructor) {
 		methods.moveConstructor(object, src);
 	}
 }
 
-void Type::moveObject(void* a, void* b) const {
+void Type::moveObject(DataPtr a, DataPtr b) const {
 	if (methods.moveAssignment) {
 		methods.moveAssignment(a, b);
 	}
 }
 
-bool Type::compareObjects(const void* a, const void* b) const {
+bool Type::compareObjects(ConstDataPtr a, ConstDataPtr b) const {
 	return methods.equalityOperator(a, b);
 }
 

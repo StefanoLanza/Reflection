@@ -13,7 +13,6 @@ class StructType;
 
 class TypeVisitor {
 public:
-
 	~TypeVisitor() = default;
 
 	virtual void beginNamespace(const Namespace&) = 0;
@@ -32,8 +31,6 @@ struct VisitOptions {
 void visitType(TypeId typeId, TypeVisitor& visitor, const VisitOptions& options);
 
 void visitType(const Type& type, TypeVisitor& visitor, const VisitOptions& options);
-
-void visitObject(void* object, const TypeId typeId, TypeVisitor& visitor, const VisitOptions& options);
 
 // Helper
 template <class T>

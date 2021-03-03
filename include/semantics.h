@@ -4,7 +4,8 @@
 
 namespace Typhoon::Reflection {
 
-enum class Semantic {
+enum class Semantic
+{
 	none = 0,
 	color = 1,
 	direction = 2,

@@ -16,7 +16,7 @@ span<const Enumerator> EnumType::getEnumerators() const {
 	return { enumerators, numEnumerators };
 }
 
-const Enumerator* EnumType::findEnumeratorByValue(const void* value, size_t valueSize) const {
+const Enumerator* EnumType::findEnumeratorByValue(ConstDataPtr value, size_t valueSize) const {
 	for (size_t i = 0; i < numEnumerators; ++i) {
 		if (std::memcmp(enumerators[i].value, value, valueSize) == 0) {
 			return &enumerators[i];

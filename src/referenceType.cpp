@@ -9,8 +9,15 @@ ReferenceType::ReferenceType(TypeId typeID, const Type* referencedType, bool bIs
     , bIsConst(bIsConst) {
 }
 
-void* ReferenceType::resolvePointer(void* data) const {
-	void* pointer = nullptr;
+DataPtr ReferenceType::resolvePointer(DataPtr data) const {
+	DataPtr pointer = nullptr;
+	std::memcpy(&pointer, &data, sizeof pointer);
+	assert(pointer); // cannot have a null reference
+	return pointer;
+}
+
+ConstDataPtr ReferenceType::resolvePointer(ConstDataPtr data) const {
+	ConstDataPtr pointer = nullptr;
 	std::memcpy(&pointer, &data, sizeof pointer);
 	assert(pointer); // cannot have a null reference
 	return pointer;

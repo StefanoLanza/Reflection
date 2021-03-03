@@ -42,26 +42,23 @@ Semantic Property::getSemantic() const {
 	return semantic;
 }
 
-void Property::setValue(void* self, const void* value) const {
+void Property::setValue(DataPtr self, ConstDataPtr value) const {
 	setter(self, value);
 }
 
-void Property::getValue(const void* self, void* value) const {
+void Property::getValue(ConstDataPtr self, DataPtr value) const {
 	getter(self, value);
 }
 
-void Property::copyValue(void* dstSelf, const void* srcSelf) const {
-	char   stack[256];
-	void*  dst = stack;
-	size_t size = sizeof stack;
-	void*  temporary = std::align(valueType->getAlignment(), valueType->getSize(), dst, size);
-	assert(temporary);
-	if (temporary) {
+void Property::copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator& alloc) const {
+	void* allocOffs = alloc.getOffset();
+	if (void* temporary = alloc.alloc(valueType->getSize(), valueType->getAlignment()); temporary) {
 		valueType->constructObject(temporary);
-		const void* value = getter(srcSelf, temporary);
+		ConstDataPtr value = getter(srcSelf, temporary);
 		setter(dstSelf, value);
 		valueType->destructObject(temporary);
 	}
+	alloc.rewind(allocOffs);
 }
 
 void Property::addAttribute(const Attribute* attribute) {

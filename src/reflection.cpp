@@ -13,26 +13,26 @@ namespace Typhoon::Reflection {
 namespace {
 
 template <class T>
-void readBuiltin(void* data, InputArchive& archive) {
-	read(*static_cast<T*>(data), archive);
+void readBuiltin(DataPtr data, InputArchive& archive) {
+	read(*cast<T>(data), archive);
 }
 
 template <class T>
-bool writeBuiltin(const void* data, OutputArchive& archive) {
-	return write(*static_cast<const T*>(data), archive);
+bool writeBuiltin(ConstDataPtr data, OutputArchive& archive) {
+	return write(*cast<T>(data), archive);
 }
 
 template <>
-void readBuiltin<std::string>(void* data, InputArchive& archive) {
+void readBuiltin<std::string>(DataPtr data, InputArchive& archive) {
 	const char* cstr = nullptr;
 	if (archive.readString(cstr)) {
-		*static_cast<std::string*>(data) = cstr;
+		*cast<std::string>(data) = cstr;
 	}
 }
 
 template <>
-bool writeBuiltin<std::string>(const void* data, OutputArchive& archive) {
-	archive.write(static_cast<const std::string*>(data)->c_str());
+bool writeBuiltin<std::string>(ConstDataPtr data, OutputArchive& archive) {
+	archive.write(cast<std::string>(data)->c_str());
 	return true;
 }
 
@@ -69,8 +69,8 @@ void registerBuiltinTypes(Context& context) {
 	context.typeDB->getGlobalNamespace().addType(variantType);
 }
 
-HeapAllocator defaultAllocator;
-Context       context {};
+HeapAllocator  defaultAllocator;
+Context        context {};
 
 } // namespace
 
@@ -82,7 +82,8 @@ void initReflection(Allocator& allocator) {
 	assert(! context.typeDB);
 
 	context.allocator = &allocator;
-	context.scopedAllocator = new (allocator.alloc<ScopedAllocator>()) ScopedAllocator(allocator);
+	context.pagedAllocator = new (allocator.alloc<PagedAllocator>()) PagedAllocator(allocator, PagedAllocator::defaultPageSize);
+	context.scopedAllocator = new (allocator.alloc<ScopedAllocator>()) ScopedAllocator(*context.pagedAllocator);
 	context.typeDB = context.scopedAllocator->make<TypeDB>(std::ref(allocator), std::ref(*context.scopedAllocator));
 	registerBuiltinTypes(context);
 }
@@ -91,6 +92,8 @@ void deinitReflection() {
 	assert(context.scopedAllocator);
 	context.scopedAllocator->~ScopedAllocator();
 	context.allocator->free(context.scopedAllocator, sizeof(ScopedAllocator));
+	context.pagedAllocator->~LinearAllocator();
+	context.allocator->free(context.pagedAllocator, sizeof(PagedAllocator));
 	context.scopedAllocator = nullptr;
 	context.typeDB = nullptr;
 	context.allocator = nullptr;

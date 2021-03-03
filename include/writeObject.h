@@ -1,6 +1,7 @@
 #pragma once
 
 #include "context.h"
+#include "dataPtr.h"
 #include "errorCodes.h"
 #include "typeDB.h"
 
@@ -30,6 +31,6 @@ bool writeObject(const T& object, const char* name, OutputArchive& archive) {
 	}
 }
 
-bool writeObject(const void* data, const char* name, const Type& type, OutputArchive& archive);
+bool writeObject(ConstDataPtr data, const char* name, const Type& type, OutputArchive& archive);
 
 } // namespace Typhoon::Reflection

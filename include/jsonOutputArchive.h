@@ -4,10 +4,10 @@
 
 #if TY_REFLECTION_JSON
 
+#include "../external/rapidjson/include/rapidjson/fwd.h"
+#include "../external/rapidjson/include/rapidjson/prettywriter.h"
 #include "archive.h"
 #include <memory>
-#include <rapidjson/include/rapidjson/fwd.h>
-#include <rapidjson/include/rapidjson/prettywriter.h>
 
 namespace Typhoon::Reflection {
 

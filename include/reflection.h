@@ -6,6 +6,7 @@
 #include "builtinType.h"
 #include "cloneObject.h"
 #include "containerType.h"
+#include "namespace.h"
 #include "pointerType.h"
 #include "readObject.h"
 #include "serializeBuiltIns.h"
@@ -13,7 +14,6 @@
 #include "variant.h"
 #include "variantType.h"
 #include "writeObject.h"
-#include "namespace.h"
 
 #include "registration.h"
 

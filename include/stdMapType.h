@@ -18,10 +18,10 @@ public:
 	    , iter(container->begin()) {
 	}
 
-	const void* getKey() override {
+	ConstDataPtr getKey() override {
 		return &iter->first;
 	}
-	const void* getValue() override {
+	ConstDataPtr getValue() override {
 		return &iter->second;
 	}
 	size_t getCount() const override {
@@ -47,17 +47,17 @@ public:
 	    , iter(container->begin()) {
 	}
 
-	void* pushBack() override {
+	DataPtr pushBack() override {
 		assert(0);
 		return nullptr;
 	}
 	bool isValid() const override {
 		return true;
 	}
-	void* insert(const void* key) override {
+	DataPtr insert(ConstDataPtr key) override {
 		// Insert a temporary value
 		mapped_type               tmp;
-		std::pair<iterator, bool> res = container->insert(std::make_pair(*reinterpret_cast<const key_type*>(key), tmp));
+		std::pair<iterator, bool> res = container->insert(std::make_pair(*cast<key_type>(key), tmp));
 		// Return pointer to mapped value
 		return &res.first->second;
 	}
@@ -78,26 +78,25 @@ public:
 	    : ContainerType(typeName, typeID, sizeof(MAP_TYPE), keyType, valueType, buildMethodTable<MAP_TYPE>()) {
 	}
 
-	bool isEmpty(const void* container) const override {
-		return reinterpret_cast<const MAP_TYPE*>(container)->empty();
+	bool isEmpty(ConstDataPtr container) const override {
+		return cast<MAP_TYPE>(container)->empty();
 	}
 
-	ReadIterator* newReadIterator(const void* container, ScopedAllocator& allocator) const override {
-		return allocator.make<ReadIteratorType>(reinterpret_cast<const MAP_TYPE*>(container));
+	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
+		return allocator.make<ReadIteratorType>(cast<MAP_TYPE>(container));
 	}
 
-	WriteIterator* newWriteIterator(void* container, ScopedAllocator& allocator) const override {
-		return allocator.make<WriteIteratorType>(reinterpret_cast<MAP_TYPE*>(container));
+	WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const override {
+		return allocator.make<WriteIteratorType>(cast<MAP_TYPE>(container));
 	}
-	void clear(void* container) const override {
-		reinterpret_cast<MAP_TYPE*>(container)->clear();
+	void clear(DataPtr container) const override {
+		cast<MAP_TYPE>(container)->clear();
 	}
 
 private:
 	using ReadIteratorType = StdMapReadIterator<MAP_TYPE>;
 	using WriteIteratorType = StdMapWriteIterator<MAP_TYPE>;
 };
-
 
 const char* buildTemplateTypeName(const char* typeNames[], const char* prefix, const char* suffix, ScopedAllocator& alloc);
 
@@ -112,7 +111,7 @@ struct autoRegisterHelper<std::map<_Kty, T>> {
 		const Type*      mappedType = autoRegisterType<MappedType>(context);
 		constexpr TypeId typeID = getTypeId<ContainerType>();
 		const char*      innerTypeNames[] = { keyType->getName(), mappedType->getName(), nullptr };
-		const char*      typeName = buildTemplateTypeName(innerTypeNames, "std::map<", ">", *context.scopedAllocator);	
+		const char*      typeName = buildTemplateTypeName(innerTypeNames, "std::map<", ">", *context.scopedAllocator);
 		auto             type = context.scopedAllocator->make<StdMapContainer<ContainerType>>(typeName, typeID, keyType, mappedType);
 		context.typeDB->registerType(type);
 		return type;

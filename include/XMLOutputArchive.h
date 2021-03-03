@@ -54,7 +54,11 @@ private:
 	void endArrayElement();
 
 private:
-	enum class Type { array, object };
+	enum class Type
+	{
+		array,
+		object
+	};
 
 	std::unique_ptr<tinyxml2::XMLDocument> document;    // The tinyxml document object
 	tinyxml2::XMLNode*                     currentNode; // The node that is currently being processed

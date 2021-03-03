@@ -38,13 +38,3 @@ namespace Typhoon::Reflection {}
 // Namespace alias
 namespace refl = Typhoon::Reflection;
 #endif
-
-// Stack size for read and write operations
-namespace Typhoon::Reflection::Defaults {
-#ifdef TY_REFLECTION_STACK_SIZE
-inline constexpr size_t stackSize = TY_REFLECTION_STACK_SIZE;
-#else
-inline constexpr size_t stackSize = 1024;
-#endif
-}
-

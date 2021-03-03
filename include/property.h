@@ -1,6 +1,7 @@
 #pragma once
 
 #include "config.h"
+#include "dataPtr.h"
 #include "semantics.h"
 #include <core/span.h>
 #include <core/stdAllocator.h>
@@ -13,8 +14,8 @@ namespace Typhoon::Reflection {
 class Type;
 class Attribute;
 
-using Getter = std::function<const void*(const void* self, void* temporary)>;
-using Setter = std::function<void(void* self, const void* value)>; // TODO void* value to allow move?
+using Getter = std::function<ConstDataPtr(ConstDataPtr self, DataPtr temporary)>;
+using Setter = std::function<void(DataPtr self, ConstDataPtr value)>; // TODO DataPtr value to allow move?
 
 class Property {
 public:
@@ -25,9 +26,9 @@ public:
 	uint32_t    getFlags() const;
 	Semantic    getSemantic() const;
 
-	void                         setValue(void* self, const void* value) const;
-	void                         getValue(const void* self, void* value) const;
-	void                         copyValue(void* dstSelf, const void* srcSelf) const;
+	void                         setValue(DataPtr self, ConstDataPtr value) const;
+	void                         getValue(ConstDataPtr self, DataPtr value) const;
+	void                         copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator& alloc) const;
 	void                         addAttribute(const Attribute* attribute);
 	span<const Attribute* const> getAttributes() const;
 

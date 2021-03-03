@@ -18,10 +18,10 @@ public:
 	    , position(0) {
 	}
 
-	const void* getKey() override {
+	ConstDataPtr getKey() override {
 		return nullptr;
 	};
-	const void* getValue() override {
+	ConstDataPtr getValue() override {
 		return &container[position];
 	}
 	size_t getCount() const override {
@@ -47,12 +47,12 @@ public:
 	    , position(0) {
 	}
 
-	void* insert(const void* key) override {
+	DataPtr insert(ConstDataPtr key) override {
 		assert(false);
 		(void)key;
 		return nullptr;
 	}
-	void* pushBack() override {
+	DataPtr pushBack() override {
 		assert(position < L);
 		++position;
 		return &container[position - 1];
@@ -75,19 +75,18 @@ public:
 	    : ContainerType(typeName, typeID, sizeof(array_type), nullptr, valueType, buildMethodTable<array_type>()) {
 	}
 
-	bool isEmpty(const void* container) const override {
-		(void)container;
+	bool isEmpty([[maybe_unused]] ConstDataPtr container) const override {
 		return L == 0;
 	}
 
-	ReadIterator* newReadIterator(const void* container, ScopedAllocator& allocator) const override {
-		return allocator.make<ReadIteratorType>(reinterpret_cast<const T*>(container));
+	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
+		return allocator.make<ReadIteratorType>(cast<T>(container));
 	}
 
-	WriteIterator* newWriteIterator(void* container, ScopedAllocator& allocator) const override {
-		return allocator.make<WriteIteratorType>(reinterpret_cast<T*>(container));
+	WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const override {
+		return allocator.make<WriteIteratorType>(cast<T>(container));
 	}
-	void clear([[maybe_unused]] void* container) const override {
+	void clear([[maybe_unused]] DataPtr container) const override {
 	}
 
 private:
@@ -104,7 +103,7 @@ struct autoRegisterHelper<std::array<T, N>> {
 		using container_type = std::array<T, N>;
 		const Type*      elementType = autoRegisterType<element_type>(context);
 		constexpr TypeId typeID = getTypeId<container_type>();
-		const char*      typeName = decorateTypeName(elementType->getName(), "std::array<", ">", *context.scopedAllocator);	
+		const char*      typeName = decorateTypeName(elementType->getName(), "std::array<", ">", *context.scopedAllocator);
 		auto             type = context.scopedAllocator->make<StdArrayContainer<element_type, N>>(typeName, typeID, elementType);
 		context.typeDB->registerType(type);
 		return type;

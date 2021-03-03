@@ -28,7 +28,7 @@ public:
 	         const Type* underlyingType);
 
 	span<const Enumerator> getEnumerators() const;
-	const Enumerator*      findEnumeratorByValue(const void* value, size_t valueSize) const;
+	const Enumerator*      findEnumeratorByValue(ConstDataPtr value, size_t valueSize) const;
 	const Enumerator*      findEnumeratorByName(const char* constantName) const;
 	const Type&            getUnderlyingType() const;
 

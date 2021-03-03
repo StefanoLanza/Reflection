@@ -124,5 +124,5 @@ project("Example5")
 project("UnitTest")
 	kind "ConsoleApp"
 	links({"Reflection", })
-	files "test/**.cpp"
+	files "test/**.*"
 	sysincludedirs { "./", "include", "external", }

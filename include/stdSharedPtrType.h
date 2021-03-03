@@ -11,8 +11,8 @@ class StdSharedPointerType final : public PointerType {
 public:
 	StdSharedPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType);
 
-	const void* resolvePointer(const void* ptr) const override;
-	void*       resolvePointer(void* ptr) const override;
+	ConstDataPtr resolvePointer(ConstDataPtr ptr) const override;
+	DataPtr      resolvePointer(DataPtr ptr) const override;
 };
 
 template <typename T>
@@ -21,18 +21,18 @@ inline StdSharedPointerType<T>::StdSharedPointerType(const char* typeName, TypeI
 }
 
 template <typename T>
-inline const void* StdSharedPointerType<T>::resolvePointer(const void* data) const {
-	const void* pointer = nullptr;
-	const auto& sharedPtr = *reinterpret_cast<const std::shared_ptr<T>*>(data);
-	const T*    srcPtr = sharedPtr.get();
+inline ConstDataPtr StdSharedPointerType<T>::resolvePointer(ConstDataPtr data) const {
+	ConstDataPtr pointer = nullptr;
+	const auto&  sharedPtr = *cast<const std::shared_ptr<T>>(data);
+	const T*     srcPtr = sharedPtr.get();
 	std::memcpy(&pointer, &srcPtr, sizeof pointer);
 	return pointer;
 }
 
 template <typename T>
-inline void* StdSharedPointerType<T>::resolvePointer(void* data) const {
-	void*    pointer = nullptr;
-	auto&    sharedPtr = *reinterpret_cast<std::shared_ptr<T>*>(data);
+inline DataPtr StdSharedPointerType<T>::resolvePointer(DataPtr data) const {
+	DataPtr  pointer = nullptr;
+	auto&    sharedPtr = *cast<std::shared_ptr<T>>(data);
 	const T* srcPtr = sharedPtr.get();
 	std::memcpy(&pointer, &srcPtr, sizeof pointer);
 	return pointer;
@@ -48,8 +48,8 @@ struct autoRegisterHelper<std::shared_ptr<T>> {
 		const Type* valueType = autoRegisterType<T>(context);
 		assert(valueType);
 		const char* typeName = decorateTypeName(valueType->getName(), "std::shared_ptr<", ">", *context.scopedAllocator);
-		auto        type =
-		    context.scopedAllocator->make<StdSharedPointerType<T>>(typeName, getTypeId<PointerType>(), sizeof(PointerType), alignof(PointerType), valueType);
+		auto        type = context.scopedAllocator->make<StdSharedPointerType<T>>(typeName, getTypeId<PointerType>(), sizeof(PointerType),
+                                                                           alignof(PointerType), valueType);
 		context.typeDB->registerType(type);
 		return type;
 	}
