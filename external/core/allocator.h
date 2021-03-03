@@ -58,7 +58,7 @@ public:
  */
 class BufferAllocator : public LinearAllocator {
 public:
-	BufferAllocator(char* buffer, size_t bufferSize);
+	BufferAllocator(void* buffer, size_t bufferSize);
 
 	void* alloc(size_t size, size_t alignment) override;
 	void  rewind() override;

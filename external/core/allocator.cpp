@@ -30,7 +30,7 @@ void* HeapAllocator::realloc(void* ptr, size_t bytes, [[maybe_unused]] size_t al
 #endif
 }
 
-BufferAllocator::BufferAllocator(char* buffer, size_t bufferSize)
+BufferAllocator::BufferAllocator(void* buffer, size_t bufferSize)
     : buffer(buffer)
     , offset(buffer)
     , bufferSize(bufferSize)
