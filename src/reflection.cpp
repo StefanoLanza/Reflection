@@ -82,18 +82,16 @@ void initReflection(Allocator& allocator) {
 	assert(! context.typeDB);
 
 	context.allocator = &allocator;
-	context.pagedAllocator = new (allocator.alloc<PagedAllocator>()) PagedAllocator(allocator, PagedAllocator::defaultPageSize);
-	context.scopedAllocator = new (allocator.alloc<ScopedAllocator>()) ScopedAllocator(*context.pagedAllocator);
+	context.pagedAllocator = allocator.construct<PagedAllocator>(std::ref(allocator), PagedAllocator::defaultPageSize);
+	context.scopedAllocator = allocator.construct<ScopedAllocator>(std::ref(*context.pagedAllocator));
 	context.typeDB = context.scopedAllocator->make<TypeDB>(std::ref(allocator), std::ref(*context.scopedAllocator));
 	registerBuiltinTypes(context);
 }
 
 void deinitReflection() {
 	assert(context.scopedAllocator);
-	context.scopedAllocator->~ScopedAllocator();
-	context.allocator->free(context.scopedAllocator, sizeof(ScopedAllocator));
-	context.pagedAllocator->~LinearAllocator();
-	context.allocator->free(context.pagedAllocator, sizeof(PagedAllocator));
+	context.allocator->destroy(context.scopedAllocator);
+	context.allocator->destroy(context.pagedAllocator);
 	context.scopedAllocator = nullptr;
 	context.typeDB = nullptr;
 	context.allocator = nullptr;

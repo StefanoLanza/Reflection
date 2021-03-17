@@ -14,7 +14,7 @@ void* HeapAllocator::alloc(size_t size, [[maybe_unused]] size_t alignment) {
 #endif
 }
 
-void HeapAllocator::free(void* ptr, size_t /*size*/) {
+void HeapAllocator::free(void* ptr, [[maybe_unused]] size_t size) {
 #ifdef _MSC_VER
 	::_aligned_free(ptr);
 #else
@@ -28,6 +28,13 @@ void* HeapAllocator::realloc(void* ptr, size_t bytes, [[maybe_unused]] size_t al
 #else
 	return ::realloc(ptr, bytes);
 #endif
+}
+
+void LinearAllocator::free([[maybe_unused]] void* ptr, [[maybe_unused]] size_t size) {
+}
+
+void* LinearAllocator::realloc([[maybe_unused]] void* ptr, size_t bytes, size_t alignment) {
+	return alloc(bytes, alignment);
 }
 
 BufferAllocator::BufferAllocator(void* buffer, size_t bufferSize)
@@ -75,7 +82,7 @@ PagedAllocator::PagedAllocator(Allocator& parentAllocator, size_t pageSize, size
 PagedAllocator::~PagedAllocator() {
 	for (Page* page = rootPage; page; ) {
 		Page* next = page->next; // Fetch before freeing page
-		allocator->free(page->buffer, page->size);
+		allocator->free(page->buffer, pageSize);
 		page = next;
 	}
 }
@@ -113,7 +120,7 @@ void* PagedAllocator::alloc(size_t size, size_t alignment) {
 
 void PagedAllocator::rewind() {
 	for (Page* page = currPage; page; page = page->prev) {
-		page->offset = page->buffer;
+		page->offset = advancePointer(page->buffer, sizeof(Page));
 	}
 	if (rootPage) {
 		freeSize = rootPage->size;
@@ -149,14 +156,13 @@ PagedAllocator::Page* PagedAllocator::allocPage() {
 		newPage.next = nullptr;
 		newPage.prev = nullptr;
 		newPage.buffer = buffer;
-		newPage.offset = static_cast<char*>(buffer) + sizeof(Page);
+		newPage.offset = advancePointer(buffer, sizeof(Page));
 		newPage.size = pageSize - sizeof(Page);
 		freeSize = pageSize;
 		std::memcpy(buffer, &newPage, sizeof newPage);
 		++pageCount;
-		return static_cast<Page*>(buffer);
 	}
-	return nullptr;
+	return static_cast<Page*>(buffer);
 }
 
 void* PagedAllocator::allocFromPage(Page& page, size_t size, size_t alignment) {
