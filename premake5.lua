@@ -1,3 +1,14 @@
+-- Options
+newoption {
+	trigger     = "with-tests",
+	description = "Build the unit test application",
+}
+
+newoption {
+	trigger     = "with-examples",
+	description = "Build the examples",
+}
+
 -- Global settings
 local workspacePath = path.join("build", _ACTION)  -- e.g. build/vs2019 or build/xcode4
 
@@ -23,8 +34,7 @@ cppdialect "c++17"
 rtti "Off"
 
 filter { vs }
-	buildoptions
-	{
+	buildoptions {
 		"/permissive-",
 	}
 	system "Windows"
@@ -88,41 +98,45 @@ project("Reflection")
 	files "src/**.cpp"
 	files "src/**.h"
 	files "include/**.h"
-	sysincludedirs { "./", "include", "external", }
+	sysincludedirs { "./", "include/reflection", "external", }
 	links({"Core", "TinyXML"})
 
-project("Example1")
-	kind "ConsoleApp"
-	files { "examples/example1.cpp", "examples/utils.*", }
-	sysincludedirs { "./", "include", "external", }
-	links({"Reflection", })
+if _OPTIONS["with-examples"] then
+	project("Example1")
+		kind "ConsoleApp"
+		files { "examples/example1.cpp", "examples/utils.*", }
+		sysincludedirs { "include", "external", }
+		links({"Reflection", })
 
-project("Example2")
-	kind "ConsoleApp"
-	files { "examples/example2.cpp", "examples/utils.*", }
-	sysincludedirs { "./", "include", "external", }
-	links({"Reflection", })
+	project("Example2")
+		kind "ConsoleApp"
+		files { "examples/example2.cpp", "examples/utils.*", }
+		sysincludedirs { "include", "external", }
+		links({"Reflection", })
 
-project("Example3")
-	kind "ConsoleApp"
-	files { "examples/example3.cpp", "examples/utils.*", }
-	sysincludedirs { "./", "include", "external", }
-	links({"Reflection", })
+	project("Example3")
+		kind "ConsoleApp"
+		files { "examples/example3.cpp", "examples/utils.*", }
+		sysincludedirs { "include", "external", }
+		links({"Reflection", })
 
-project("Example4")
-	kind "ConsoleApp"
-	files { "examples/example4.cpp", "examples/utils.*", }
-	sysincludedirs { "./", "include", "external",  }
-	links({"Reflection", })
+	project("Example4")
+		kind "ConsoleApp"
+		files { "examples/example4.cpp", "examples/utils.*", }
+		sysincludedirs { "include", "external",  }
+		links({"Reflection", })
 
-project("Example5")
-	kind "ConsoleApp"
-	files { "examples/example5.cpp", "examples/utils.*", }
-	sysincludedirs { "./", "include", "external",  }
-	links({"Reflection", })
+	project("Example5")
+		kind "ConsoleApp"
+		files { "examples/example5.cpp", "examples/utils.*", }
+		sysincludedirs { "include", "external",  }
+		links({"Reflection", })
+end
 
-project("UnitTest")
-	kind "ConsoleApp"
-	links({"Reflection", })
-	files "test/**.*"
-	sysincludedirs { "./", "include", "external", }
+if _OPTIONS["with-tests"] then
+	project("UnitTest")
+		kind "ConsoleApp"
+		links({"Reflection", })
+		files "test/**.*"
+		sysincludedirs { "include", "external", }
+end

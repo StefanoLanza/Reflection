@@ -1,8 +1,8 @@
 // Example showing reflection and serialization of a builtin types, enums and bitmasks
 
 #include "utils.h"
-#include <include/reflection.h>
-#include <include/version.h>
+#include <reflection/reflection.h>
+#include <reflection/version.h>
 #include <iostream>
 #include <string>
 

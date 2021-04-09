@@ -1,7 +1,7 @@
 // Example showing reflection and serialization of a C++ object
 
-#include <include/reflection.h>
-#include <include/version.h>
+#include <reflection/reflection.h>
+#include <reflection/version.h>
 #include <iostream>
 #include <string>
 #include "utils.h"

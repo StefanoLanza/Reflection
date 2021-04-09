@@ -1,11 +1,11 @@
 #include "utils.h"
 #include <cassert>
-#include <include/enumType.h>
-#include <include/bitMaskType.h>
-#include <include/namespace.h>
-#include <include/type.h>
-#include <include/structType.h>
-#include <include/visitor.h>
+#include <reflection/enumType.h>
+#include <reflection/bitMaskType.h>
+#include <reflection/namespace.h>
+#include <reflection/type.h>
+#include <reflection/structType.h>
+#include <reflection/visitor.h>
 #include <iomanip>
 #include <iostream>
 

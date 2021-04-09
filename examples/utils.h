@@ -1,5 +1,5 @@
 #include <core/typeId.h>
-#include <include/fwdDecl.h>
+#include <reflection/fwdDecl.h>
 
 void printRegisteredType(const refl::Type& type);
 

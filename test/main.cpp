@@ -2,7 +2,7 @@
 #include <Catch-master/single_include/catch2/catch.hpp>
 
 #include "testClasses.h"
-#include <include/reflection.h>
+#include <reflection/reflection.h>
 #include <string>
 
 //#include <vld.h>

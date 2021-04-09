@@ -2,8 +2,8 @@
 // which does parameter validation
 
 #include <algorithm>
-#include <include/reflection.h>
-#include <include/version.h>
+#include <reflection/reflection.h>
+#include <reflection/version.h>
 #include <iostream>
 #include <string>
 #include "utils.h"
