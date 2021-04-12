@@ -52,6 +52,7 @@ private:
 
 private:
 	struct StackItem {
+		const char*             name;
 		const rapidjson::Value* value;
 	};
 

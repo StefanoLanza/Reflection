@@ -8,7 +8,7 @@
 
 #define XML  0
 #define JSON 1
-#if 0 && TY_REFLECTION_JSON
+#if TY_REFLECTION_JSON && 1
 #define ARCHIVE_TYPE JSON
 #elif TY_REFLECTION_XML
 #define ARCHIVE_TYPE XML
@@ -111,17 +111,18 @@ std::string writeBuiltins(const Builtins& obj, const char* element) {
 	refl::JSONOutputArchive archive;
 #endif
 	if (archive.beginElement(element)) {
-		archive.beginObject();
-		writeObject(obj.b, "b", archive);
-		writeObject(obj.i, "i", archive);
-		writeObject(obj.f, "f", archive);
-		writeObject(obj.d, "d", archive);
-		writeObject(obj.i64, "i64", archive);
-		writeObject(obj.ui64, "ui64", archive);
-		writeObject(obj.str, "str", archive);
-		writeObject(obj.e, "enum", archive);
-		writeObject(obj.flags, "flags", archive);
-		archive.endObject();
+		if (archive.beginObject()) {
+			archive.write("b", obj.b);
+			archive.write("i", obj.i);
+			archive.write("f", obj.f);
+			archive.write("d", obj.d);
+			archive.write("i64", obj.i64);
+			archive.write("ui64", obj.ui64);
+			archive.write("str", obj.str);
+			archive.write("enum", obj.e);
+			archive.write("flags", obj.flags);
+			archive.endObject();
+		}
 		archive.endElement();
 		archive.saveToString(content);
 	}

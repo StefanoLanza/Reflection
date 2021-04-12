@@ -111,78 +111,83 @@ bool read(const char*& data, InputArchive& archive) {
 }
 
 bool write(bool data, OutputArchive& archive) {
-	archive.writeBool(data);
+	archive.write(data);
 	return true;
 }
 
 bool write(char data, OutputArchive& archive) {
-	archive.writeInt(static_cast<int>(data));
+	archive.write(static_cast<int>(data));
 	return true;
 }
 
 bool write(unsigned char data, OutputArchive& archive) {
-	archive.writeUInt(static_cast<unsigned int>(data));
+	archive.write(static_cast<unsigned int>(data));
 	return true;
 }
 
 bool write(short data, OutputArchive& archive) {
-	archive.writeInt(static_cast<int>(data));
+	archive.write(static_cast<int>(data));
 	return true;
 }
 
 bool write(unsigned short data, OutputArchive& archive) {
-	archive.writeUInt(static_cast<unsigned short>(data));
+	archive.write(static_cast<unsigned short>(data));
 	return true;
 }
 
 bool write(int data, OutputArchive& archive) {
-	archive.writeInt(data);
+	archive.write(data);
 	return true;
 }
 
 bool write(unsigned int data, OutputArchive& archive) {
-	archive.writeUInt(data);
+	archive.write(data);
 	return true;
 }
 
 bool write(long data, OutputArchive& archive) {
 	if constexpr (sizeof(long) == sizeof(int64_t)) {
-		archive.writeInt64(data);
+		archive.write(static_cast<int64_t>(data));
 	}
 	else {
-		archive.writeInt(data);
+		archive.write(static_cast<int>(data));
 	}
 	return true;
 }
 
 bool write(unsigned long data, OutputArchive& archive) {
-	archive.writeUInt64(data);
+	if constexpr (sizeof(long) == sizeof(uint64_t)) {
+		archive.write(static_cast<uint64_t>(data));
+	}
+	else {
+		archive.write(static_cast<unsigned int>(data));
+	}
 	return true;
 }
 
 bool write(long long data, OutputArchive& archive) {
-	archive.writeInt64(data);
+	archive.write(data);
 	return true;
 }
 
 bool write(unsigned long long data, OutputArchive& archive) {
-	archive.writeUInt64(data);
+	 archive.write(data);
 	return true;
 }
 
 bool write(float data, OutputArchive& archive) {
-	archive.writeFloat(data);
+	archive.write(data);
 	return true;
 }
 
 bool write(double data, OutputArchive& archive) {
-	archive.writeDouble(data);
+	 archive.write(data);
 	return true;
 }
 
 bool write(const char* str, OutputArchive& archive) {
 	assert(str);
-	archive.writeString(str);
+	 archive.write(str);
 	return true;
 }
 

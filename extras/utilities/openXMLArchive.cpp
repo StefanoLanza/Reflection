@@ -3,9 +3,12 @@
 #include <file/fileServer.h>
 #include <file/fileUtil.h>
 #include <file/stream.h>
-#include <include/XMLInputArchive.h>
+#include <reflection/XMLInputArchive.h>
+#include <reflection/jsonInputArchive.h>
 
 namespace Typhoon {
+
+#if TY_REFLECTION_XML
 
 bool openXMLArchive(Reflection::XMLInputArchive& archive, const char* fileName, IO::FileServer& fileServer) {
 	assert(fileName);
@@ -36,5 +39,37 @@ bool openXMLArchive(Reflection::XMLInputArchive& archive, const char* fileName, 
 
 	return true;
 }
+
+#endif
+
+#if TY_REFLECTION_JSON
+
+bool openJSONArchive(Reflection::JSONInputArchive& archive, const char* fileName, IO::FileServer& fileServer) {
+	assert(fileName);
+	// Open stream
+	auto stream = fileServer.OpenFile(fileName);
+	if (! stream) {
+		return false;
+	}
+
+	const size_t streamSize = stream->GetSize();
+	if (! streamSize) {
+		return false;
+	}
+
+	std::vector<char> buffer(streamSize + 2);
+	if (! stream->Read(buffer.data(), streamSize)) {
+		return false;
+	}
+
+	// Initialize XML archive
+	if (! archive.initialize(buffer.data())) {
+		return false;
+	}
+
+	return true;
+}
+
+#endif
 
 } // namespace Typhoon

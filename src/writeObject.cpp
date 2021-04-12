@@ -51,6 +51,12 @@ bool writeObject(ConstDataPtr data, const char* name, const Type& type, OutputAr
 	return res;
 }
 
+bool writeObject(ConstDataPtr data, const Type& type, OutputArchive& archive) {
+	assert(data);
+	TypeDB& typeDB = *detail::getContext().typeDB;
+	return writeObjectImpl(data, type, typeDB, archive, *detail::getContext().pagedAllocator);
+}
+
 namespace {
 
 bool writeObjectImpl(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
@@ -64,7 +70,7 @@ bool writeObjectImpl(ConstDataPtr data, const Type& type, const TypeDB& typeDB, 
 	return res;
 }
 
-void writeStructProperties(ConstDataPtr data, const StructType& structType, OutputArchive& archive, LinearAllocator& tempAllocator) {
+void writeStructProperties(ConstDataPtr data, const StructType& structType, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
 	for (const auto& property : structType.getProperties()) {
 		if (property.getFlags() & Flags::writeable) {
 			const Type& valueType = property.getValueType();
@@ -74,7 +80,10 @@ void writeStructProperties(ConstDataPtr data, const StructType& structType, Outp
 				valueType.constructObject(temporary);
 				ConstDataPtr const self = data;
 				property.getValue(self, temporary);
-				writeObject(temporary, property.getName(), valueType, archive);
+				if (archive.beginElement(property.getName())) {
+					writeObjectImpl(temporary, valueType, typeDB, archive, tempAllocator);
+					archive.endElement();
+				}
 				valueType.destructObject(temporary);
 			}
 			tempAllocator.rewind(allocOffs);
@@ -82,11 +91,11 @@ void writeStructProperties(ConstDataPtr data, const StructType& structType, Outp
 	}
 }
 
-bool writeStruct(ConstDataPtr data, const Type& type, [[maybe_unused]] const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
+bool writeStruct(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
 	if (archive.beginObject()) {
 		const StructType* structType = static_cast<const StructType*>(&type);
 		do {
-			writeStructProperties(data, *structType, archive, tempAllocator);
+			writeStructProperties(data, *structType, typeDB, archive, tempAllocator);
 			structType = structType->getParentType();
 		} while (structType);
 		archive.endObject();
@@ -127,7 +136,7 @@ bool writeBitMask(ConstDataPtr data, const Type& type, const TypeDB& /*typeDB*/,
 		}
 	}
 	if (res) {
-		archive.write(str);
+		archive.write(static_cast<const char*>(str));
 	}
 	return res;
 }
@@ -147,8 +156,14 @@ bool writeContainer(ConstDataPtr data, const Type& type, const TypeDB& typeDB, O
 		if (keyType) {
 			// write key and value
 			if (archive.beginObject()) {
-				writeObject(iterator->getKey(), "key", *keyType, archive);
-				writeObject(iterator->getValue(), "value", *valueType, archive);
+				if (archive.beginElement("key")) {
+					writeObjectImpl(iterator->getKey(), *keyType, typeDB, archive, tempAllocator);
+					archive.endElement();
+				}
+				if (archive.beginElement("value")) {
+					writeObjectImpl(iterator->getValue(), *valueType, typeDB, archive, tempAllocator);
+					archive.endElement();
+				}
 				archive.endObject();
 			}
 		}
@@ -187,11 +202,12 @@ bool writeVariant(ConstDataPtr data, const Type& /*type*/, const TypeDB& typeDB,
 		return false;
 	}
 	archive.beginObject();
-	archive.writeString("type", typeName);
-	archive.writeString("name", variant->getName());
-	archive.beginElement("value");
-	writeObjectImpl(variant->getStorage(), type, typeDB, archive, tempAllocator);
-	archive.endElement();
+	archive.write("type", typeName);
+	archive.write("name", variant->getName());
+	if (archive.beginElement("value")) {
+		writeObjectImpl(variant->getStorage(), type, typeDB, archive, tempAllocator);
+		archive.endElement();
+	}
 	archive.endObject();
 	return true;
 }

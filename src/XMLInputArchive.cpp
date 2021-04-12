@@ -207,7 +207,7 @@ bool XMLInputArchive::iterateChild(ArchiveIterator& it) {
 	}
 
 	currentNode = childIt;
-	it.reset(childIt);
+	it.setNode(childIt);
 	return true;
 }
 
@@ -230,7 +230,7 @@ bool XMLInputArchive::iterateChild(ArchiveIterator& it, const char* name) {
 		}
 	}
 	currentNode = childIt;
-	it.reset(childIt);
+	it.setNode(childIt);
 	return true;
 }
 

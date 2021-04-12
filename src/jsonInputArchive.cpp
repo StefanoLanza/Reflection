@@ -17,7 +17,7 @@ JSONInputArchive::~JSONInputArchive() = default;
 ParseResult JSONInputArchive::initialize(const char* buffer) {
 	const rapidjson::ParseResult result = document->Parse<rapidjson::kParseCommentsFlag | rapidjson::kParseTrailingCommasFlag>(buffer);
 	if (! result.IsError()) {
-		stack.push({ document.get() });
+		stack.push({ nullptr, document.get() });
 	}
 	return { ! result.IsError(), GetParseError_En(result.Code()), static_cast<int>(result.Offset()) };
 }
@@ -91,7 +91,7 @@ bool JSONInputArchive::beginElement(const char* name) {
 	const StackItem& top = stack.top();
 	if (top.value->IsObject()) {
 		if (auto memberItr = name ? top.value->FindMember(name) : top.value->MemberBegin(); memberItr != top.value->MemberEnd()) {
-			stack.push({ &memberItr->value });
+			stack.push({ memberItr->name.GetString(), &memberItr->value });
 			return true;
 		}
 		else {
@@ -155,32 +155,59 @@ bool JSONInputArchive::beginArray(const char* key) {
 }
 
 bool JSONInputArchive::iterateChild(ArchiveIterator& it) {
-	if (it.getIndex() != static_cast<size_t>(-1)) {
+	if (it.hasValidIndex()) {
 		stack.pop();
 
 		const StackItem& top = stack.top();
-		assert(top.value->IsArray());
-		auto array = top.value->GetArray();
-
-		size_t index = it.getIndex() + 1;
-		if (index >= array.Size()) {
-			it.reset();
-			return false;
+		const size_t index = it.getIndex() + 1;
+		if (top.value->IsArray()) {
+			auto array = top.value->GetArray();
+			if (index >= array.Size()) {
+				it.reset();
+				return false;
+			}
+			it.setIndex(index);
+			auto sindex = static_cast<rapidjson::SizeType>(index);
+			stack.push({ nullptr, &array[sindex] });
 		}
-		auto sindex = static_cast<rapidjson::SizeType>(index);
-		it.reset(index);
-		stack.push({ &array[sindex] });
+		else if (top.value->IsObject()) {
+			auto object = top.value->GetObject();
+			if (index >= object.MemberCount()) {
+				it.reset();
+				return false;
+			}
+			it.setIndex(index);
+			rapidjson::GenericMemberIterator memberIt = object.MemberBegin() + index;
+			stack.push({ memberIt->name.GetString(), &memberIt->value });
+			it.setKey(memberIt->name.GetString());
+		}
+		else {
+			assert(false);
+		}
 	}
 	else {
 		const StackItem& top = stack.top();
-		assert(top.value->IsArray());
-		auto array = top.value->GetArray();
-		if (array.Empty()) {
-			return false;
+		if (top.value->IsArray()) {
+			auto array = top.value->GetArray();
+			if (array.Empty()) {
+				return false;
+			}
+			it.setIndex(0);
+			stack.push({ nullptr, &array[0] });
 		}
-		size_t index = 0;
-		it.reset(index);
-		stack.push({ &array[0] });
+		else if (top.value->IsObject()) {
+			auto object = top.value->GetObject();
+			if (object.MemberCount() == 0) {
+				return false;
+			}
+			it.setIndex(0);
+			rapidjson::GenericMemberIterator memberIt = object.MemberBegin();
+			stack.push({ memberIt->name.GetString(), &memberIt->value });
+			it.setKey(memberIt->name.GetString());
+		}
+		else {
+			assert(false); // unsupported
+		}
 	}
 
 	return true;

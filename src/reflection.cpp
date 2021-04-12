@@ -32,7 +32,7 @@ void readBuiltin<std::string>(DataPtr data, InputArchive& archive) {
 
 template <>
 bool writeBuiltin<std::string>(ConstDataPtr data, OutputArchive& archive) {
-	archive.write(cast<std::string>(data)->c_str());
+	archive.write(*cast<std::string>(data));
 	return true;
 }
 

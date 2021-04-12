@@ -43,13 +43,13 @@ bool InputArchive::readString(const char* key, const char*& str) {
 	return res;
 }
 
-bool OutputArchive::writeString(const char* key, const char* str) {
+bool OutputArchive::write(const char* key, const char* str) {
 	bool res = false;
 	if (beginElement(key)) {
-		writeString(str);
+		res = write(str);
 		endElement();
 	}
-	return res;
+	return false;
 }
 
 } // namespace Typhoon::Reflection
