@@ -111,84 +111,70 @@ bool read(const char*& data, InputArchive& archive) {
 }
 
 bool write(bool data, OutputArchive& archive) {
-	archive.write(data);
-	return true;
+	return archive.write(data);
 }
 
 bool write(char data, OutputArchive& archive) {
-	archive.write(static_cast<int>(data));
-	return true;
+	return archive.write(static_cast<int>(data));
 }
 
 bool write(unsigned char data, OutputArchive& archive) {
-	archive.write(static_cast<unsigned int>(data));
-	return true;
+	return archive.write(static_cast<unsigned int>(data));
 }
 
 bool write(short data, OutputArchive& archive) {
-	archive.write(static_cast<int>(data));
-	return true;
+	return archive.write(static_cast<int>(data));
 }
 
 bool write(unsigned short data, OutputArchive& archive) {
-	archive.write(static_cast<unsigned short>(data));
-	return true;
+	return archive.write(static_cast<unsigned short>(data));
 }
 
 bool write(int data, OutputArchive& archive) {
-	archive.write(data);
-	return true;
+	return archive.write(data);
 }
 
 bool write(unsigned int data, OutputArchive& archive) {
-	archive.write(data);
-	return true;
+	return archive.write(data);
 }
 
 bool write(long data, OutputArchive& archive) {
 	if constexpr (sizeof(long) == sizeof(int64_t)) {
-		archive.write(static_cast<int64_t>(data));
+		return archive.write(static_cast<int64_t>(data));
 	}
 	else {
-		archive.write(static_cast<int>(data));
+		return archive.write(static_cast<int>(data));
 	}
-	return true;
 }
 
 bool write(unsigned long data, OutputArchive& archive) {
 	if constexpr (sizeof(long) == sizeof(uint64_t)) {
-		archive.write(static_cast<uint64_t>(data));
+		return archive.write(static_cast<uint64_t>(data));
 	}
 	else {
-		archive.write(static_cast<unsigned int>(data));
+		return archive.write(static_cast<unsigned int>(data));
 	}
-	return true;
 }
 
 bool write(long long data, OutputArchive& archive) {
-	archive.write(data);
-	return true;
+	return archive.write(data);
 }
 
 bool write(unsigned long long data, OutputArchive& archive) {
-	 archive.write(data);
-	return true;
+	return archive.write(data);
 }
 
 bool write(float data, OutputArchive& archive) {
-	archive.write(data);
-	return true;
+	return archive.write(data);
 }
 
 bool write(double data, OutputArchive& archive) {
-	 archive.write(data);
-	return true;
+	return archive.write(data);
 }
 
 bool write(const char* str, OutputArchive& archive) {
 	assert(str);
-	 archive.write(str);
-	return true;
+	return archive.write(str);
 }
 
 } // namespace Typhoon::Reflection
