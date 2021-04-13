@@ -61,6 +61,7 @@ struct ParseResult {
 
 class InputArchive : Uncopyable {
 public:
+	InputArchive();
 	virtual ~InputArchive() = default;
 
 	virtual bool beginElement(const char* name) = 0;
@@ -103,10 +104,14 @@ public:
 
 	template <class T>
 	bool read(const char* key, T& object);
+
+private:
+	Context& context;
 };
 
 class OutputArchive : Uncopyable {
 public:
+	OutputArchive();
 	virtual ~OutputArchive() = default;
 
 	virtual bool             saveToFile(const char* filename) = 0;
@@ -137,7 +142,7 @@ public:
 	virtual void writeAttribute(const char* name, const char* str) = 0;
 
 	bool write(const char* key, const void* data, TypeId typeId);
-	bool write(void* data, TypeId typeId);
+	bool write(const void* data, TypeId typeId);
 
 	// Write data of user-defined type
 	template <class T>
@@ -148,6 +153,8 @@ public:
 
 	template <class T>
 	bool write(const char* key, const T& data);
+private:
+	Context& context;
 };
 
 template <typename T>
@@ -226,7 +233,17 @@ bool OutputArchive::write(const char* key, const T& data) {
 
 template <class T>
 bool OutputArchive::write(const T& data) {
-	return detail::writeData(data, *this);
+	const Type* type = context.typeDB->tryGetType<T>();
+	if (! type) {
+		// TODO Allocate a temporary Type, without registering it ?
+		type = detail::autoRegisterHelper<T>::autoRegister(context);
+	}
+	if (type) {
+		return detail::writeData(static_cast<const void*>(&data), *type, *this, context);
+	}
+	else {
+		return false;
+	}
 }
 
 } // namespace Typhoon::Reflection

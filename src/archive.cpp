@@ -3,6 +3,10 @@
 
 namespace Typhoon::Reflection {
 
+namespace detail {
+	Context& getContext();
+}
+
 ArchiveElement::ArchiveElement(InputArchive& archive, const char* tag)
     : archive(&archive)
     , isValid(archive.beginElement(tag)) {
@@ -34,30 +38,46 @@ WriteTag::operator bool() const {
 	return isValid;
 }
 
+InputArchive::InputArchive()
+	: context(detail::getContext()) {
+}
+
 bool InputArchive::read(const char* key, void* data, TypeId typeId) {
 	bool res = false;
 	if (beginElement(key)) {
-		res = detail::readData(data, typeId, *this);
+		res = read(data, typeId);
 		endElement();
 	}
 	return res;
 }
 
 bool InputArchive::read(void* data, TypeId typeId) {
-	return detail::readData(data, typeId, *this);
+	auto type = context.typeDB->tryGetType(typeId);
+	if (type) {
+		return detail::readData(data, *type, *this, context);
+	}
+	return false;
+}
+
+OutputArchive::OutputArchive()
+	: context(detail::getContext()) {
 }
 
 bool OutputArchive::write(const char* key, const void* data, TypeId typeId) {
 	bool res = false;
 	if (beginElement(key)) {
-		res = detail::writeData(data, typeId, *this);
+		res = write(data, typeId);
 		endElement();
 	}
 	return res;
 }
 
-bool OutputArchive::write(void* data, TypeId typeId) {
-	return detail::writeData(data, typeId, *this);
+bool OutputArchive::write(const void* data, TypeId typeId) {
+	auto type = context.typeDB->tryGetType(typeId);
+	if (type) {
+		return detail::writeData(data, *type, *this, context);
+	}
+	return false;
 }
 
 bool OutputArchive::write(const char* key, const char* str) {

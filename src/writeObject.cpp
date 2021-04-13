@@ -3,6 +3,7 @@
 #include "bitMaskType.h"
 #include "builtinType.h"
 #include "containerType.h"
+#include "context.h"
 #include "enumType.h"
 #include "flags.h"
 #include "pointerType.h"
@@ -40,19 +41,9 @@ constexpr Writer perClasswriters[] = {
 
 namespace detail {
 
-bool writeData(ConstDataPtr data, const Type& type, OutputArchive& archive) {
+bool writeData(ConstDataPtr data, const Type& type, OutputArchive& archive, const Context& context) {
 	assert(data);
-	TypeDB& typeDB = *detail::getContext().typeDB;
-	return writeObjectImpl(data, type, typeDB, archive, *detail::getContext().pagedAllocator);
-}
-
-bool writeData(ConstDataPtr data, TypeId typeId, OutputArchive& archive) {
-	TypeDB& typeDB = *detail::getContext().typeDB;
-	auto type = typeDB.tryGetType(typeId);
-	if (type) {
-		return writeObjectImpl(data, *type, typeDB, archive, *detail::getContext().pagedAllocator);
-	}
-	return false;
+	return writeObjectImpl(data, type, *context.typeDB, archive, *context.pagedAllocator);
 }
 
 }
