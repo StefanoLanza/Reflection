@@ -3,20 +3,20 @@ namespace Typhoon::Reflection {
 class InputArchive;
 class OutputArchive;
 
-bool read(char& data, InputArchive& archive);
-bool read(unsigned char& data, InputArchive& archive);
-bool read(short& data, InputArchive& archive);
-bool read(unsigned short& data, InputArchive& archive);
-bool read(int& data, InputArchive& archive);
-bool read(unsigned int& data, InputArchive& archive);
-bool read(long& data, InputArchive& archive);
-bool read(unsigned long& data, InputArchive& archive);
-bool read(long long& data, InputArchive& archive);
-bool read(unsigned long long& data, InputArchive& archive);
-bool read(bool& data, InputArchive& archive);
-bool read(float& data, InputArchive& archive);
-bool read(double& data, InputArchive& archive);
-bool read(const char*& data, InputArchive& archive);
+bool read(char& data, const InputArchive& archive);
+bool read(unsigned char& data, const InputArchive& archive);
+bool read(short& data, const InputArchive& archive);
+bool read(unsigned short& data, const InputArchive& archive);
+bool read(int& data, const InputArchive& archive);
+bool read(unsigned int& data, const InputArchive& archive);
+bool read(long& data, const InputArchive& archive);
+bool read(unsigned long& data, const InputArchive& archive);
+bool read(long long& data, const InputArchive& archive);
+bool read(unsigned long long& data, const InputArchive& archive);
+bool read(bool& data, const InputArchive& archive);
+bool read(float& data, const InputArchive& archive);
+bool read(double& data, const InputArchive& archive);
+bool read(const char*& data, const InputArchive& archive);
 
 bool write(bool data, OutputArchive& archive);
 bool write(char data, OutputArchive& archive);

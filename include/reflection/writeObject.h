@@ -15,6 +15,7 @@ Context& getContext();
 
 } // namespace detail
 
+#if 0
 template <typename T>
 bool writeObject(const T& object, const char* name, OutputArchive& archive) {
 	Context&    context = detail::getContext();
@@ -30,6 +31,7 @@ bool writeObject(const T& object, const char* name, OutputArchive& archive) {
 		return false;
 	}
 }
+#endif
 
 template <typename T>
 bool writeObject(const T& object, OutputArchive& archive) {
@@ -47,7 +49,7 @@ bool writeObject(const T& object, OutputArchive& archive) {
 	}
 }
 
-bool writeObject(ConstDataPtr data, const char* name, const Type& type, OutputArchive& archive);
+//bool writeObject(ConstDataPtr data, const char* name, const Type& type, OutputArchive& archive);
 bool writeObject(ConstDataPtr data, const Type& type, OutputArchive& archive);
 
 } // namespace Typhoon::Reflection

@@ -63,15 +63,15 @@ TEST_CASE("Primitives") {
 	};
 
 	auto read = [&](InputArchive& archive) {
-		REQUIRE(readObject(&c2, "c", archive));
-		REQUIRE(readObject(&uc2, "uc", archive));
-		REQUIRE(readObject(&i2, "i", archive));
-		REQUIRE(readObject(&ui2, "ui", archive));
-		REQUIRE(readObject(&l2, "l", archive));
-		REQUIRE(readObject(&ul2, "ul", archive));
-		REQUIRE(readObject(&f2, "f", archive));
-		REQUIRE(readObject(&d2, "d", archive));
-		REQUIRE(readObject(&b2, "b", archive));
+		REQUIRE(archive.read("c", c2));
+		REQUIRE(archive.read("uc", uc2));
+		REQUIRE(archive.read("i", i2));
+		REQUIRE(archive.read("ui", ui2));
+		REQUIRE(archive.read("l", l2));
+		REQUIRE(archive.read("ul", ul2));
+		REQUIRE(archive.read("f", f2));
+		REQUIRE(archive.read("d", d2));
+		REQUIRE(archive.read("b", b2));
 		CHECK(c == c2);
 		CHECK(uc == uc2);
 		CHECK(i == i2);
@@ -139,7 +139,7 @@ TEST_CASE("Enum") {
 
 	auto read = [&](InputArchive& archive) {
 		SeasonType readSeason;
-		REQUIRE(readObject(&readSeason, elementName, archive));
+		REQUIRE(archive.read(elementName, readSeason));
 		CHECK(readSeason == season);
 	};
 
@@ -185,7 +185,7 @@ TEST_CASE("BitMask") {
 
 	auto read = [&](InputArchive& archive) {
 		ActionFlags readFlags;
-		REQUIRE(readObject(&readFlags, elementName, archive));
+		REQUIRE(archive.read(elementName, readFlags));
 		CHECK(readFlags == flags);
 	};
 
@@ -239,7 +239,7 @@ TEST_CASE("C array") {
 
 	auto read = [&](InputArchive& archive) {
 		Array in_array;
-		REQUIRE(readObject(&in_array, elementName, archive));
+		REQUIRE(archive.read(elementName, in_array));
 		CHECK(compareArrays(in_array, array, size));
 	};
 
@@ -285,7 +285,7 @@ TEST_CASE("std::vector") {
 
 	auto read = [&](InputArchive& archive) {
 		Vector in_vec;
-		REQUIRE(readObject(&in_vec, elementName, archive));
+		REQUIRE(archive.read(elementName, in_vec));
 		CHECK(in_vec == vec);
 	};
 
@@ -333,7 +333,7 @@ TEST_CASE("std::map") {
 
 	auto read = [&](InputArchive& archive) {
 		Map inMap;
-		REQUIRE(readObject(&inMap, elementName, archive));
+		REQUIRE(archive.read(elementName, inMap));
 		CHECK(inMap == map);
 	};
 
@@ -383,7 +383,7 @@ TEST_CASE("std::array") {
 
 	auto read = [&](InputArchive& archive) {
 		Array in_array;
-		REQUIRE(readObject(&in_array, elementName, archive));
+		REQUIRE(archive.read(elementName, in_array));
 		CHECK(in_array == array);
 	};
 
@@ -429,7 +429,7 @@ TEST_CASE("std::pair") {
 
 	auto read = [&](InputArchive& archive) {
 		Pair inPair;
-		REQUIRE(readObject(&inPair, elementName, archive));
+		REQUIRE(archive.read(elementName, inPair));
 		CHECK(inPair == pair);
 	};
 
@@ -476,7 +476,7 @@ TEST_CASE("std::tuple") {
 
 	auto read = [&](InputArchive& archive) {
 		Tuple inTuple;
-		REQUIRE(readObject(&inTuple, elementName, archive));
+		REQUIRE(archive.read(elementName, inTuple));
 		CHECK(inTuple == tuple);
 	};
 
@@ -521,7 +521,7 @@ TEST_CASE("std::unique_ptr") {
 
 	auto read = [&](InputArchive& archive) {
 		auto inMaterial = std::make_unique<Material>();
-		REQUIRE(readObject(&inMaterial, elementName, archive));
+		REQUIRE(archive.read(elementName, inMaterial));
 		CHECK(*inMaterial == *material);
 	};
 
@@ -566,7 +566,7 @@ TEST_CASE("std::shared_ptr") {
 
 	auto read = [&](InputArchive& archive) {
 		auto inMaterial = std::make_unique<Material>();
-		REQUIRE(readObject(&inMaterial, elementName, archive));
+		REQUIRE(archive.read(elementName, inMaterial));
 		CHECK(*inMaterial == *material);
 	};
 
@@ -620,7 +620,7 @@ TEST_CASE("Class") {
 
 	auto read = [&](InputArchive& archive) {
 		GameObject inObject;
-		REQUIRE(readObject(&inObject, elementName, archive));
+		REQUIRE(archive.read(elementName, inObject));
 		compare(inObject, gameObject);
 	};
 
@@ -669,7 +669,7 @@ TEST_CASE("Struct") {
 
 	auto read = [&](InputArchive& archive) {
 		Fog inFog;
-		REQUIRE(readObject(&inFog, elementName, archive));
+		REQUIRE(archive.read(elementName, inFog));
 		REQUIRE(fog == inFog);
 	};
 
@@ -721,7 +721,7 @@ TEST_CASE("Variant") {
 
 		XMLInputArchive inArchive;
 		REQUIRE(inArchive.initialize(archiveContent.data()));
-		REQUIRE(readObject(&otherVariants, key, inArchive));
+		REQUIRE(inArchive.read(key, otherVariants));
 		CHECK(compare(otherVariants, variants));
 	}
 #endif
@@ -736,7 +736,7 @@ TEST_CASE("Variant") {
 
 		JSONInputArchive inArchive;
 		REQUIRE(inArchive.initialize(archiveContent.data()));
-		REQUIRE(readObject(&otherVariants, key, inArchive));
+		REQUIRE(inArchive.read(key, otherVariants));
 		CHECK(compare(otherVariants, variants));
 	}
 #endif

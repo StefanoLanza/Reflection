@@ -130,7 +130,7 @@ std::string writeGameObject(const GameObject& obj, const char* element) {
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
-	writeObject(obj, element, archive);
+	archive.write(element, obj);
 	archive.saveToString(archiveContent);
 	return archiveContent;
 }
@@ -142,6 +142,6 @@ void readGameObject(GameObject& obj, const std::string& archiveContent, const ch
 	refl::JSONInputArchive archive;
 #endif
 	if (archive.initialize(archiveContent.data())) {
-		readObject(&obj, element, archive);
+		archive.read(element, &obj);
 	}
 }

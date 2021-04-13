@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <string>
 
+#include "readObject.h"
 #include "writeObject.h"
 
 namespace Typhoon::Reflection {
@@ -80,25 +81,24 @@ public:
 	virtual bool readAttribute(const char* name, float& value) = 0;
 	virtual bool readAttribute(const char* name, double& value) = 0;
 	virtual bool readAttribute(const char* name, const char*& str) = 0;
-	virtual bool readBool(bool& value) const = 0;
-	virtual bool readInt(int& value) const = 0;
-	virtual bool readUInt(unsigned int& value) const = 0;
-	virtual bool readInt64(int64_t& value) const = 0;
-	virtual bool readUInt64(uint64_t& value) const = 0;
-	virtual bool readFloat(float& value) const = 0;
-	virtual bool readDouble(double& value) const = 0;
-	virtual bool readString(const char*& str) const = 0;
-
-	bool readString(const char* key, const char*& str);
-
-	template <class T>
-	T readObject(const char* tag, T&& defaultValue);
+	// Primitives
+	virtual bool read(bool& value) const = 0;
+	virtual bool read(int& value) const = 0;
+	virtual bool read(unsigned int& value) const = 0;
+	virtual bool read(int64_t& value) const = 0;
+	virtual bool read(uint64_t& value) const = 0;
+	virtual bool read(float& value) const = 0;
+	virtual bool read(double& value) const = 0;
+	virtual bool read(const char*& str) const = 0;
 
 	template <class T>
-	bool readObject(const char* tag, T& object);
+	T read(const char* tag, T&& defaultValue);
 
 	template <class T>
-	bool readObject(T& object);
+	bool read(const char* tag, T& object);
+
+	template <class T>
+	bool read(T& object);
 };
 
 class OutputArchive : Uncopyable {
@@ -185,25 +185,25 @@ private:
 };
 
 template <class T>
-T InputArchive::readObject(const char* tag, T&& defaultValue) {
+T InputArchive::read(const char* tag, T&& defaultValue) {
 	T obj = std::move(defaultValue);
-	readObject(tag, obj);
+	read(tag, obj);
 	return obj;
 }
 
 template <class T>
-bool InputArchive::readObject(const char* tag, T& object) {
+bool InputArchive::read(const char* tag, T& object) {
 	bool res = false;
 	if (beginElement(tag)) {
-		res = read(object, *this);
+		res = read(object);
 		endElement();
 	}
 	return res;
 }
 
 template <class T>
-bool InputArchive::readObject(T& object) {
-	return read(object, *this);
+bool InputArchive::read(T& object) {
+	return refl::detail::readObject(&object, getTypeId<T>(), *this);
 }
 
 template <class T>

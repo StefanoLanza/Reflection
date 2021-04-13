@@ -137,15 +137,15 @@ void readBuiltins(Builtins& obj, const std::string& content, const char* element
 #endif
 	if (refl::ParseResult res = archive.initialize(content.data()); res) {
 		if (archive.beginElement(element)) {
-			readObject(&obj.b, "b", archive);
-			readObject(&obj.i, "i", archive);
-			readObject(&obj.f, "f", archive);
-			readObject(&obj.d, "d", archive);
-			readObject(&obj.i64, "i64", archive);
-			readObject(&obj.ui64, "ui64", archive);
-			readObject(&obj.str, "str", archive);
-			readObject(&obj.e, "enum", archive);
-			readObject(&obj.flags, "flags", archive);
+			archive.read("b", obj.b);
+			archive.read("i", obj.i);
+			archive.read("f", obj.f);
+			archive.read("d", obj.d);
+			archive.read("i64", obj.i64);
+			archive.read("ui64", obj.ui64);
+			archive.read("str", obj.str);
+			archive.read("enum", obj.e);
+			archive.read("flags", obj.flags);
 			archive.endElement();
 		}
 	}
