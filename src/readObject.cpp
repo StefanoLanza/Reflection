@@ -50,7 +50,7 @@ constexpr Reader perClassReaders[] = {
 
 namespace detail {
 
-bool readObject(DataPtr object, TypeId typeId, InputArchive& archive, Semantic semantic) {
+bool readData(DataPtr object, TypeId typeId, InputArchive& archive, Semantic semantic) {
 	assert(object);
 	bool        res = false;
 	const Type* type = detail::getTypeDB().tryGetType(typeId);

@@ -18,7 +18,7 @@ class InputArchive;
 namespace detail {
 TypeDB& getTypeDB();
 
-bool readObject(DataPtr object, TypeId typeId, InputArchive& archive, Semantic semantic = Semantic::none);
+bool readData(DataPtr object, TypeId typeId, InputArchive& archive, Semantic semantic = Semantic::none);
 
 }
 

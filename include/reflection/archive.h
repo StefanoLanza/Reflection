@@ -91,14 +91,15 @@ public:
 	virtual bool read(double& value) const = 0;
 	virtual bool read(const char*& str) const = 0;
 
+	// Read data of user-defined type
+	template <class T>
+	bool read(T& object);
+
 	template <class T>
 	T read(const char* tag, T&& defaultValue);
 
 	template <class T>
 	bool read(const char* tag, T& object);
-
-	template <class T>
-	bool read(T& object);
 };
 
 class OutputArchive : Uncopyable {
@@ -132,14 +133,15 @@ public:
 	virtual void writeAttribute(const char* name, double value) = 0;
 	virtual void writeAttribute(const char* name, const char* str) = 0;
 
+	// Write data of user-defined type
+	template <class T>
+	bool write(const T& data);
+
 	// Helpers
 	bool write(const char* key, const char* str);
 
 	template <class T>
 	bool write(const char* key, const T& data);
-
-	template <class T>
-	bool write(const T& data);
 };
 
 template <typename T>
@@ -203,14 +205,14 @@ bool InputArchive::read(const char* tag, T& object) {
 
 template <class T>
 bool InputArchive::read(T& object) {
-	return refl::detail::readObject(&object, getTypeId<T>(), *this);
+	return detail::readData(&object, getTypeId<T>(), *this);
 }
 
 template <class T>
 bool OutputArchive::write(const char* key, const T& data) {
 	bool res = false;
 	if (beginElement(key)) {
-		 res = refl::writeObject(data, *this);
+		 res = write(data);
 		 endElement();
 	}
 	return res;
@@ -218,7 +220,7 @@ bool OutputArchive::write(const char* key, const T& data) {
 
 template <class T>
 bool OutputArchive::write(const T& data) {
-	return refl::writeObject(data, *this);
+	return detail::writeData(data, *this);
 }
 
 } // namespace Typhoon::Reflection

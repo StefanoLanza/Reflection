@@ -38,23 +38,14 @@ constexpr Writer perClasswriters[] = {
 
 } // namespace
 
-bool writeObject(ConstDataPtr data, const char* name, const Type& type, OutputArchive& archive) {
-	assert(data);
-	assert(name);
-	TypeDB& typeDB = *detail::getContext().typeDB;
+namespace detail {
 
-	bool res = false;
-	if (archive.beginElement(name)) {
-		res = writeObjectImpl(data, type, typeDB, archive, *detail::getContext().pagedAllocator);
-		archive.endElement();
-	}
-	return res;
-}
-
-bool writeObject(ConstDataPtr data, const Type& type, OutputArchive& archive) {
+bool writeData(ConstDataPtr data, const Type& type, OutputArchive& archive) {
 	assert(data);
 	TypeDB& typeDB = *detail::getContext().typeDB;
 	return writeObjectImpl(data, type, typeDB, archive, *detail::getContext().pagedAllocator);
+}
+
 }
 
 namespace {
