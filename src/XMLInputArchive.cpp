@@ -30,7 +30,7 @@ ParseResult XMLInputArchive::initialize(const char* buffer) {
 	}
 }
 
-bool XMLInputArchive::read(bool& value) const {
+bool XMLInputArchive::read(bool& value) {
 	bool res = false;
 	if (auto element = currentNode->ToElement(); element) {
 		if (auto error = element->QueryBoolText(&value); error == tinyxml2::XML_SUCCESS) {
@@ -40,7 +40,7 @@ bool XMLInputArchive::read(bool& value) const {
 	return res;
 }
 
-bool XMLInputArchive::read(int& value) const {
+bool XMLInputArchive::read(int& value) {
 	bool res = false;
 	if (auto element = currentNode->ToElement(); element) {
 		if (auto error = element->QueryIntText(&value); error == tinyxml2::XML_SUCCESS) {
@@ -50,7 +50,7 @@ bool XMLInputArchive::read(int& value) const {
 	return res;
 }
 
-bool XMLInputArchive::read(unsigned int& value) const {
+bool XMLInputArchive::read(unsigned int& value) {
 	bool res = false;
 	if (auto element = currentNode->ToElement(); element) {
 		if (auto error = element->QueryUnsignedText(&value); error == tinyxml2::XML_SUCCESS) {
@@ -60,7 +60,7 @@ bool XMLInputArchive::read(unsigned int& value) const {
 	return res;
 }
 
-bool XMLInputArchive::read(int64_t& value) const {
+bool XMLInputArchive::read(int64_t& value) {
 	bool res = false;
 	if (auto element = currentNode->ToElement(); element) {
 		if (auto error = element->QueryInt64Text(&value); error == tinyxml2::XML_SUCCESS) {
@@ -70,7 +70,7 @@ bool XMLInputArchive::read(int64_t& value) const {
 	return res;
 }
 
-bool XMLInputArchive::read(uint64_t& value) const {
+bool XMLInputArchive::read(uint64_t& value) {
 	bool res = false;
 	if (auto element = currentNode->ToElement(); element) {
 		if (auto error = element->QueryUnsigned64Text(&value); error == tinyxml2::XML_SUCCESS) {
@@ -79,7 +79,7 @@ bool XMLInputArchive::read(uint64_t& value) const {
 	}
 	return res;
 }
-bool XMLInputArchive::read(float& value) const {
+bool XMLInputArchive::read(float& value) {
 	bool res = false;
 	if (auto element = currentNode->ToElement(); element) {
 		if (auto error = element->QueryFloatText(&value); error == tinyxml2::XML_SUCCESS) {
@@ -89,7 +89,7 @@ bool XMLInputArchive::read(float& value) const {
 	return res;
 }
 
-bool XMLInputArchive::read(double& value) const {
+bool XMLInputArchive::read(double& value) {
 	bool res = false;
 	if (auto element = currentNode->ToElement(); element) {
 		if (auto error = element->QueryDoubleText(&value); error == tinyxml2::XML_SUCCESS) {
@@ -99,7 +99,7 @@ bool XMLInputArchive::read(double& value) const {
 	return res;
 }
 
-bool XMLInputArchive::read(const char*& str) const {
+bool XMLInputArchive::read(const char*& str) {
 	bool res = false;
 	if (auto element = currentNode->ToElement(); element) {
 		if (const char* text = element->GetText(); text) {

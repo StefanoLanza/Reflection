@@ -22,7 +22,7 @@ ParseResult JSONInputArchive::initialize(const char* buffer) {
 	return { ! result.IsError(), GetParseError_En(result.Code()), static_cast<int>(result.Offset()) };
 }
 
-bool JSONInputArchive::read(bool& b) const {
+bool JSONInputArchive::read(bool& b) {
 	if (auto value = stack.top().value; value->IsBool()) {
 		b = value->GetBool();
 		return true;
@@ -30,7 +30,7 @@ bool JSONInputArchive::read(bool& b) const {
 	return false;
 }
 
-bool JSONInputArchive::read(int& i) const {
+bool JSONInputArchive::read(int& i) {
 	if (auto value = stack.top().value; value->IsInt()) {
 		i = value->GetInt();
 		return true;
@@ -38,7 +38,7 @@ bool JSONInputArchive::read(int& i) const {
 	return false;
 }
 
-bool JSONInputArchive::read(unsigned int& ui) const {
+bool JSONInputArchive::read(unsigned int& ui) {
 	if (auto value = stack.top().value; value->IsUint()) {
 		ui = value->GetUint();
 		return true;
@@ -46,7 +46,7 @@ bool JSONInputArchive::read(unsigned int& ui) const {
 	return false;
 }
 
-bool JSONInputArchive::read(int64_t& i64) const {
+bool JSONInputArchive::read(int64_t& i64) {
 	if (auto value = stack.top().value; value->IsInt64()) {
 		i64 = value->GetInt64();
 		return true;
@@ -54,7 +54,7 @@ bool JSONInputArchive::read(int64_t& i64) const {
 	return false;
 }
 
-bool JSONInputArchive::read(uint64_t& ui64) const {
+bool JSONInputArchive::read(uint64_t& ui64) {
 	if (auto value = stack.top().value; value->IsUint64()) {
 		ui64 = value->GetUint64();
 		return true;
@@ -62,7 +62,7 @@ bool JSONInputArchive::read(uint64_t& ui64) const {
 	return false;
 }
 
-bool JSONInputArchive::read(float& f) const {
+bool JSONInputArchive::read(float& f) {
 	if (auto value = stack.top().value; value->IsFloat()) {
 		f = value->GetFloat();
 		return true;
@@ -70,7 +70,7 @@ bool JSONInputArchive::read(float& f) const {
 	return false;
 }
 
-bool JSONInputArchive::read(double& d) const {
+bool JSONInputArchive::read(double& d) {
 	if (auto value = stack.top().value; value->IsDouble()) {
 		d = value->GetDouble();
 		return true;
@@ -78,7 +78,7 @@ bool JSONInputArchive::read(double& d) const {
 	return false;
 }
 
-bool JSONInputArchive::read(const char*& str) const {
+bool JSONInputArchive::read(const char*& str) {
 	if (auto value = stack.top().value; value->IsString()) {
 		str = value->GetString();
 		return true;

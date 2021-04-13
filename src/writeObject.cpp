@@ -46,6 +46,15 @@ bool writeData(ConstDataPtr data, const Type& type, OutputArchive& archive) {
 	return writeObjectImpl(data, type, typeDB, archive, *detail::getContext().pagedAllocator);
 }
 
+bool writeData(ConstDataPtr data, TypeId typeId, OutputArchive& archive) {
+	TypeDB& typeDB = *detail::getContext().typeDB;
+	auto type = typeDB.tryGetType(typeId);
+	if (type) {
+		return writeObjectImpl(data, *type, typeDB, archive, *detail::getContext().pagedAllocator);
+	}
+	return false;
+}
+
 }
 
 namespace {

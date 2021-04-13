@@ -13,6 +13,7 @@ namespace detail {
 Context& getContext();
 
 bool writeData(ConstDataPtr data, const Type& type, OutputArchive& archive);
+bool writeData(ConstDataPtr data, TypeId typeId, OutputArchive& archive);
 
 template <typename T>
 bool writeData(const T& object, OutputArchive& archive) {

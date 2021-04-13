@@ -82,24 +82,27 @@ public:
 	virtual bool readAttribute(const char* name, double& value) = 0;
 	virtual bool readAttribute(const char* name, const char*& str) = 0;
 	// Primitives
-	virtual bool read(bool& value) const = 0;
-	virtual bool read(int& value) const = 0;
-	virtual bool read(unsigned int& value) const = 0;
-	virtual bool read(int64_t& value) const = 0;
-	virtual bool read(uint64_t& value) const = 0;
-	virtual bool read(float& value) const = 0;
-	virtual bool read(double& value) const = 0;
-	virtual bool read(const char*& str) const = 0;
+	virtual bool read(bool& value) = 0;
+	virtual bool read(int& value) = 0;
+	virtual bool read(unsigned int& value) = 0;
+	virtual bool read(int64_t& value) = 0;
+	virtual bool read(uint64_t& value) = 0;
+	virtual bool read(float& value) = 0;
+	virtual bool read(double& value) = 0;
+	virtual bool read(const char*& str) = 0;
+
+	bool read(const char* key, void* data, TypeId typeId);
+	bool read(void* data, TypeId typeId);
 
 	// Read data of user-defined type
 	template <class T>
 	bool read(T& object);
 
 	template <class T>
-	T read(const char* tag, T&& defaultValue);
+	T read(const char* key, T&& defaultValue);
 
 	template <class T>
-	bool read(const char* tag, T& object);
+	bool read(const char* key, T& object);
 };
 
 class OutputArchive : Uncopyable {
@@ -132,6 +135,9 @@ public:
 	virtual void writeAttribute(const char* name, float value) = 0;
 	virtual void writeAttribute(const char* name, double value) = 0;
 	virtual void writeAttribute(const char* name, const char* str) = 0;
+
+	bool write(const char* key, const void* data, TypeId typeId);
+	bool write(void* data, TypeId typeId);
 
 	// Write data of user-defined type
 	template <class T>
@@ -187,16 +193,16 @@ private:
 };
 
 template <class T>
-T InputArchive::read(const char* tag, T&& defaultValue) {
+T InputArchive::read(const char* key, T&& defaultValue) {
 	T obj = std::move(defaultValue);
-	read(tag, obj);
+	read(key, obj);
 	return obj;
 }
 
 template <class T>
-bool InputArchive::read(const char* tag, T& object) {
+bool InputArchive::read(const char* key, T& object) {
 	bool res = false;
-	if (beginElement(tag)) {
+	if (beginElement(key)) {
 		res = read(object);
 		endElement();
 	}
@@ -205,7 +211,7 @@ bool InputArchive::read(const char* tag, T& object) {
 
 template <class T>
 bool InputArchive::read(T& object) {
-	return detail::readData(&object, getTypeId<T>(), *this);
+	return read(static_cast<void*>(&object), getTypeId<T>());
 }
 
 template <class T>
