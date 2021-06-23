@@ -2,6 +2,7 @@
 
 #if TY_REFLECTION_JSON
 
+#include <fstream>
 #include <cassert>
 #include <rapidjson/include/rapidjson/document.h>
 #include <rapidjson/include/rapidjson/prettywriter.h>
@@ -19,10 +20,18 @@ JSONOutputArchive::JSONOutputArchive()
 	writer->StartObject(); // begin root
 }
 
-JSONOutputArchive::~JSONOutputArchive() {
-}
+JSONOutputArchive::~JSONOutputArchive() = default;
 
 bool JSONOutputArchive::saveToFile(const char* fileName) {
+	std::string str;
+	if (saveToString(str)) {
+		std::ofstream file(fileName);
+		if (file) {
+			file.write(str.data(), str.size());
+			file.close();
+			return true;
+		}
+	}
 	return false;
 }
 
