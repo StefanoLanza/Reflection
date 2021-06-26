@@ -39,15 +39,17 @@ public:
 	void             writeAttribute(const char* name, float value) override;
 	void             writeAttribute(const char* name, double value) override;
 	void             writeAttribute(const char* name, const char* str) override;
-	void             write(const char* text) override;
-	void             writeBool(bool value) override;
-	void             writeInt(int value) override;
-	void             writeUInt(unsigned int value) override;
-	void             writeInt64(int64_t value) override;
-	void             writeUInt64(uint64_t value) override;
-	void             writeFloat(float value) override;
-	void             writeDouble(double value) override;
-	void             writeString(const char* str) override;
+	bool             write(bool value) override;
+	bool             write(int value) override;
+	bool             write(unsigned int value) override;
+	bool             write(int64_t value) override;
+	bool             write(uint64_t value) override;
+	bool             write(float value) override;
+	bool             write(double value) override;
+	bool             write(const char* str) override;
+	bool             write(const std::string& str) override;
+
+	using OutputArchive::write;
 
 private:
 	void beginArrayElement();

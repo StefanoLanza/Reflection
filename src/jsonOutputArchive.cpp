@@ -2,6 +2,7 @@
 
 #if TY_REFLECTION_JSON
 
+#include <fstream>
 #include <cassert>
 #include <rapidjson/include/rapidjson/document.h>
 #include <rapidjson/include/rapidjson/prettywriter.h>
@@ -19,10 +20,18 @@ JSONOutputArchive::JSONOutputArchive()
 	writer->StartObject(); // begin root
 }
 
-JSONOutputArchive::~JSONOutputArchive() {
-}
+JSONOutputArchive::~JSONOutputArchive() = default;
 
 bool JSONOutputArchive::saveToFile(const char* fileName) {
+	std::string str;
+	if (saveToString(str)) {
+		std::ofstream file(fileName);
+		if (file) {
+			file.write(str.data(), str.size());
+			file.close();
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -41,7 +50,7 @@ std::string_view JSONOutputArchive::getString() {
 
 bool JSONOutputArchive::beginElement(const char* name) {
 	assert(name);
-	return writer->Key(name, static_cast<SizeType>(strlen(name)));
+	return writer->Key(name);
 }
 
 void JSONOutputArchive::endElement() {
@@ -93,40 +102,40 @@ void JSONOutputArchive::writeAttribute(const char* name, const char* str) {
 	writer->String(str);
 }
 
-void JSONOutputArchive::write(const char* text) {
-	writer->String(text, static_cast<SizeType>(strlen(text)));
+bool JSONOutputArchive::write(bool value) {
+	return writer->Bool(value);
 }
 
-void JSONOutputArchive::writeBool(bool value) {
-	writer->Bool(value);
+bool JSONOutputArchive::write(int value) {
+	return writer->Int(value);
 }
 
-void JSONOutputArchive::writeInt(int value) {
-	writer->Int(value);
+bool JSONOutputArchive::write(unsigned int value) {
+	return writer->Uint(value);
 }
 
-void JSONOutputArchive::writeUInt(unsigned int value) {
-	writer->Uint(value);
+bool JSONOutputArchive::write(int64_t value) {
+	return writer->Int64(value);
 }
 
-void JSONOutputArchive::writeInt64(int64_t value) {
-	writer->Int64(value);
+bool JSONOutputArchive::write(uint64_t value) {
+	return writer->Uint64(value);
 }
 
-void JSONOutputArchive::writeUInt64(uint64_t value) {
-	writer->Uint64(value);
+bool JSONOutputArchive::write(float value) {
+	return writer->Double(value);
 }
 
-void JSONOutputArchive::writeFloat(float value) {
-	writer->Double(value);
+bool JSONOutputArchive::write(double value) {
+	return writer->Double(value);
 }
 
-void JSONOutputArchive::writeDouble(double value) {
-	writer->Double(value);
+bool JSONOutputArchive::write(const char* str) {
+	return writer->String(str);
 }
 
-void JSONOutputArchive::writeString(const char* str) {
-	writer->String(str);
+bool JSONOutputArchive::write(const std::string& str) {
+	return writer->String(str.data(), static_cast<rapidjson::SizeType>(str.size()));
 }
 
 void JSONOutputArchive::writeAttributeKey(const char* key) const {

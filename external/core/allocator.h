@@ -131,7 +131,6 @@ private:
 	size_t     maxPages;
 	Page*      rootPage;
 	Page*      currPage;
-	size_t     freeSize;
 	size_t     pageCount;
 };
 

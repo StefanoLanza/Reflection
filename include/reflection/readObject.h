@@ -17,19 +17,9 @@ class InputArchive;
 
 namespace detail {
 TypeDB& getTypeDB();
-}
 
-bool readObject(DataPtr object, TypeId typeId, InputArchive& archive, Semantic semantic = Semantic::none);
-bool readObject(DataPtr object, TypeId typeId, const char* name, InputArchive& archive, Semantic semantic = Semantic::none);
+bool readData(DataPtr object, const Type& type, InputArchive& archive, const Context& context, Semantic semantic = Semantic::none);
 
-template <typename T>
-bool readObject(T* object, const char* name, InputArchive& archive, Semantic semantic = Semantic::none) {
-	return readObject(object, getTypeId<T>(), name, archive, semantic);
-}
-
-template <typename T>
-bool readObject(T* object, InputArchive& archive, Semantic semantic = Semantic::none) {
-	return readObject(object, getTypeId<T>(), archive, semantic);
 }
 
 std::pair<bool, size_t> readArray(DataPtr array, size_t arraySize, TypeId elementType, const char* arrayName, InputArchive& archive);

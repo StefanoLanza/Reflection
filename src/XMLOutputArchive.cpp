@@ -86,6 +86,7 @@ bool XMLOutputArchive::beginArray() {
 void XMLOutputArchive::endArray() {
 	assert(typeStack.top() == Type::array);
 	typeStack.pop();
+	endArrayElement();
 }
 
 void XMLOutputArchive::writeAttribute(const char* name, const char* str) {
@@ -113,60 +114,64 @@ void XMLOutputArchive::writeAttribute(const char* name, double value) {
 	currentNode->ToElement()->SetAttribute(name, value);
 }
 
-#if TY_REFLECTION_DEPRECATED
-void XMLOutputArchive::write(const char* text) {
-	beginArrayElement(); // insert "element" node for array
-	currentNode->InsertEndChild(document->NewText(text));
-	endArrayElement();
-}
-#endif
-
-void XMLOutputArchive::writeBool(bool value) {
+bool XMLOutputArchive::write(bool value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endArrayElement();
+	return true;
 }
 
-void XMLOutputArchive::writeInt(int value) {
+bool XMLOutputArchive::write(int value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endArrayElement();
+	return true;
 }
 
-void XMLOutputArchive::writeUInt(unsigned int value) {
+bool XMLOutputArchive::write(unsigned int value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endArrayElement();
+	return true;
 }
 
-void XMLOutputArchive::writeInt64(int64_t value) {
+bool XMLOutputArchive::write(int64_t value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endArrayElement();
+	return true;
 }
 
-void XMLOutputArchive::writeUInt64(uint64_t value) {
+bool XMLOutputArchive::write(uint64_t value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endArrayElement();
+	return true;
 }
 
-void XMLOutputArchive::writeFloat(float value) {
+bool XMLOutputArchive::write(float value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endArrayElement();
+	return true;
 }
 
-void XMLOutputArchive::writeDouble(double value) {
+bool XMLOutputArchive::write(double value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endArrayElement();
+	return true;
 }
 
-void XMLOutputArchive::writeString(const char* str) {
+bool XMLOutputArchive::write(const char* str) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(str);
 	endArrayElement();
+	return true;
+}
+
+bool XMLOutputArchive::write(const std::string& str) {
+	return write(str.c_str());
 }
 
 void XMLOutputArchive::beginArrayElement() {

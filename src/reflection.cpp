@@ -25,14 +25,14 @@ bool writeBuiltin(ConstDataPtr data, OutputArchive& archive) {
 template <>
 void readBuiltin<std::string>(DataPtr data, InputArchive& archive) {
 	const char* cstr = nullptr;
-	if (archive.readString(cstr)) {
+	if (archive.read(cstr)) {
 		*cast<std::string>(data) = cstr;
 	}
 }
 
 template <>
 bool writeBuiltin<std::string>(ConstDataPtr data, OutputArchive& archive) {
-	archive.write(cast<std::string>(data)->c_str());
+	archive.write(*cast<std::string>(data));
 	return true;
 }
 

@@ -48,30 +48,30 @@ TEST_CASE("Primitives") {
 	using namespace refl;
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(writeObject(c, "c", archive));
-		REQUIRE(writeObject(uc, "uc", archive));
-		REQUIRE(writeObject(i, "i", archive));
-		REQUIRE(writeObject(ui, "ui", archive));
-		REQUIRE(writeObject(l, "l", archive));
-		REQUIRE(writeObject(ul, "ul", archive));
-		REQUIRE(writeObject(f, "f", archive));
-		REQUIRE(writeObject(d, "d", archive));
-		REQUIRE(writeObject(b, "b", archive));
+		REQUIRE(archive.write("c", c));
+		REQUIRE(archive.write("uc", uc));
+		REQUIRE(archive.write("i", i));
+		REQUIRE(archive.write("ui", ui));
+		REQUIRE(archive.write("l", l));
+		REQUIRE(archive.write("ul", ul));
+		REQUIRE(archive.write("f", f));
+		REQUIRE(archive.write("d", d));
+		REQUIRE(archive.write("b", b));
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
 	};
 
 	auto read = [&](InputArchive& archive) {
-		REQUIRE(readObject(&c2, "c", archive));
-		REQUIRE(readObject(&uc2, "uc", archive));
-		REQUIRE(readObject(&i2, "i", archive));
-		REQUIRE(readObject(&ui2, "ui", archive));
-		REQUIRE(readObject(&l2, "l", archive));
-		REQUIRE(readObject(&ul2, "ul", archive));
-		REQUIRE(readObject(&f2, "f", archive));
-		REQUIRE(readObject(&d2, "d", archive));
-		REQUIRE(readObject(&b2, "b", archive));
+		REQUIRE(archive.read("c", c2));
+		REQUIRE(archive.read("uc", uc2));
+		REQUIRE(archive.read("i", i2));
+		REQUIRE(archive.read("ui", ui2));
+		REQUIRE(archive.read("l", l2));
+		REQUIRE(archive.read("ul", ul2));
+		REQUIRE(archive.read("f", f2));
+		REQUIRE(archive.read("d", d2));
+		REQUIRE(archive.read("b", b2));
 		CHECK(c == c2);
 		CHECK(uc == uc2);
 		CHECK(i == i2);
@@ -132,14 +132,14 @@ TEST_CASE("Enum") {
 
 	auto write = [&](OutputArchive& archive) {
 		std::string content;
-		REQUIRE(writeObject(season, elementName, archive));
+		REQUIRE(archive.write(elementName,  season));
 		REQUIRE(archive.saveToString(content));
 		return content;
 	};
 
 	auto read = [&](InputArchive& archive) {
 		SeasonType readSeason;
-		REQUIRE(readObject(&readSeason, elementName, archive));
+		REQUIRE(archive.read(elementName, readSeason));
 		CHECK(readSeason == season);
 	};
 
@@ -177,7 +177,7 @@ TEST_CASE("BitMask") {
 	const char* elementName = "flags";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(writeObject(flags, elementName, archive));
+		REQUIRE(archive.write(elementName, flags));
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -185,7 +185,7 @@ TEST_CASE("BitMask") {
 
 	auto read = [&](InputArchive& archive) {
 		ActionFlags readFlags;
-		REQUIRE(readObject(&readFlags, elementName, archive));
+		REQUIRE(archive.read(elementName, readFlags));
 		CHECK(readFlags == flags);
 	};
 
@@ -231,7 +231,7 @@ TEST_CASE("C array") {
 	const char* elementName = "array";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(writeObject(array, elementName, archive));
+		REQUIRE(archive.write(elementName, array));
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -239,7 +239,7 @@ TEST_CASE("C array") {
 
 	auto read = [&](InputArchive& archive) {
 		Array in_array;
-		REQUIRE(readObject(&in_array, elementName, archive));
+		REQUIRE(archive.read(elementName, in_array));
 		CHECK(compareArrays(in_array, array, size));
 	};
 
@@ -277,7 +277,7 @@ TEST_CASE("std::vector") {
 	const char*  elementName = "vector";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(writeObject(vec, elementName, archive));
+		REQUIRE(archive.write(elementName, vec));
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -285,7 +285,7 @@ TEST_CASE("std::vector") {
 
 	auto read = [&](InputArchive& archive) {
 		Vector in_vec;
-		REQUIRE(readObject(&in_vec, elementName, archive));
+		REQUIRE(archive.read(elementName, in_vec));
 		CHECK(in_vec == vec);
 	};
 
@@ -325,7 +325,7 @@ TEST_CASE("std::map") {
 	const char* elementName = "map";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(writeObject(map, elementName, archive));
+		REQUIRE(archive.write(elementName, map));
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -333,7 +333,7 @@ TEST_CASE("std::map") {
 
 	auto read = [&](InputArchive& archive) {
 		Map inMap;
-		REQUIRE(readObject(&inMap, elementName, archive));
+		REQUIRE(archive.read(elementName, inMap));
 		CHECK(inMap == map);
 	};
 
@@ -375,7 +375,7 @@ TEST_CASE("std::array") {
 	const char* elementName = "array";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(writeObject(array, elementName, archive));
+		REQUIRE(archive.write(elementName, array));
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -383,7 +383,7 @@ TEST_CASE("std::array") {
 
 	auto read = [&](InputArchive& archive) {
 		Array in_array;
-		REQUIRE(readObject(&in_array, elementName, archive));
+		REQUIRE(archive.read(elementName, in_array));
 		CHECK(in_array == array);
 	};
 
@@ -421,7 +421,7 @@ TEST_CASE("std::pair") {
 	const char* elementName = "pair";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(writeObject(pair, elementName, archive));
+		REQUIRE(archive.write(elementName, pair));
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -429,7 +429,7 @@ TEST_CASE("std::pair") {
 
 	auto read = [&](InputArchive& archive) {
 		Pair inPair;
-		REQUIRE(readObject(&inPair, elementName, archive));
+		REQUIRE(archive.read(elementName, inPair));
 		CHECK(inPair == pair);
 	};
 
@@ -468,7 +468,7 @@ TEST_CASE("std::tuple") {
 	const char* elementName = "tuple";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(writeObject(tuple, elementName, archive));
+		REQUIRE(archive.write(elementName, tuple));
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -476,7 +476,7 @@ TEST_CASE("std::tuple") {
 
 	auto read = [&](InputArchive& archive) {
 		Tuple inTuple;
-		REQUIRE(readObject(&inTuple, elementName, archive));
+		REQUIRE(archive.read(elementName, inTuple));
 		CHECK(inTuple == tuple);
 	};
 
@@ -513,7 +513,7 @@ TEST_CASE("std::unique_ptr") {
 	const char* elementName = "material";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(writeObject(material, elementName, archive));
+		REQUIRE(archive.write(elementName, material));
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -521,7 +521,7 @@ TEST_CASE("std::unique_ptr") {
 
 	auto read = [&](InputArchive& archive) {
 		auto inMaterial = std::make_unique<Material>();
-		REQUIRE(readObject(&inMaterial, elementName, archive));
+		REQUIRE(archive.read(elementName, inMaterial));
 		CHECK(*inMaterial == *material);
 	};
 
@@ -558,7 +558,7 @@ TEST_CASE("std::shared_ptr") {
 	const char* elementName = "material";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(writeObject(material, elementName, archive));
+		REQUIRE(archive.write(elementName, material));
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -566,7 +566,7 @@ TEST_CASE("std::shared_ptr") {
 
 	auto read = [&](InputArchive& archive) {
 		auto inMaterial = std::make_unique<Material>();
-		REQUIRE(readObject(&inMaterial, elementName, archive));
+		REQUIRE(archive.read(elementName, inMaterial));
 		CHECK(*inMaterial == *material);
 	};
 
@@ -612,7 +612,7 @@ TEST_CASE("Class") {
 	const char* elementName = "gameObject";
 
 	auto write = [&](OutputArchive& archive) {
-		CHECK(writeObject(gameObject, elementName, archive));
+		CHECK(archive.write(elementName, gameObject));
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -620,7 +620,7 @@ TEST_CASE("Class") {
 
 	auto read = [&](InputArchive& archive) {
 		GameObject inObject;
-		REQUIRE(readObject(&inObject, elementName, archive));
+		REQUIRE(archive.read(elementName, inObject));
 		compare(inObject, gameObject);
 	};
 
@@ -661,7 +661,7 @@ TEST_CASE("Struct") {
 	const char* elementName = "fog";
 
 	auto write = [&](OutputArchive& archive) {
-		CHECK(writeObject(fog, elementName, archive));
+		CHECK(archive.write(elementName, fog));
 		std::string content;
 		REQUIRE(archive.saveToString(content));
 		return content;
@@ -669,7 +669,7 @@ TEST_CASE("Struct") {
 
 	auto read = [&](InputArchive& archive) {
 		Fog inFog;
-		REQUIRE(readObject(&inFog, elementName, archive));
+		REQUIRE(archive.read(elementName, inFog));
 		REQUIRE(fog == inFog);
 	};
 
@@ -716,12 +716,12 @@ TEST_CASE("Variant") {
 		std::string      archiveContent;
 		XMLOutputArchive outArchive;
 
-		CHECK(writeObject(variants, key, outArchive));
+		CHECK(outArchive.write(key, variants));
 		outArchive.saveToString(archiveContent);
 
 		XMLInputArchive inArchive;
 		REQUIRE(inArchive.initialize(archiveContent.data()));
-		REQUIRE(readObject(&otherVariants, key, inArchive));
+		REQUIRE(inArchive.read(key, otherVariants));
 		CHECK(compare(otherVariants, variants));
 	}
 #endif
@@ -731,12 +731,12 @@ TEST_CASE("Variant") {
 		std::string       archiveContent;
 		JSONOutputArchive outArchive;
 
-		CHECK(writeObject(variants, key, outArchive));
+		CHECK(outArchive.write(key, variants));
 		outArchive.saveToString(archiveContent);
 
 		JSONInputArchive inArchive;
 		REQUIRE(inArchive.initialize(archiveContent.data()));
-		REQUIRE(readObject(&otherVariants, key, inArchive));
+		REQUIRE(inArchive.read(key, otherVariants));
 		CHECK(compare(otherVariants, variants));
 	}
 #endif

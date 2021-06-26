@@ -76,7 +76,7 @@ std::string writeTextureToArchive(const Texture& obj, const char* name) {
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
-	writeObject(obj, name, archive);
+	archive.write(name, obj);
 	archive.saveToString(archiveContent);
 	return archiveContent;
 }
@@ -88,7 +88,7 @@ void readTextureFromArchive(Texture& obj, const std::string& archiveContent, con
 	refl::JSONInputArchive  archive;
 #endif
 	if (archive.initialize(archiveContent.data())) {
-		readObject(&obj, name, archive);
+		archive.read(name, obj);
 	}
 }
 
@@ -102,7 +102,7 @@ bool writeTexture(const void* data, refl::OutputArchive& archive) {
 	const Texture* texture = static_cast<const Texture*>(data);
 	// Only the texture fileName is serialized. Its data is stored externally
 	if (archive.beginObject()) {
-		writeObject(texture->fileName, "fileName", archive);
+		archive.write("fileName", texture->fileName);
 		archive.endObject();
 		return true;
 	}
@@ -111,7 +111,7 @@ bool writeTexture(const void* data, refl::OutputArchive& archive) {
 
 void readTexture(void* data, refl::InputArchive& archive) {
 	Texture* texture = static_cast<Texture*>(data);
-	if (readObject(&texture->fileName, "fileName", archive)) {
+	if (archive.read("fileName", texture->fileName)) {
 		texture->data = loadTextureFromFile(texture->fileName);
 	}
 }

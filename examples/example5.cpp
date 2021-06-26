@@ -132,9 +132,9 @@ std::string writeToArchive(const PersonMap& persons, const CityVector& cities, c
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
-	writeObject(persons, personsKey, archive);
-	writeObject(cities, citiesKey, archive);
-	writeObject(numbers, numbersKey, archive);
+	archive.write(personsKey, persons);
+	archive.write(citiesKey, cities);
+	archive.write(numbersKey, numbers);
 	archive.writeAttribute("bool", true);
 	archive.writeAttribute("int", 13);
 	archive.writeAttribute("float", 3.141);
@@ -151,9 +151,9 @@ void readFromArchive(PersonMap& persons, CityVector& cities, NumberVector& numbe
 	refl::JSONInputArchive  archive;
 #endif
 	if (archive.initialize(archiveContent.data())) {
-		readObject(&persons, personsKey, archive);
-		readObject(&cities, citiesKey, archive);
-		readObject(&numbers, numbersKey, archive);
+		archive.read(personsKey, persons);
+		archive.read(citiesKey, cities);
+		archive.read(numbersKey, numbers);
 	}
 	bool   b = false;
 	int    i = 0;
