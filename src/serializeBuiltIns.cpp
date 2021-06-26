@@ -93,9 +93,8 @@ bool read(unsigned long& data, InputArchive& archive) {
 }
 
 bool read(long long& data, InputArchive& archive) {
-	int64_t i64;
 	bool    res = false;
-	if (archive.read(i64)) {
+	if (int64_t i64 = 0; archive.read(i64)) {
 		data = static_cast<long long>(i64);
 		res = true;
 	}
@@ -103,8 +102,11 @@ bool read(long long& data, InputArchive& archive) {
 }
 
 bool read(unsigned long long& data, InputArchive& archive) {
-	static_assert(std::is_same_v<unsigned long long, uint64_t>);
-	return archive.read(data);
+	if (uint64_t ui64 = 0; archive.read(ui64)) {
+		data = static_cast<unsigned long long>(ui64);
+		return true;
+	}
+	return false;
 }
 
 bool read(bool& data, InputArchive& archive) {
@@ -172,13 +174,15 @@ bool write(unsigned long data, OutputArchive& archive) {
 }
 
 bool write(long long data, OutputArchive& archive) {
-	static_assert(std::is_same_v<long long, int64_t>);
-	return archive.write(data);
+	static_assert(sizeof(long long) <= sizeof(int64_t));
+	int64_t i64 = data;
+	return archive.write(i64);
 }
 
 bool write(unsigned long long data, OutputArchive& archive) {
-	static_assert(std::is_same_v<unsigned long long, uint64_t>);
-	return archive.write(data);
+	static_assert(sizeof(unsigned long long) <= sizeof(uint64_t));
+	uint64_t ui64 = data;
+	return archive.write(ui64);
 }
 
 bool write(float data, OutputArchive& archive) {
