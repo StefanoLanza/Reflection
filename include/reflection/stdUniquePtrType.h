@@ -1,6 +1,8 @@
 #pragma once
 
 #include "pointerType.h"
+
+#include <cassert>
 #include <memory>
 
 namespace Typhoon::Reflection::detail {

@@ -62,7 +62,6 @@ public:
 class LinearAllocator : public Allocator {
 public:
 
-	void* alloc(size_t size, size_t alignment) = 0;
 	void  free(void* ptr, size_t size) override;
 	void* realloc(void* ptr, size_t bytes, size_t alignment) override;
 	virtual void  rewind() = 0;

@@ -3,11 +3,11 @@
 namespace Typhoon::Reflection {
 
 Type::Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods)
-    : typeName(typeName)
-    , typeID(typeId)
+    : typeID(typeId)
     , size(size)
     , alignment(alignment)
     , subClass(subClass)
+    , typeName(typeName)
     , methods(methods) {
 }
 

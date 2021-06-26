@@ -45,6 +45,10 @@ filter { xcode }
 	system "macosx"
 	systemversion("10.12") -- MACOSX_DEPLOYMENT_TARGET
 
+filter {  "toolset:clang" }
+    buildoptions { "-stdlib=libc++" }
+    linkoptions { "-stdlib=libc++ -v" }
+
 filter { x86 }
 	architecture "x86"
 	  

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "property.h"
+#include <cassert>
 
 namespace Typhoon::Reflection::detail {
 

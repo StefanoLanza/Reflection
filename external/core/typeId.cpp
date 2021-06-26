@@ -37,8 +37,10 @@ TypeId typeNameToId(const char* typeName) {
 void registerTypeName(TypeId id, const char* typeName) {
 	TypeNameStorage s;
 	assert(strlen(typeName) < std::size(s.string));
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 	strncpy_s(s.string, typeName, std::size(s.string));
+#elif defined (__clang__)
+	strncpy(s.string, typeName, std::size(s.string));
 #else
 	strlcpy(s.string, typeName, std::size(s.string));
 #endif
