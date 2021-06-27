@@ -15,14 +15,13 @@ class TypeVisitor {
 public:
 	~TypeVisitor() = default;
 
-	virtual void beginNamespace(const Namespace&) = 0;
+	virtual void beginNamespace(const Namespace& nameSpace) = 0;
 	virtual void endNamespace(const refl::Namespace& nameSpace) = 0;
 	virtual void beginClass(const StructType& type) = 0;
 	virtual void endClass() = 0;
 	virtual void visitType(const Type& type) = 0;
 	virtual void visitField(const char* fieldName, const Type& type) = 0;
 };
-//= std::function<void(const Type& type, const VisitContext& context)>;
 
 struct VisitOptions {
 	bool recursive = true;

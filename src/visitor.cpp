@@ -29,7 +29,6 @@ void visitStruct(const Type& type, TypeVisitor& visitor, const VisitOptions& opt
 		for (const auto& property : structType->getProperties()) {
 			const Type& valueType = property.getValueType();
 			visitor.visitField(property.getName(), valueType);
-			// visitType(valueType, visitor, options, typeDB, context);
 		}
 		structType = structType->getParentType();
 	} while (structType);

@@ -55,7 +55,7 @@ bool read(unsigned int& data, InputArchive& archive) {
 }
 
 bool read(long& data, InputArchive& archive) {
-	// InputArchive::read(unsigned long) overload does not exist
+	// InputArchive::read(long) overload does not exist
 	if constexpr (std::is_same_v<long, int64_t>) {
 		int64_t i64 = 0;
 		if (archive.read(i64)) {
@@ -93,7 +93,7 @@ bool read(unsigned long& data, InputArchive& archive) {
 }
 
 bool read(long long& data, InputArchive& archive) {
-	bool    res = false;
+	bool res = false;
 	if (int64_t i64 = 0; archive.read(i64)) {
 		data = static_cast<long long>(i64);
 		res = true;

@@ -215,7 +215,7 @@ bool JSONInputArchive::iterateChild(ArchiveIterator& it) {
 
 #if TY_REFLECTION_DEPRECATED
 
-bool JSONInputArchive::iterateChild(ArchiveIterator& it, const char* name) {
+bool JSONInputArchive::iterateChild(ArchiveIterator& /*it*/, const char* /*name*/) {
 	assert(false && "Not supported");
 	return false;
 }
