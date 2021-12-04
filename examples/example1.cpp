@@ -49,7 +49,7 @@ Builtins    makeBuiltins();
 std::string writeBuiltins(const Builtins& b, const char* XMLelement);
 void        readBuiltins(Builtins& b, const std::string& xmlString, const char* XMLelement);
 
-int __cdecl main(int /*argc*/, char* /*argv*/[]) {
+int main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
 
 	refl::initReflection();

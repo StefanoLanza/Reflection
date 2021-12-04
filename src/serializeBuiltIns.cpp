@@ -20,7 +20,7 @@ bool read(unsigned char& data, InputArchive& archive) {
 	bool         res = false;
 	if (archive.read(ui)) {
 		// check overflow
-		res = (ui >= 0 && ui <= 255);
+		res = (ui <= 255);
 		data = static_cast<unsigned char>(ui);
 	}
 	return res;

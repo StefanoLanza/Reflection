@@ -56,7 +56,7 @@ public:
 	}
 	DataPtr insert(ConstDataPtr key) override {
 		// Insert a temporary value
-		mapped_type               tmp;
+		mapped_type               tmp {};
 		std::pair<iterator, bool> res = container->insert(std::make_pair(*cast<key_type>(key), tmp));
 		// Return pointer to mapped value
 		return &res.first->second;

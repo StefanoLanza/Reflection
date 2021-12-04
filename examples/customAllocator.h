@@ -1,4 +1,5 @@
 #include <core/allocator.h>
+#include <cstdlib>
 #include <new>
 
 class CustomAllocator final : public Typhoon::Allocator {

@@ -2,6 +2,7 @@
 #include <reflection/archive.h>
 #include <reflection/readObject.h>
 #include <reflection/writeObject.h>
+#include <cstring>
 
 bool operator==(const Coords& a, const Coords& b) {
 	return a.x == b.x && a.y == b.y && a.z == b.z;
@@ -16,7 +17,7 @@ bool operator==(const Material& a, const Material& b) {
 }
 
 bool operator==(const Fog& a, const Fog& b) {
-	return ! memcmp(&a, &b, sizeof a);
+	return ! std::memcmp(&a, &b, sizeof a);
 }
 
 void setDensity(Fog& fog, float value) {

@@ -1,5 +1,8 @@
 #include "typeId.h"
+
+#include <algorithm>
 #include <cassert>
+#include <cstring>
 #include <map>
 #include <unordered_map>
 #include <vector>
@@ -39,10 +42,8 @@ void registerTypeName(TypeId id, const char* typeName) {
 	assert(strlen(typeName) < std::size(s.string));
 #if defined(_MSC_VER)
 	strncpy_s(s.string, typeName, std::size(s.string));
-#elif defined (__clang__)
-	strncpy(s.string, typeName, std::size(s.string));
 #else
-	strlcpy(s.string, typeName, std::size(s.string));
+	strncpy(s.string, typeName, std::size(s.string));
 #endif
 	auto r = idToName.insert({ id.impl, s });
 	assert(r.second);

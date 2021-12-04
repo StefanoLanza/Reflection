@@ -4,6 +4,7 @@
 #include <core/scopedAllocator.h>
 
 #include <cassert>
+#include <cstring>
 
 namespace Typhoon::Reflection {
 

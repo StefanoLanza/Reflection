@@ -2,6 +2,8 @@
 #include "ptrUtil.h"
 
 #include <cassert>
+#include <cstdlib>
+#include <limits>
 #include <memory>
 
 namespace Typhoon {

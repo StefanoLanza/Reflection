@@ -1,5 +1,6 @@
 #include "pointerType.h"
 #include <cassert>
+#include <cstring>
 
 namespace Typhoon::Reflection {
 

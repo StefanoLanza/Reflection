@@ -1,5 +1,7 @@
 #include "stdVectorType.h"
 
+#include <cstring>
+
 namespace Typhoon::Reflection::detail {
 
 const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc) {

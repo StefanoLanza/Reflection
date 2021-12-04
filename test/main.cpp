@@ -27,7 +27,7 @@ bool compareArrays(const T a[], const T b[], size_t n) {
 	return true;
 }
 
-int __cdecl main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
 	refl::initReflection();
 	registerUserTypes();
 	const int res = Catch::Session().run(argc, argv);

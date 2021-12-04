@@ -52,7 +52,7 @@ std::string  writeToArchive(const PersonMap& persons, const CityVector& cities, 
 void         readFromArchive(PersonMap& persons, CityVector& cities, NumberVector& numbers, const std::string& archiveContent, const char* personsKey,
                              const char* citiesKey, const char* numbersKey);
 
-int __cdecl main(int /*argc*/, char* /*argv*/[]) {
+int main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
 
 	CustomAllocator customAllocator;

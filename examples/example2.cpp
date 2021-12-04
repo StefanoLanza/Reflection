@@ -49,7 +49,7 @@ GameObject  makeGameObject();
 std::string writeGameObject(const GameObject& obj, const char* XMLelement);
 void        readGameObject(GameObject& obj, const std::string& xmlString, const char* XMLelement);
 
-int __cdecl main(int /*argc*/, char* /*argv*/[]) {
+int main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
 
 	refl::initReflection();

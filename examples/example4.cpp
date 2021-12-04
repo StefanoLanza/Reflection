@@ -39,7 +39,7 @@ void           registerUserTypes();
 std::string    writeTextureToArchive(const Texture& obj, const char* name);
 void           readTextureFromArchive(Texture& obj, const std::string& xmlString, const char* name);
 
-int __cdecl main(int /*argc*/, char* /*argv*/[]) {
+int main(int /*argc*/, char* /*argv*/[]) {
 	std::cout << "Reflection version: " << refl::getVersionString() << std::endl;
 
 	CustomAllocator customAllocator;

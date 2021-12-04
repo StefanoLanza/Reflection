@@ -1,5 +1,6 @@
 #include "namespace.h"
 #include <cassert>
+#include <cstring>
 
 namespace Typhoon::Reflection {
 

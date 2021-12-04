@@ -50,6 +50,10 @@ filter { filter_clang }
 	buildoptions { "-stdlib=libc++ -Wno-unused-command-line-argument" }
 	linkoptions { "-stdlib=libc++ -v -fuse-ld=gold" }
 
+filter {  "toolset:gcc" }
+    -- https://stackoverflow.com/questions/39236917/using-gccs-link-time-optimization-with-static-linked-libraries
+    buildoptions { "-ffat-lto-objects" }
+
 filter { filter_x86 }
 	architecture "x86"
 	  

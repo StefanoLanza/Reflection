@@ -3,6 +3,7 @@
 #include "pointerType.h"
 
 #include <cassert>
+#include <cstring>
 #include <memory>
 
 namespace Typhoon::Reflection::detail {
