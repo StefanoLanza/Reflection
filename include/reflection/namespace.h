@@ -4,6 +4,7 @@
 
 #include <core/span.h>
 #include <core/stdAllocator.h>
+#include <cstddef> // size_t
 #include <vector>
 
 namespace Typhoon::Reflection {

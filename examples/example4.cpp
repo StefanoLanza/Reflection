@@ -48,7 +48,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
 	printNamespace(refl::getGlobalNamespace());
 
 	const char* name = "Texture";
-	Texture     texture { "glossy.mat" };
+	Texture     texture { "glossy.mat", {} };
 	std::string archiveContent = writeTextureToArchive(texture, name);
 	Texture     otherObj;
 	readTextureFromArchive(otherObj, archiveContent, name);

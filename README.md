@@ -9,6 +9,7 @@
   * std containers
   * std::pair, std::tuple
   * std smart pointers
+* Support for XML and JSON formats
 * Configurable memory allocation
 * Support for custom serialization procedures
 * No exceptions
@@ -20,22 +21,27 @@
 # INSTALLATION
 * Clone the repository to a local folder
   git clone https://github.com/StefanoLanza/Reflection.git
-* Reflection uses [Premake](https://premake.github.io/) to generate projects for Windows and MacOS. 
+* Reflection uses [Premake](https://premake.github.io/) to generate projects for Windows, Linux and MacOS. 
 * On Windows
-  * Run ```premake5.exe vsXXXX``` to generate a Visual Studio XXXX (either vs2017 or 2019) solution
+  * Run ```premake5.exe vsXXXX --with-tests --with-examples``` to generate a Visual Studio XXXX (either vs2017 or 2019) solution
   * Open build/vs2019/Typhoon-Reflection.sln
   * Select a build configuration (Release, Debug, Win32, x64)
   * Build and run the examples and the UnitTest project
 * On MacOS
-  * Run ```premake xcode4``` to generate an XCode workspace
+  * Run ```premake xcode4 --with-tests --with-examples``` to generate an XCode workspace
   * Open build/xcode4/Typhoon-Reflection.xcworkspace
   * Select a scheme under Product/Scheme/
   * Build and run the examples and the UnitTest scheme
+* On Linux
+  * Run ```premake gmake -cc=gcc --with-tests --with-examples``` to generate GNU makefiles
+  * cd build/gmake
+  * Build and run the examples and the UnitTest application
+     * make --config=configuration (e.g. release_x86)
 * For integration in your own application
   * Add the folders include, src, external/core, external/TinyXML, external/rapidjson to your build configuration. Please see premake5.lua as a reference.
 
-# CONFIGURATION
-Look at the file src/config.h Here you can find configuration settings for the library. You can change these settings by either editing this file or by defining them with the preprocessor in your build configuration.
+# BUILD CONFIGURATION
+Look at the file include/reflection/config.h Here you can find configuration settings for the library. You can change these settings by either editing this file or by defining them with the preprocessor in your build configuration.
 
 # USAGE
 Look inside the examples folder for sample code.
@@ -44,3 +50,4 @@ Look inside the examples folder for sample code.
 - [ ] YAML support
 - [ ] Support for attributes
 - [ ] Documentation
+- [ ] Conan package

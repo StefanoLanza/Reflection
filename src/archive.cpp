@@ -86,7 +86,7 @@ bool OutputArchive::write(const char* key, const char* str) {
 		res = write(str);
 		endElement();
 	}
-	return false;
+	return res;
 }
 
 } // namespace Typhoon::Reflection

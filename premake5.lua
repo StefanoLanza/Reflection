@@ -9,6 +9,12 @@ newoption {
 	description = "Build the examples",
 }
 
+newoption {
+	trigger     = "with-asan",
+	description = "Enable address sanitizer",
+}
+
+
 -- Global settings
 local workspacePath = path.join("build", _ACTION)  -- e.g. build/vs2019 or build/xcode4
 
@@ -16,6 +22,7 @@ local workspacePath = path.join("build", _ACTION)  -- e.g. build/vs2019 or build
 local filter_vs = "action:vs*"
 local filter_xcode = "action:xcode*"
 local filter_gmake = "action:gmake*"
+local filter_gcc = "toolset:gcc"
 local filter_clang = "toolset:clang"
 local filter_x86 = "platforms:x86"
 local filter_x64 = "platforms:x86_64"
@@ -46,13 +53,19 @@ filter { filter_xcode }
 	system "macosx"
 	systemversion("10.12") -- MACOSX_DEPLOYMENT_TARGET
 
-filter { filter_clang }
-	buildoptions { "-stdlib=libc++ -Wno-unused-command-line-argument" }
-	linkoptions { "-stdlib=libc++ -v -fuse-ld=gold" }
+-- Address sanitizer
+local asan = _OPTIONS["with-asan"]
+filter { not filter_clang }
+	print ("Address Sanitizer is supported only by clang toolset. Disabling it.")
+	print ("Use --cc=clang in the command line")
+	asan = false
 
-filter {  "toolset:gcc" }
+filter { filter_gcc }
     -- https://stackoverflow.com/questions/39236917/using-gccs-link-time-optimization-with-static-linked-libraries
     buildoptions { "-ffat-lto-objects" }
+
+filter { filter_clang }
+	buildoptions { "-fuse-ld=lld" }
 
 filter { filter_x86 }
 	architecture "x86"
@@ -89,6 +102,19 @@ filter { filter_release }
 	warnings "Extra"
 	symbols "Off"
 	runtime "Release"
+
+filter { filter_clang, filter_debug, }
+	defines { }
+	-- Address sanitizer for clang
+	if asan then 
+		buildoptions
+		{
+			"/fsanitize=address",
+		}
+		-- Turn off incompatible options
+		flags { "NoIncrementalLink", "NoRuntimeChecks", }
+		editAndContinue "Off"
+	end
 
 filter {}
 

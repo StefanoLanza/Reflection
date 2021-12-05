@@ -307,7 +307,8 @@ bool JSONInputArchive::beginAttribute(const char* name) {
 	strncpy_s(tmp + 1, sizeof(tmp) - 1, name, sizeof(tmp) - 2);
 	tmp[sizeof(tmp) - 1] = 0;
 #else
-	strncpy(tmp + 1, name, sizeof(tmp) - 1);
+	strncpy(tmp + 1, name, sizeof(tmp) - 2);
+	tmp[sizeof(tmp) - 1] = 0; // null terminate
 #endif
 	return beginElement(tmp);
 }

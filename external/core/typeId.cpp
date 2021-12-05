@@ -12,7 +12,7 @@ namespace Typhoon {
 namespace {
 
 struct TypeNameStorage {
-	char string[32];
+	char string[64];
 };
 
 std::unordered_map<const void*, TypeNameStorage> idToName;
@@ -30,7 +30,7 @@ TypeName typeIdToName(TypeId typeId) {
 
 TypeId typeNameToId(const char* typeName) {
 	assert(typeName);
-	auto it = std::find_if(nameToId.begin(), nameToId.end(), [typeName](auto&& pair) { return ! strcmp(pair.first.string, typeName); });
+	auto it = std::find_if(nameToId.begin(), nameToId.end(), [typeName](auto&& pair) { return ! strncmp(pair.first.string, typeName, std::size(pair.first.string) - 1); });
 	if (it != nameToId.end()) {
 		return it->second;
 	}
@@ -43,9 +43,10 @@ void registerTypeName(TypeId id, const char* typeName) {
 #if defined(_MSC_VER)
 	strncpy_s(s.string, typeName, std::size(s.string));
 #else
-	strncpy(s.string, typeName, std::size(s.string));
+	strncpy(s.string, typeName, std::size(s.string) - 1);
+	s.string[std::size(s.string) - 1] = 0; // null terminate
 #endif
-	auto r = idToName.insert({ id.impl, s });
+	[[maybe_unused]] auto r = idToName.insert({ id.impl, s });
 	assert(r.second);
 	nameToId.push_back({ s, id });
 }

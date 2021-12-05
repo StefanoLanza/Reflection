@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef> // size_t
+
 namespace Typhoon {
 
 // Temporary replacement for std::span in C++ 20
