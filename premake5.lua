@@ -128,7 +128,7 @@ project("Core")
 	kind "StaticLib"
 	files "external/core/**.cpp"
 	files "external/core/**.h"
-	includedirs { "./", }
+	includedirs { "./", "external", }
 
 project("Reflection")
 	kind "StaticLib"
