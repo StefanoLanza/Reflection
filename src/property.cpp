@@ -16,13 +16,13 @@ Property::Property(Setter&& setter, Getter&& getter, const char* name, const Typ
 	assert(valueType);
 	// Override flags
 	if (! this->setter) {
-		flags &= ~Flags::writeable;
-		flags &= ~Flags::edit;
+		this->flags &= ~Flags::writeable;
+		this->flags &= ~Flags::edit;
 	}
 	if (! this->getter) {
-		flags &= ~Flags::readable;
-		flags &= ~Flags::clonable;
-		flags &= ~Flags::view;
+		this->flags &= ~Flags::readable;
+		this->flags &= ~Flags::clonable;
+		this->flags &= ~Flags::view;
 	}
 }
 
