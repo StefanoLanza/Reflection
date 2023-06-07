@@ -11,7 +11,7 @@ const char* decorateTypeName(const char* typeName, const char* prefix, const cha
 	size_t tl = std::strlen(typeName);
 	size_t pl = std::strlen(prefix);
 	size_t sl = std::strlen(suffix);
-	char*  str = static_cast<char*>(alloc.alloc(pl + sl + tl + 1, alignof(char)));
+	char*  str = alloc.allocArray<char>(pl + sl + tl + 1);
 	size_t offs = 0;
 	memcpy(str + offs, prefix, pl);
 	offs += pl;
@@ -32,7 +32,7 @@ const char* buildTemplateTypeName(const char* typeNames[], const char* prefix, c
 	--tl; // remove last comma
 	size_t pl = std::strlen(prefix);
 	size_t sl = std::strlen(suffix);
-	char*  str = static_cast<char*>(alloc.alloc(pl + sl + tl + 1, alignof(char)));
+	char*  str = alloc.allocArray<char>(pl + sl + tl + 1);
 	size_t offs = 0;
 	memcpy(str + offs, prefix, pl);
 	offs += pl;
