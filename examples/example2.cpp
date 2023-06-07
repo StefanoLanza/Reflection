@@ -6,7 +6,6 @@
 #include <reflection/version.h>
 #include <iostream>
 #include <string>
-#include "utils.h"
 
 #define XML  0
 #define JSON 1
@@ -44,7 +43,6 @@ int getRemainingLives(const GameObject& obj) {
 }
 
 void        registerUserTypes();
-void        printRegisteredTypes();
 GameObject  makeGameObject();
 std::string writeGameObject(const GameObject& obj, const char* XMLelement);
 void        readGameObject(GameObject& obj, const std::string& xmlString, const char* XMLelement);
@@ -54,7 +52,6 @@ int main(int /*argc*/, char* /*argv*/[]) {
 
 	refl::initReflection();
 	registerUserTypes();
-	printRegisteredTypes();
 
 	const char* element = "gameObject";
 	GameObject  obj = makeGameObject();
@@ -91,10 +88,6 @@ void registerUserTypes() {
 	END_NAMESPACE();
 
 	END_REFLECTION();
-}
-
-void printRegisteredTypes() {
-	printNamespace(refl::getGlobalNamespace());
 }
 
 GameObject makeGameObject() {

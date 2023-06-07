@@ -4,7 +4,6 @@
 #include <reflection/version.h>
 #include <iostream>
 #include <string>
-#include "utils.h"
 
 #define XML          0
 #define JSON         1
@@ -74,8 +73,6 @@ int main(int /*argc*/, char* /*argv*/[]) {
 
 	refl::initReflection();
 	registerUserTypes();
-	std::cout << "Registered types:" << std::endl;
-	printNamespace(refl::getGlobalNamespace());
 
 	const char* element = "gameObject";
 	GameObject  obj = makeGameObject();

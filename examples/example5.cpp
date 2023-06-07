@@ -1,7 +1,6 @@
 // Example showing reflection and serialization of containers: array, vector and map
 
 #include "customAllocator.h"
-#include "utils.h"
 #include <reflection/reflection.h>
 #include <reflection/version.h>
 #include <iostream>
@@ -58,7 +57,6 @@ int main(int /*argc*/, char* /*argv*/[]) {
 	CustomAllocator customAllocator;
 	refl::initReflection(customAllocator);
 	registerUserTypes();
-	printNamespace(refl::getGlobalNamespace());
 
 	PersonMap    persons = buildPersonMap();
 	CityVector   cities = buildCities();
