@@ -120,14 +120,14 @@ project("Reflection")
 	files "src/**.cpp"
 	files "src/**.h"
 	files "include/**.h"
-	sysincludedirs { "./", "include/reflection", "external", }
+	externalincludedirs { "./", "include/reflection", "external", }
 	links({"Core", "TinyXML"})
 
 if _OPTIONS["with-examples"] then
 	project("Example1")
 		kind "ConsoleApp"
 		files { "examples/example1.cpp", "examples/utils.*", }
-		sysincludedirs { "include", "external", }
+		externalincludedirs { "include", "external", }
 		links({"Reflection", })
 		filter { filter_gmake }
 			links({"Core", "TinyXML"})
@@ -136,7 +136,7 @@ if _OPTIONS["with-examples"] then
 	project("Example2")
 		kind "ConsoleApp"
 		files { "examples/example2.cpp", "examples/utils.*", }
-		sysincludedirs { "include", "external", }
+		externalincludedirs { "include", "external", }
 		links({"Reflection", })
 		filter { filter_gmake }
 			links({"Core", "TinyXML"})
@@ -145,7 +145,7 @@ if _OPTIONS["with-examples"] then
 	project("Example3")
 		kind "ConsoleApp"
 		files { "examples/example3.cpp", "examples/utils.*", }
-		sysincludedirs { "include", "external", }
+		externalincludedirs { "include", "external", }
 		links({"Reflection", })
 		filter { filter_gmake }
 			links({"Core", "TinyXML"})
@@ -154,7 +154,7 @@ if _OPTIONS["with-examples"] then
 	project("Example4")
 		kind "ConsoleApp"
 		files { "examples/example4.cpp", "examples/utils.*", }
-		sysincludedirs { "include", "external",  }
+		externalincludedirs { "include", "external",  }
 		links({"Reflection", })
 		filter { filter_gmake }
 			links({"Core", "TinyXML"})
@@ -163,7 +163,7 @@ if _OPTIONS["with-examples"] then
 	project("Example5")
 		kind "ConsoleApp"
 		files { "examples/example5.cpp", "examples/utils.*", }
-		sysincludedirs { "include", "external",  }
+		externalincludedirs { "include", "external",  }
 		links({"Reflection", })
 		filter { filter_gmake }
 			links({"Core", "TinyXML"})
@@ -174,7 +174,7 @@ if _OPTIONS["with-tests"] then
 	project("UnitTest")
 		kind "ConsoleApp"
 		files "test/**.*"
-		sysincludedirs { "include", "external", }
+		externalincludedirs { "include", "external", }
 		links({"Reflection", })
 		filter { filter_gmake }
 			links({"Core", "TinyXML"})
