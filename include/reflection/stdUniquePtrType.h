@@ -48,10 +48,8 @@ struct autoRegisterHelper<std::unique_ptr<T>> {
 		const Type* valueType = autoRegisterType<T>(context);
 		assert(valueType);
 		const char* typeName = decorateTypeName(valueType->getName(), "std::unique_ptr<", ">", *context.scopedAllocator);
-		auto        type = context.scopedAllocator->make<StdUniquePointerType<T>>(typeName, getTypeId<PointerType>(), sizeof(PointerType),
+		return context.scopedAllocator->make<StdUniquePointerType<T>>(typeName, getTypeId<PointerType>(), sizeof(PointerType),
                                                                            alignof(PointerType), valueType);
-		context.typeDB->registerType(type);
-		return type;
 	}
 };
 

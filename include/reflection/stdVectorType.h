@@ -3,8 +3,9 @@
 #include "containerType.h"
 #include "context.h"
 #include "typeDB.h"
-#include <cassert>
 #include <core/scopedAllocator.h>
+
+#include <cassert>
 #include <vector>
 
 namespace Typhoon::Reflection::detail {
@@ -96,9 +97,7 @@ struct autoRegisterHelper<std::vector<T>> {
 		const Type*      valueType = autoRegisterType<ValueType>(context);
 		constexpr TypeId typeID = getTypeId<ContainerType>();
 		const char*      typeName = decorateTypeName(valueType->getName(), "std::vector<", ">", *context.scopedAllocator);
-		auto             type = context.scopedAllocator->make<StdVectorContainer<ContainerType>>(typeName, typeID, valueType);
-		context.typeDB->registerType(type);
-		return type;
+		return context.scopedAllocator->make<StdVectorContainer<ContainerType>>(typeName, typeID, valueType);
 	}
 };
 

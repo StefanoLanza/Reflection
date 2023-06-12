@@ -93,9 +93,7 @@ struct autoRegisterHelper<T[N]> {
 		const Type*      elementType = autoRegisterType<ElementType>(context);
 		constexpr TypeId typeID = getTypeId<ContainerType>();
 		const char*      typeName = decorateTypeName(elementType->getName(), "", "[]", *context.scopedAllocator);
-		auto             type = context.scopedAllocator->make<ArrayContainer<ElementType, N>>(typeName, typeID, elementType);
-		context.typeDB->registerType(type);
-		return type;
+		return context.scopedAllocator->make<ArrayContainer<ElementType, N>>(typeName, typeID, elementType);
 	}
 };
 

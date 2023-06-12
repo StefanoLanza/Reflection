@@ -105,9 +105,7 @@ struct autoRegisterHelper<std::map<_Kty, T>> {
 		constexpr TypeId typeID = getTypeId<ContainerType>();
 		const char*      innerTypeNames[] = { keyType->getName(), mappedType->getName(), nullptr };
 		const char*      typeName = buildTemplateTypeName(innerTypeNames, "std::map<", ">", *context.scopedAllocator);
-		auto             type = context.scopedAllocator->make<StdMapContainer<ContainerType>>(typeName, typeID, keyType, mappedType);
-		context.typeDB->registerType(type);
-		return type;
+		return context.scopedAllocator->make<StdMapContainer<ContainerType>>(typeName, typeID, keyType, mappedType);
 	}
 };
 

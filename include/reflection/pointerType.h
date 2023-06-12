@@ -38,10 +38,8 @@ struct autoRegisterHelper<T*> {
 		using non_const_type = std::remove_const_t<T>;
 		const Type* valueType = autoRegisterType<non_const_type>(context);
 		const char* typeName = decorateTypeName(valueType->getName(), "", "*", *context.scopedAllocator);
-		auto type = context.scopedAllocator->make<RawPointerType>(typeName, getTypeId<pointer_type>(), sizeof(pointer_type), alignof(pointer_type),
+		return context.scopedAllocator->make<RawPointerType>(typeName, getTypeId<pointer_type>(), sizeof(pointer_type), alignof(pointer_type),
 		                                                          valueType);
-		context.typeDB->registerType(type);
-		return type;
 	}
 };
 

@@ -33,21 +33,14 @@ void      cloneVariant(DataPtr dstData, ConstDataPtr srcData, const TypeDB& type
 
 } // namespace
 
-ErrorCode cloneObject(DataPtr dstObject, ConstDataPtr srcObject, TypeId typeId) {
-	const TypeDB& typeDB = detail::getTypeDB();
-	const Type*   type = typeDB.tryGetType(typeId);
+ErrorCode cloneObject(DataPtr dstObject, ConstDataPtr srcObject, const Type& type) {
 	ErrorCode     errorCode;
-	if (type) {
-		if (const CustomCloner& customCloner = type->getCustomCloner(); customCloner) {
-			customCloner(dstObject, srcObject);
-			errorCode = ErrorCode::ok;
-		}
-		else {
-			errorCode = cloneObjectImpl(dstObject, srcObject, *type, *detail::getContext().pagedAllocator);
-		}
+	if (const CustomCloner& customCloner = type.getCustomCloner(); customCloner) {
+		customCloner(dstObject, srcObject);
+		errorCode = ErrorCode::ok;
 	}
 	else {
-		errorCode = ErrorCode::unknownType;
+		errorCode = cloneObjectImpl(dstObject, srcObject, type, *detail::getContext().pagedAllocator);
 	}
 	return errorCode;
 }

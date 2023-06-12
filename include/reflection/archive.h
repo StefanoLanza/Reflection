@@ -44,8 +44,8 @@ public:
 	}
 
 private:
-	void*  node;
-	size_t index;
+	void*       node;
+	size_t      index;
 	const char* key;
 };
 
@@ -91,9 +91,6 @@ public:
 	virtual bool read(const char*& str) = 0;
 	virtual bool read(std::string_view& sv) = 0;
 
-	bool read(const char* key, void* data, TypeId typeId);
-	bool read(void* data, TypeId typeId);
-
 	// Read data of user-defined type
 	template <class T>
 	bool read(T& object);
@@ -103,6 +100,10 @@ public:
 
 	template <class T>
 	bool read(const char* key, T& object);
+
+private:
+	//bool readAny(const char* key, void* data, TypeId typeId);
+	bool readAny(void* data, const Type& type);
 
 private:
 	Context& context;
@@ -116,21 +117,21 @@ public:
 	virtual bool             saveToFile(const char* filename) = 0;
 	virtual bool             saveToString(std::string& string) = 0;
 	virtual std::string_view getString() = 0;
-	virtual bool beginElement(const char* key) = 0;
-	virtual void endElement() = 0;
+	virtual bool             beginElement(const char* key) = 0;
+	virtual void             endElement() = 0;
 	virtual bool             beginObject() = 0;
 	virtual void             endObject() = 0;
 	virtual bool             beginArray() = 0;
 	virtual void             endArray() = 0;
-	virtual bool write(bool value) = 0;
-	virtual bool write(int value) = 0;
-	virtual bool write(unsigned int value) = 0;
-	virtual bool write(int64_t value) = 0;
-	virtual bool write(uint64_t value) = 0;
-	virtual bool write(float value) = 0;
-	virtual bool write(double value) = 0;
-	virtual bool write(const char* str) = 0;
-	virtual bool write(std::string_view str) = 0;
+	virtual bool             write(bool value) = 0;
+	virtual bool             write(int value) = 0;
+	virtual bool             write(unsigned int value) = 0;
+	virtual bool             write(int64_t value) = 0;
+	virtual bool             write(uint64_t value) = 0;
+	virtual bool             write(float value) = 0;
+	virtual bool             write(double value) = 0;
+	virtual bool             write(const char* str) = 0;
+	virtual bool             write(std::string_view str) = 0;
 
 	// Serialization of attributes
 	virtual void writeAttribute(const char* name, bool value) = 0;
@@ -152,6 +153,7 @@ public:
 
 	template <class T>
 	bool write(const char* key, const T& data);
+
 private:
 	Context& context;
 };
@@ -217,15 +219,22 @@ bool InputArchive::read(const char* key, T& object) {
 
 template <class T>
 bool InputArchive::read(T& object) {
-	return read(static_cast<void*>(&object), getTypeId<T>());
+	const Type* type = context.typeDB->tryGetType<T>();
+	if (! type) {
+		type = detail::autoRegisterHelper<T>::autoRegister(context);
+	}
+	if (type) {
+		return readAny(static_cast<void*>(&object), *type);
+	}
+	return false;
 }
 
 template <class T>
 bool OutputArchive::write(const char* key, const T& data) {
 	bool res = false;
 	if (beginElement(key)) {
-		 res = write(data);
-		 endElement();
+		res = write(data);
+		endElement();
 	}
 	return res;
 }
