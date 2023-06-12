@@ -39,7 +39,7 @@ public:
 	bool             write(float value) override;
 	bool             write(double value) override;
 	bool             write(const char* str) override;
-	bool             write(const std::string& str) override;
+	bool             write(std::string_view str) override;
 
 	using OutputArchive::write;
 

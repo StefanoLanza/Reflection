@@ -32,7 +32,7 @@ bool writeReference(ConstDataPtr data, const Type& type, const TypeDB& typeDB, O
 bool writeVariant(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator);
 
 using Writer = bool (*)(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive&, LinearAllocator&);
-constexpr Writer perClasswriters[] = {
+constexpr Writer perClassWriters[] = {
 	nullptr, // built-ins use per-type savers
 	writeStruct, writeEnum, writeBitMask, writeContainer, writePointer, writeReference, writeVariant,
 };
@@ -56,7 +56,7 @@ bool writeObjectImpl(ConstDataPtr data, const Type& type, const TypeDB& typeDB, 
 		res = customWriter(data, archive);
 	}
 	else {
-		res = perClasswriters[(int)type.getSubClass()](data, type, typeDB, archive, tempAllocator);
+		res = perClassWriters[(int)type.getSubClass()](data, type, typeDB, archive, tempAllocator);
 	}
 	return res;
 }

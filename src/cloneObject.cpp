@@ -115,7 +115,7 @@ void cloneContainer(DataPtr dstContainer, ConstDataPtr srcContainer, const Conta
 	ScopedAllocator      scopedAllocator(allocator);
 	WriteIterator* const writeIterator = type.newWriteIterator(dstContainer, scopedAllocator);
 	ReadIterator* const  readIterator = type.newReadIterator(srcContainer, scopedAllocator);
-	type.clear(dstContainer);
+	//type.clear(dstContainer);
 
 	while (readIterator->isValid()) {
 		if (key_type) {

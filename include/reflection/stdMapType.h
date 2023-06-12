@@ -78,19 +78,12 @@ public:
 	    : ContainerType(typeName, typeID, sizeof(MAP_TYPE), keyType, valueType, buildMethodTable<MAP_TYPE>()) {
 	}
 
-	bool isEmpty(ConstDataPtr container) const override {
-		return cast<MAP_TYPE>(container)->empty();
-	}
-
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
 		return allocator.make<ReadIteratorType>(cast<MAP_TYPE>(container));
 	}
 
 	WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const override {
 		return allocator.make<WriteIteratorType>(cast<MAP_TYPE>(container));
-	}
-	void clear(DataPtr container) const override {
-		cast<MAP_TYPE>(container)->clear();
 	}
 
 private:

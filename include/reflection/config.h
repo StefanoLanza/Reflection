@@ -25,11 +25,6 @@
 #define TY_REFLECTION_ALIAS_NAMESPACE 1
 #endif
 
-// Set to 1 to enable deprecated methods
-#ifndef TY_REFLECTION_DEPRECATED
-#define TY_REFLECTION_DEPRECATED 1
-#endif
-
 #if TY_REFLECTION_ALIAS_NAMESPACE
 namespace Typhoon::Reflection {}
 

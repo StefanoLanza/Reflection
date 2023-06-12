@@ -170,8 +170,8 @@ bool XMLOutputArchive::write(const char* str) {
 	return true;
 }
 
-bool XMLOutputArchive::write(const std::string& str) {
-	return write(str.c_str());
+bool XMLOutputArchive::write(std::string_view sv) {
+	return write(sv.data());//FIXME Not necessarily null terminated
 }
 
 void XMLOutputArchive::beginArrayElement() {

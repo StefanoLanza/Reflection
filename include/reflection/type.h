@@ -157,20 +157,4 @@ private:
 	CustomCloner customCloner;
 };
 
-struct Context;
-
-namespace detail {
-
-template <class T>
-struct autoRegisterHelper {
-	static const Type* autoRegister([[maybe_unused]] Context& context) {
-		return nullptr; // not supported
-	}
-};
-
-template <class T>
-const Type* autoRegisterType(Context& context);
-
-} // namespace detail
-
 } // namespace Typhoon::Reflection

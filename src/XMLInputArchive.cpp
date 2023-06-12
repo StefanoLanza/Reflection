@@ -110,6 +110,14 @@ bool XMLInputArchive::read(const char*& str) {
 	return res;
 }
 
+bool XMLInputArchive::read(std::string_view& sv) {
+	if (const char* str = nullptr; read(str)) {
+		sv = str;
+		return true;
+	}
+	return false;
+}
+
 void XMLInputArchive::endElement() {
 	assert(currentNode);
 	currentNode = currentNode->Parent();
@@ -211,31 +219,6 @@ bool XMLInputArchive::iterateChild(ArchiveIterator& it) {
 	return true;
 }
 
-#if TY_REFLECTION_DEPRECATED
-
-bool XMLInputArchive::iterateChild(ArchiveIterator& it, const char* name) {
-	tinyxml2::XMLNode* childIt = nullptr;
-	if (it.getNode()) {
-		childIt = static_cast<tinyxml2::XMLNode*>(it.getNode())->NextSiblingElement(name);
-		if (childIt == nullptr) {
-			currentNode = static_cast<tinyxml2::XMLNode*>(it.getNode())->Parent();
-			it.reset();
-			return false;
-		}
-	}
-	else {
-		childIt = currentNode->FirstChildElement(name);
-		if (! childIt) {
-			return false;
-		}
-	}
-	currentNode = childIt;
-	it.setNode(childIt);
-	return true;
-}
-
-#endif
-
 bool XMLInputArchive::readAttribute(const char* name, bool& value) {
 	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
 		if (auto error = elem->QueryBoolAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
@@ -290,6 +273,15 @@ bool XMLInputArchive::readAttribute(const char* name, const char*& str) {
 	}
 	return false;
 }
+
+bool XMLInputArchive::readAttribute(const char* name, std::string_view& sv) {
+	if (const char* str = nullptr; readAttribute(name, str)) {
+		sv = str;
+		return true;
+	}
+	return false;
+}
+
 
 } // namespace Typhoon::Reflection
 

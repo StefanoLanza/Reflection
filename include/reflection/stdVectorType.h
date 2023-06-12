@@ -73,10 +73,6 @@ public:
 	    : ContainerType(typeName, typeID, sizeof(VECTOR_TYPE), nullptr, valueType, buildMethodTable<VECTOR_TYPE>()) {
 	}
 
-	bool isEmpty(ConstDataPtr container) const override {
-		return cast<VECTOR_TYPE>(container)->empty();
-	}
-
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
 		return allocator.make<ReadIteratorType>(cast<VECTOR_TYPE>(container));
 	}
@@ -85,16 +81,10 @@ public:
 		return allocator.make<WriteIteratorType>(cast<VECTOR_TYPE>(container));
 	}
 
-	void clear(DataPtr container) const override {
-		cast<VECTOR_TYPE>(container)->clear();
-	}
-
 private:
 	using ReadIteratorType = StdVectorReadIterator<VECTOR_TYPE>;
 	using WriteIteratorType = StdVectorWriteIterator<VECTOR_TYPE>;
 };
-
-const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc);
 
 // std::vector specialization
 template <class T>

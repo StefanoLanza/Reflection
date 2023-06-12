@@ -134,7 +134,7 @@ bool JSONOutputArchive::write(const char* str) {
 	return writer->String(str);
 }
 
-bool JSONOutputArchive::write(const std::string& str) {
+bool JSONOutputArchive::write(std::string_view str) {
 	return writer->String(str.data(), static_cast<rapidjson::SizeType>(str.size()));
 }
 

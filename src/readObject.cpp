@@ -193,8 +193,6 @@ bool readContainer(DataPtr data, const Type& type, Semantic semantic, const Type
 	const Type*          key_type = containerType.getKeyType();
 	const Type*          value_type = containerType.getValueType();
 
-	containerType.clear(data);
-
 	ScopedAllocator      outerScopedAllocator(tempAllocator);
 	WriteIterator* const containerIterator = containerType.newWriteIterator(data, outerScopedAllocator);
 	ArchiveIterator      archiveIterator;

@@ -71,9 +71,6 @@ public:
 	virtual bool beginArray() = 0;
 	virtual void endArray() = 0;
 	virtual bool iterateChild(ArchiveIterator&) = 0;
-#if TY_REFLECTION_DEPRECATED
-	virtual bool iterateChild(ArchiveIterator&, const char* name) = 0; // TODO remove
-#endif
 	virtual bool beginObject(const char* key) = 0;
 	virtual bool beginArray(const char* key) = 0;
 	virtual bool readAttribute(const char* name, bool& value) = 0;
@@ -82,6 +79,7 @@ public:
 	virtual bool readAttribute(const char* name, float& value) = 0;
 	virtual bool readAttribute(const char* name, double& value) = 0;
 	virtual bool readAttribute(const char* name, const char*& str) = 0;
+	virtual bool readAttribute(const char* name, std::string_view& sv) = 0;
 	// Primitives
 	virtual bool read(bool& value) = 0;
 	virtual bool read(int& value) = 0;
@@ -91,6 +89,7 @@ public:
 	virtual bool read(float& value) = 0;
 	virtual bool read(double& value) = 0;
 	virtual bool read(const char*& str) = 0;
+	virtual bool read(std::string_view& sv) = 0;
 
 	bool read(const char* key, void* data, TypeId typeId);
 	bool read(void* data, TypeId typeId);
@@ -131,7 +130,7 @@ public:
 	virtual bool write(float value) = 0;
 	virtual bool write(double value) = 0;
 	virtual bool write(const char* str) = 0;
-	virtual bool write(const std::string& str) = 0;
+	virtual bool write(std::string_view str) = 0;
 
 	// Serialization of attributes
 	virtual void writeAttribute(const char* name, bool value) = 0;

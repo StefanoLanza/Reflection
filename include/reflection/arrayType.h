@@ -71,10 +71,6 @@ public:
 	    : ContainerType(typeName, typeID, sizeof(TYPE) * LENGTH, nullptr, valueType, {}) {
 	}
 
-	bool isEmpty([[maybe_unused]] ConstDataPtr container) const override {
-		return LENGTH == 0;
-	}
-
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
 		return allocator.make<ReadIteratorType>(cast<TYPE>(container));
 	}
@@ -82,15 +78,11 @@ public:
 	WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const override {
 		return allocator.make<WriteIteratorType>(cast<TYPE>(container));
 	}
-	void clear([[maybe_unused]] DataPtr container) const override {
-	}
 
 private:
 	using ReadIteratorType = ArrayReadIterator<TYPE, LENGTH>;
 	using WriteIteratorType = ArrayWriteIterator<TYPE, LENGTH>;
 };
-
-const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc);
 
 // C-style array
 template <class T, size_t N>

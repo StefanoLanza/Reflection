@@ -40,8 +40,6 @@ inline DataPtr StdSharedPointerType<T>::resolvePointer(DataPtr data) const {
 	return pointer;
 }
 
-const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc);
-
 // Specialization for std::shared_ptr
 template <class T>
 struct autoRegisterHelper<std::shared_ptr<T>> {

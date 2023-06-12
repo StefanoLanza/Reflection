@@ -597,6 +597,53 @@ TEST_CASE("std::shared_ptr") {
 	}
 }
 
+TEST_CASE("std::string_view") {
+	using namespace refl;
+	const char*  elementName = "string_view";
+	std::string_view sv = "ImAStringView";
+
+	auto write = [&](OutputArchive& archive) {
+		REQUIRE(archive.write(elementName, sv));
+		std::string content;
+		REQUIRE(archive.saveToString(content));
+		return content;
+	};
+
+	auto read = [&](InputArchive& archive) {
+		std::string in_sv;
+		REQUIRE(archive.read(elementName, in_sv));
+		CHECK(in_sv == sv);
+	};
+
+#if TY_REFLECTION_XML
+	SECTION("XML serialization") {
+		std::string      xmlContent;
+		XMLOutputArchive outArchive;
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+#endif
+
+#if TY_REFLECTION_JSON
+	SECTION("JSON serialization") {
+		std::string       xmlContent;
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+#endif
+
+	SECTION("Clone") {
+		std::string_view cloned;
+		cloneObject(&cloned, sv);
+		CHECK(sv == cloned);
+	}
+}
+
 TEST_CASE("Class") {
 	using namespace refl;
 

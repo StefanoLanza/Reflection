@@ -86,6 +86,14 @@ bool JSONInputArchive::read(const char*& str) {
 	return false;
 }
 
+bool JSONInputArchive::read(std::string_view& sv) {
+	if (auto value = stack.top().value; value->IsString()) {
+		sv = { value->GetString(), value->GetStringLength() };
+		return true;
+	}
+	return false;
+}
+
 bool JSONInputArchive::beginElement(const char* name) {
 	assert(! stack.empty());
 	const StackItem& top = stack.top();
@@ -213,15 +221,6 @@ bool JSONInputArchive::iterateChild(ArchiveIterator& it) {
 	return true;
 }
 
-#if TY_REFLECTION_DEPRECATED
-
-bool JSONInputArchive::iterateChild(ArchiveIterator& /*it*/, const char* /*name*/) {
-	assert(false && "Not supported");
-	return false;
-}
-
-#endif
-
 bool JSONInputArchive::readAttribute(const char* name, bool& value) {
 	bool res = false;
 	if (beginAttribute(name)) {
@@ -293,6 +292,19 @@ bool JSONInputArchive::readAttribute(const char* name, const char*& str) {
 		const StackItem& top = stack.top();
 		if (top.value->IsString()) {
 			str = top.value->GetString();
+			res = true;
+		}
+		endElement();
+	}
+	return res;
+}
+
+bool JSONInputArchive::readAttribute(const char* name, std::string_view& sv) {
+	bool res = false;
+	if (beginAttribute(name)) {
+		const StackItem& top = stack.top();
+		if (top.value->IsString()) {
+			sv = { top.value->GetString(), top.value->GetStringLength() };
 			res = true;
 		}
 		endElement();

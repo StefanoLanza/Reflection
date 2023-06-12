@@ -28,16 +28,6 @@ namespace Typhoon::Reflection {
 
 namespace detail {
 
-template <class T>
-inline const Type* autoRegisterType(Context& context) {
-	const Type* type = context.typeDB->tryGetType<T>();
-	if (! type) {
-		type = autoRegisterHelper<T>::autoRegister(context);
-	}
-	assert(type);
-	return type;
-}
-
 Context& getContext();
 
 } // namespace detail
@@ -64,7 +54,7 @@ Context& getContext();
 		const auto parentNamespace = currNamespace;                                       \
 		Namespace* newNamespace = parentNamespace->getNestedNamespace(#name);             \
 		if (! newNamespace) {                                                             \
-			newNamespace = scopedAllocator_.make<Namespace>(#name, std::ref(allocator_)); \
+			newNamespace = scopedAllocator_.make<Namespace>(#name, allocator_); \
 			parentNamespace->addNestedNamespace(newNamespace);                            \
 		}                                                                                 \
 		currNamespace = newNamespace;
@@ -79,14 +69,14 @@ Context& getContext();
 		using class_ = class;                                                                                                                         \
 		constexpr bool isClass = true;                                                                                                                \
 		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-                                                                  MethodTable {}, std::ref(allocator_));
+                                                                  MethodTable {}, allocator_);
 
 #define BEGIN_STRUCT(class)                                                                                                                           \
 	do {                                                                                                                                              \
 		using class_ = class;                                                                                                                         \
 		constexpr bool isClass = false;                                                                                                               \
 		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-                                                                  detail::buildMethodTable<class_>(), std::ref(allocator_));                      \
+                                                                  detail::buildMethodTable<class_>(), allocator_);                      \
 		do {                                                                                                                                          \
 	} while (0)
 
@@ -95,7 +85,7 @@ Context& getContext();
 		using class_ = class;                                                                                                                         \
 		constexpr bool isClass = true;                                                                                                                \
 		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-                                                                  detail::buildMethodTable<class_>(), std::ref(allocator_));                      \
+                                                                  detail::buildMethodTable<class_>(), allocator_);                      \
 		do {                                                                                                                                          \
 	} while (0)
 
@@ -108,7 +98,7 @@ Context& getContext();
 		const StructType& parentType = static_cast<const StructType&>(typeDB_.getType<parentClass>());                                    \
 		assert(parentType.getSubClass() == Type::Subclass::Struct);                                                                       \
 		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_),  \
-		                                                          &parentType, detail::buildMethodTable<class_>(), std::ref(allocator_)); \
+		                                                          &parentType, detail::buildMethodTable<class_>(), allocator_); \
 		do {                                                                                                                              \
 	} while (0)
 

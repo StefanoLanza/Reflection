@@ -75,10 +75,6 @@ public:
 	    : ContainerType(typeName, typeID, sizeof(array_type), nullptr, valueType, buildMethodTable<array_type>()) {
 	}
 
-	bool isEmpty([[maybe_unused]] ConstDataPtr container) const override {
-		return L == 0;
-	}
-
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
 		return allocator.make<ReadIteratorType>(cast<T>(container));
 	}
@@ -86,15 +82,11 @@ public:
 	WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const override {
 		return allocator.make<WriteIteratorType>(cast<T>(container));
 	}
-	void clear([[maybe_unused]] DataPtr container) const override {
-	}
 
 private:
 	using ReadIteratorType = StdArrayReadIterator<T, L>;
 	using WriteIteratorType = StdArrayWriteIterator<T, L>;
 };
-
-const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc);
 
 template <class T, size_t N>
 struct autoRegisterHelper<std::array<T, N>> {
