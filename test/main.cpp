@@ -786,7 +786,7 @@ void registerUserTypes() {
 	END_STRUCT();
 
 	BEGIN_STRUCT(Fog);
-	C_PROPERTY("density", setDensity, getDensity);
+	C_PROPERTY("density", getDensity, setDensity);
 	C_SETTER(color, setColor);
 	END_STRUCT();
 

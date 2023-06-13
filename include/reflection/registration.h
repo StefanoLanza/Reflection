@@ -135,7 +135,7 @@ Context& getContext();
 		    detail::PropertyHelpers<class_>::createRWProperty(name, flags, semantic, &class_::setter, &class_::getter, context)); \
 	} while (false)
 
-#define C_PROPERTY(name, setter, getter)                                                                                                       \
+#define C_PROPERTY(name, getter, setter)                                                                                                       \
 	do {                                                                                                                                       \
 		structType->addProperty(detail::PropertyHelpers<class_>::createRWProperty(name, Flags::all, Semantic::none, setter, getter, context)); \
 	} while (0)

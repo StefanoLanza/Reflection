@@ -46,7 +46,7 @@ bool writeData(ConstDataPtr data, const Type& type, OutputArchive& archive, cons
 	return writeObjectImpl(data, type, *context.typeDB, archive, *context.pagedAllocator);
 }
 
-}
+} // namespace detail
 
 namespace {
 
@@ -61,7 +61,9 @@ bool writeObjectImpl(ConstDataPtr data, const Type& type, const TypeDB& typeDB, 
 	return res;
 }
 
-void writeStructProperties(ConstDataPtr data, const StructType& structType, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
+void writeStructProperties(ConstDataPtr data, const StructType& structType, const TypeDB& typeDB, OutputArchive& archive,
+                           LinearAllocator& tempAllocator) {
+	ConstDataPtr const self = data;
 	for (const auto& property : structType.getProperties()) {
 		if (property.getFlags() & Flags::writeable) {
 			const Type& valueType = property.getValueType();
@@ -69,7 +71,6 @@ void writeStructProperties(ConstDataPtr data, const StructType& structType, cons
 			// Allocate a temporary for the value
 			if (void* temporary = tempAllocator.alloc(valueType.getSize(), valueType.getAlignment()); temporary) {
 				valueType.constructObject(temporary);
-				ConstDataPtr const self = data;
 				property.getValue(self, temporary);
 				if (archive.beginElement(property.getName())) {
 					writeObjectImpl(temporary, valueType, typeDB, archive, tempAllocator);
@@ -119,7 +120,7 @@ bool writeBitMask(ConstDataPtr data, const Type& type, const TypeDB& /*typeDB*/,
 	for (const BitMaskConstant& enumerator : bitMaskType.getEnumerators()) {
 		if ((bitMask & enumerator.mask) == enumerator.mask) {
 			// Append enumerator name
-			const int r = snprintf(str + length, std::size(str) - length, first?"%s" : "|%s", enumerator.name);
+			const int r = snprintf(str + length, std::size(str) - length, first ? "%s" : "|%s", enumerator.name);
 			if (r < 0) {
 				res = false;
 				break;
@@ -143,9 +144,8 @@ bool writeContainer(ConstDataPtr data, const Type& type, const TypeDB& typeDB, O
 		return false;
 	}
 
-	ScopedAllocator scopedAllocator(tempAllocator);
-	ReadIterator*   iterator = containerType.newReadIterator(data, scopedAllocator);
-	while (iterator->isValid()) {
+	ScopedAllocator scopedAllocator { tempAllocator };
+	for (ReadIterator* iterator = containerType.newReadIterator(data, scopedAllocator); iterator->isValid();) {
 		if (keyType) {
 			// write key and value
 			if (archive.beginObject()) {
@@ -172,12 +172,10 @@ bool writeContainer(ConstDataPtr data, const Type& type, const TypeDB& typeDB, O
 
 bool writePointer(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
 	const PointerType& pointerType = static_cast<const PointerType&>(type);
-	ConstDataPtr       pointer = pointerType.resolvePointer(data);
-	bool               res = true;
-	if (pointer) {
-		res = writeObjectImpl(pointer, pointerType.getPointedType(), typeDB, archive, tempAllocator);
+	if (ConstDataPtr pointer = pointerType.resolvePointer(data); pointer) {
+		return writeObjectImpl(pointer, pointerType.getPointedType(), typeDB, archive, tempAllocator);
 	}
-	return res;
+	return false;
 }
 
 bool writeReference(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
@@ -197,10 +195,9 @@ bool writeVariant(ConstDataPtr data, const Type& /*type*/, const TypeDB& typeDB,
 	archive.beginObject();
 	archive.write("type", typeName);
 	archive.write("name", variant->getName());
-	if (archive.beginElement("value")) {
-		writeObjectImpl(variant->getStorage(), realType, typeDB, archive, tempAllocator);
-		archive.endElement();
-	}
+	archive.beginElement("value");
+	writeObjectImpl(variant->getStorage(), realType, typeDB, archive, tempAllocator);
+	archive.endElement();
 	archive.endObject();
 	return true;
 }
