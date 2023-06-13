@@ -40,7 +40,7 @@ public:
 
 private:
 	void*       node = nullptr;
-	size_t      index = -1;
+	size_t      index = (size_t)-1;
 	const char* key = nullptr;
 };
 
