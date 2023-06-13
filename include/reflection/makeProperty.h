@@ -1,12 +1,10 @@
 #pragma once
 
 #include "property.h"
+#include "typeDB.h"
 #include <cassert>
 
 namespace Typhoon::Reflection::detail {
-
-template <class T>
-const Type* autoRegisterType(TypeDB& typeDB);
 
 template <class C, typename T>
 Getter makeFieldGetter(T C::*memberPtr) {

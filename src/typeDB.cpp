@@ -34,8 +34,6 @@ TypeDB::TypeDB(Allocator& allocator, ScopedAllocator& scopedAllocator)
 	types.reserve(64);
 }
 
-TypeDB::~TypeDB() = default;
-
 void TypeDB::registerType(const Type* newType) {
 	assert(newType);
 	types.push_back(newType);

@@ -22,7 +22,6 @@ class Namespace;
 class TypeDB : Uncopyable {
 public:
 	TypeDB(Allocator& allocator, ScopedAllocator& scopedAllocator);
-	~TypeDB();
 
 	void       registerType(const Type* type);
 	Namespace& getGlobalNamespace() const;
@@ -62,6 +61,7 @@ inline const Type* autoRegisterType(Context& context) {
 	const Type* type = context.typeDB->tryGetType<T>();
 	if (! type) {
 		type = autoRegisterHelper<T>::autoRegister(context);
+		context.typeDB->registerType(type);
 	}
 	assert(type);
 	return type;

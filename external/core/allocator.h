@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/uncopyable.h>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -45,7 +46,7 @@ public:
 	template <class T, class... ArgTypes>
 	T* construct(ArgTypes&&... args) {
 		void* ptr = alloc(sizeof(T), alignof(T));
-		return ptr ? new (ptr) T{std::forward<ArgTypes>(args)...} : nullptr;
+		return ptr ? new (ptr) T { std::forward<ArgTypes>(args)... } : nullptr;
 	}
 
 	template <class T>
@@ -82,10 +83,11 @@ public:
 /**
  * @brief Buffer allocator
  */
-class BufferAllocator : public LinearAllocator {
+class BufferAllocator : public LinearAllocator, Uncopyable {
 public:
 	BufferAllocator(void* buffer, size_t bufferSize);
 	BufferAllocator(Allocator& parentAllocator, size_t bufferSize);
+	~BufferAllocator();
 
 	void* alloc(size_t size, size_t alignment) override;
 	void  rewind() override;
