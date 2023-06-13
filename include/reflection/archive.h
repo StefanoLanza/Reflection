@@ -1,12 +1,12 @@
 #pragma once
 
 #include "config.h"
-#include <core/uncopyable.h>
-#include <cstdint>
-#include <string>
-
 #include "readObject.h"
 #include "writeObject.h"
+#include <core/uncopyable.h>
+
+#include <cstdint>
+#include <string>
 
 namespace Typhoon::Reflection {
 
@@ -70,7 +70,8 @@ public:
 	virtual void endObject() = 0;
 	virtual bool beginArray() = 0;
 	virtual void endArray() = 0;
-	virtual bool iterateChild(ArchiveIterator&) = 0;
+	virtual bool iterateChild(ArchiveIterator& it) = 0;
+	virtual bool iterateChild(ArchiveIterator& it, const char* name) = 0;
 	virtual bool beginObject(const char* key) = 0;
 	virtual bool beginArray(const char* key) = 0;
 	virtual bool readAttribute(const char* name, bool& value) = 0;
@@ -91,6 +92,10 @@ public:
 	virtual bool read(const char*& str) = 0;
 	virtual bool read(std::string_view& sv) = 0;
 
+	//  Helpers
+	bool read(const char* key, void* data, TypeId typeId);
+	bool read(void* data, TypeId typeId);
+
 	// Read data of user-defined type
 	template <class T>
 	bool read(T& object);
@@ -102,7 +107,6 @@ public:
 	bool read(const char* key, T& object);
 
 private:
-	//bool readAny(const char* key, void* data, TypeId typeId);
 	bool readAny(void* data, const Type& type);
 
 private:
@@ -243,7 +247,6 @@ template <class T>
 bool OutputArchive::write(const T& data) {
 	const Type* type = context.typeDB->tryGetType<T>();
 	if (! type) {
-		// TODO Allocate a temporary Type, without registering it ?
 		type = detail::autoRegisterHelper<T>::autoRegister(context);
 	}
 	if (type) {

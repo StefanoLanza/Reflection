@@ -4,7 +4,7 @@
 namespace Typhoon::Reflection {
 
 namespace detail {
-	Context& getContext();
+Context& getContext();
 }
 
 ArchiveElement::ArchiveElement(InputArchive& archive, const char* tag)
@@ -39,26 +39,36 @@ WriteTag::operator bool() const {
 }
 
 InputArchive::InputArchive()
-	: context(detail::getContext()) {
+    : context(detail::getContext()) {
 }
 
-#if 0
-bool InputArchive::readAny(const char* key, void* data, TypeId typeId) {
+bool InputArchive::read(void* data, TypeId typeId) {
+	bool res = false;
+	auto type = context.typeDB->tryGetType(typeId);
+	if (type) {
+		res = readAny(data, *type);
+	}
+	return res;
+}
+
+bool InputArchive::read(const char* key, void* data, TypeId typeId) {
 	bool res = false;
 	if (beginElement(key)) {
-		res = read(data, typeId);
+		auto type = context.typeDB->tryGetType(typeId);
+		if (type) {
+			res = readAny(data, *type);
+		}
 		endElement();
 	}
 	return res;
 }
-#endif
 
 bool InputArchive::readAny(void* data, const Type& type) {
 	return detail::readData(data, type, *this, context);
 }
 
 OutputArchive::OutputArchive()
-	: context(detail::getContext()) {
+    : context(detail::getContext()) {
 }
 
 bool OutputArchive::write(const char* key, const void* data, TypeId typeId) {

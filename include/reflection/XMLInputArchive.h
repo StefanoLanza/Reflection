@@ -34,6 +34,7 @@ public:
 	bool        beginObject(const char* key) override;
 	bool        beginArray(const char* key) override;
 	bool        iterateChild(ArchiveIterator& it) override;
+	bool        iterateChild(ArchiveIterator& it, const char* name) override;
 	bool        read(bool& value) override;
 	bool        read(int& value) override;
 	bool        read(unsigned int& value) override;

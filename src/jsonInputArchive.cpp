@@ -167,7 +167,7 @@ bool JSONInputArchive::iterateChild(ArchiveIterator& it) {
 		stack.pop();
 
 		const StackItem& top = stack.top();
-		const size_t index = it.getIndex() + 1;
+		const size_t     index = it.getIndex() + 1;
 		if (top.value->IsArray()) {
 			auto array = top.value->GetArray();
 			if (index >= array.Size()) {
@@ -219,6 +219,11 @@ bool JSONInputArchive::iterateChild(ArchiveIterator& it) {
 	}
 
 	return true;
+}
+
+bool JSONInputArchive::iterateChild(ArchiveIterator& it, const char* name) {
+	assert(false);
+	return false;
 }
 
 bool JSONInputArchive::readAttribute(const char* name, bool& value) {
