@@ -25,7 +25,7 @@ public:
 	~XMLOutputArchive();
 
 	bool             saveToFile(const char* filename) override;
-	bool             saveToString(std::string& string) override;
+	std::string      saveToString() override;
 	std::string_view getString() override;
 	bool             beginElement(const char* name) override;
 	void             endElement() override;
@@ -56,8 +56,7 @@ private:
 	void endArrayElement();
 
 private:
-	enum class Type
-	{
+	enum class Type {
 		array,
 		object
 	};

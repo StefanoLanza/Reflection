@@ -12,11 +12,6 @@ namespace Typhoon::Reflection {
 
 class ArchiveIterator {
 public:
-	ArchiveIterator()
-	    : node(nullptr)
-	    , index(static_cast<size_t>(-1))
-	    , key(nullptr) {
-	}
 	void* getNode() const {
 		return node;
 	}
@@ -44,9 +39,9 @@ public:
 	}
 
 private:
-	void*       node;
-	size_t      index;
-	const char* key;
+	void*       node = nullptr;
+	size_t      index = -1;
+	const char* key = nullptr;
 };
 
 struct ParseResult {
@@ -119,7 +114,7 @@ public:
 	virtual ~OutputArchive() = default;
 
 	virtual bool             saveToFile(const char* filename) = 0;
-	virtual bool             saveToString(std::string& string) = 0;
+	virtual std::string      saveToString() = 0;
 	virtual std::string_view getString() = 0;
 	virtual bool             beginElement(const char* key) = 0;
 	virtual void             endElement() = 0;

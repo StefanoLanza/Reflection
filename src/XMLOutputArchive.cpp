@@ -31,7 +31,8 @@ bool XMLOutputArchive::saveToFile(const char* fileName) {
 	return error == tinyxml2::XML_SUCCESS;
 }
 
-bool XMLOutputArchive::saveToString(std::string& string) {
+std::string XMLOutputArchive::saveToString() {
+	std::string str;
 	tinyxml2::XMLPrinter printer;
 	// attach it to the document you want to convert in to a std::string
 	if (document->Accept(&printer)) {
@@ -40,10 +41,9 @@ bool XMLOutputArchive::saveToString(std::string& string) {
 			endElement(); // end root
 			endRoot = false;
 		}
-		string = printer.CStr();
-		return true;
+		str = printer.CStr();
 	}
-	return false;
+	return str;
 }
 
 std::string_view XMLOutputArchive::getString() {

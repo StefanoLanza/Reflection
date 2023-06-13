@@ -100,15 +100,13 @@ GameObject makeGameObject() {
 }
 
 std::string writeGameObject(const GameObject& obj, const char* element) {
-	std::string content;
 #if ARCHIVE_TYPE == XML
 	refl::XMLOutputArchive archive;
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
 	archive.write(element, obj);
-	archive.saveToString(content);
-	return content;
+	return archive.saveToString();
 }
 
 void readGameObject(GameObject& obj, const std::string& archiveContent, const char* element) {

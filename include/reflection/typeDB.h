@@ -52,7 +52,7 @@ namespace detail {
 template <class T>
 struct autoRegisterHelper {
 	static const Type* autoRegister([[maybe_unused]] Context& context) {
-		return nullptr; // not supported
+		return nullptr;
 	}
 };
 

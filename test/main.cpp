@@ -5,7 +5,7 @@
 #include <reflection/reflection.h>
 #include <string>
 
-//#include <vld.h>
+// #include <vld.h>
 
 void registerUserTypes();
 
@@ -57,9 +57,7 @@ TEST_CASE("Primitives") {
 		REQUIRE(archive.write("f", f));
 		REQUIRE(archive.write("d", d));
 		REQUIRE(archive.write("b", b));
-		std::string content;
-		REQUIRE(archive.saveToString(content));
-		return content;
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -131,10 +129,8 @@ TEST_CASE("Enum") {
 	const char* elementName = "season";
 
 	auto write = [&](OutputArchive& archive) {
-		std::string content;
-		REQUIRE(archive.write(elementName,  season));
-		REQUIRE(archive.saveToString(content));
-		return content;
+		REQUIRE(archive.write(elementName, season));
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -178,9 +174,7 @@ TEST_CASE("BitMask") {
 
 	auto write = [&](OutputArchive& archive) {
 		REQUIRE(archive.write(elementName, flags));
-		std::string content;
-		REQUIRE(archive.saveToString(content));
-		return content;
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -232,9 +226,7 @@ TEST_CASE("C array") {
 
 	auto write = [&](OutputArchive& archive) {
 		REQUIRE(archive.write(elementName, array));
-		std::string content;
-		REQUIRE(archive.saveToString(content));
-		return content;
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -278,9 +270,7 @@ TEST_CASE("std::vector") {
 
 	auto write = [&](OutputArchive& archive) {
 		REQUIRE(archive.write(elementName, vec));
-		std::string content;
-		REQUIRE(archive.saveToString(content));
-		return content;
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -326,9 +316,7 @@ TEST_CASE("std::map") {
 
 	auto write = [&](OutputArchive& archive) {
 		REQUIRE(archive.write(elementName, map));
-		std::string content;
-		REQUIRE(archive.saveToString(content));
-		return content;
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -376,9 +364,7 @@ TEST_CASE("std::array") {
 
 	auto write = [&](OutputArchive& archive) {
 		REQUIRE(archive.write(elementName, array));
-		std::string content;
-		REQUIRE(archive.saveToString(content));
-		return content;
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -422,9 +408,7 @@ TEST_CASE("std::pair") {
 
 	auto write = [&](OutputArchive& archive) {
 		REQUIRE(archive.write(elementName, pair));
-		std::string content;
-		REQUIRE(archive.saveToString(content));
-		return content;
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -469,9 +453,7 @@ TEST_CASE("std::tuple") {
 
 	auto write = [&](OutputArchive& archive) {
 		REQUIRE(archive.write(elementName, tuple));
-		std::string content;
-		REQUIRE(archive.saveToString(content));
-		return content;
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -514,9 +496,7 @@ TEST_CASE("std::unique_ptr") {
 
 	auto write = [&](OutputArchive& archive) {
 		REQUIRE(archive.write(elementName, material));
-		std::string content;
-		REQUIRE(archive.saveToString(content));
-		return content;
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -559,9 +539,7 @@ TEST_CASE("std::shared_ptr") {
 
 	auto write = [&](OutputArchive& archive) {
 		REQUIRE(archive.write(elementName, material));
-		std::string content;
-		REQUIRE(archive.saveToString(content));
-		return content;
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -599,14 +577,12 @@ TEST_CASE("std::shared_ptr") {
 
 TEST_CASE("std::string_view") {
 	using namespace refl;
-	const char*  elementName = "string_view";
+	const char*      elementName = "string_view";
 	std::string_view sv = "ImAStringView";
 
 	auto write = [&](OutputArchive& archive) {
 		REQUIRE(archive.write(elementName, sv));
-		std::string content;
-		REQUIRE(archive.saveToString(content));
-		return content;
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -660,9 +636,7 @@ TEST_CASE("Class") {
 
 	auto write = [&](OutputArchive& archive) {
 		CHECK(archive.write(elementName, gameObject));
-		std::string content;
-		REQUIRE(archive.saveToString(content));
-		return content;
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -709,9 +683,7 @@ TEST_CASE("Struct") {
 
 	auto write = [&](OutputArchive& archive) {
 		CHECK(archive.write(elementName, fog));
-		std::string content;
-		REQUIRE(archive.saveToString(content));
-		return content;
+		return archive.saveToString();
 	};
 
 	auto read = [&](InputArchive& archive) {
@@ -760,11 +732,10 @@ TEST_CASE("Variant") {
 
 #if TY_REFLECTION_XML
 	SECTION("XML Serialization") {
-		std::string      archiveContent;
 		XMLOutputArchive outArchive;
 
 		CHECK(outArchive.write(key, variants));
-		outArchive.saveToString(archiveContent);
+		std::string archiveContent = outArchive.saveToString();
 
 		XMLInputArchive inArchive;
 		REQUIRE(inArchive.initialize(archiveContent.data()));
@@ -772,14 +743,13 @@ TEST_CASE("Variant") {
 		CHECK(compare(otherVariants, variants));
 	}
 #endif
-	
+
 #if TY_REFLECTION_JSON
 	SECTION("JSON Serialization") {
-		std::string       archiveContent;
 		JSONOutputArchive outArchive;
 
 		CHECK(outArchive.write(key, variants));
-		outArchive.saveToString(archiveContent);
+		std::string archiveContent = outArchive.saveToString();
 
 		JSONInputArchive inArchive;
 		REQUIRE(inArchive.initialize(archiveContent.data()));

@@ -23,25 +23,22 @@ JSONOutputArchive::JSONOutputArchive()
 JSONOutputArchive::~JSONOutputArchive() = default;
 
 bool JSONOutputArchive::saveToFile(const char* fileName) {
-	std::string str;
-	if (saveToString(str)) {
-		std::ofstream file(fileName);
-		if (file) {
-			file.write(str.data(), str.size());
-			file.close();
-			return true;
-		}
+	std::string str = saveToString();
+	std::ofstream file(fileName);
+	if (file) {
+		file.write(str.data(), str.size());
+		file.close();
+		return true;
 	}
 	return false;
 }
 
-bool JSONOutputArchive::saveToString(std::string& string) {
+std::string JSONOutputArchive::saveToString() {
 	if (endRoot) {
 		writer->EndObject();
 		endRoot = false;
 	}
-	string = stream->GetString(); // TODO string_view
-	return true;
+	return stream->GetString();
 }
 
 std::string_view JSONOutputArchive::getString() {

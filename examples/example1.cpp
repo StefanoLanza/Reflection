@@ -97,7 +97,6 @@ Builtins makeBuiltins() {
 }
 
 std::string writeBuiltins(const Builtins& obj, const char* element) {
-	std::string content;
 #if ARCHIVE_TYPE == XML
 	refl::XMLOutputArchive archive;
 #elif ARCHIVE_TYPE == JSON
@@ -117,9 +116,8 @@ std::string writeBuiltins(const Builtins& obj, const char* element) {
 			archive.endObject();
 		}
 		archive.endElement();
-		archive.saveToString(content);
 	}
-	return content;
+	return archive.saveToString();
 }
 
 void readBuiltins(Builtins& obj, const std::string& content, const char* element) {

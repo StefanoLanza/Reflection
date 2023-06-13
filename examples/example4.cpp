@@ -68,15 +68,13 @@ void registerUserTypes() {
 }
 
 std::string writeTextureToArchive(const Texture& obj, const char* name) {
-	std::string archiveContent;
 #if ARCHIVE_TYPE == XML
 	refl::XMLOutputArchive archive;
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
 	archive.write(name, obj);
-	archive.saveToString(archiveContent);
-	return archiveContent;
+	return archive.saveToString();
 }
 
 void readTextureFromArchive(Texture& obj, const std::string& archiveContent, const char* name) {

@@ -31,7 +31,6 @@ const char* decorateTypeName(std::string_view typeName, std::string_view prefix,
 TypeDB::TypeDB(Allocator& allocator, ScopedAllocator& scopedAllocator)
     : types { stdAllocator<const Type*>(allocator) }
     , globalNamespace { scopedAllocator.make<Namespace>(nullptr, allocator) } {
-	types.reserve(64);
 }
 
 void TypeDB::registerType(const Type* newType) {
