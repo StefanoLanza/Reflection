@@ -115,16 +115,18 @@ bool writeBitMask(ConstDataPtr data, const Type& type, const TypeDB& /*typeDB*/,
 	int  length = 0;
 	bool res = true;
 
+	bool first = true;
 	for (const BitMaskConstant& enumerator : bitMaskType.getEnumerators()) {
 		if ((bitMask & enumerator.mask) == enumerator.mask) {
 			// Append enumerator name
-			const int r = snprintf(str + length, std::size(str) - length, "%s|", enumerator.name);
+			const int r = snprintf(str + length, std::size(str) - length, first?"%s" : "|%s", enumerator.name);
 			if (r < 0) {
 				res = false;
 				break;
 			}
 			length += r;
 		}
+		first = false;
 	}
 	if (res) {
 		archive.write(static_cast<const char*>(str));
@@ -187,7 +189,7 @@ bool writeReference(ConstDataPtr data, const Type& type, const TypeDB& typeDB, O
 
 bool writeVariant(ConstDataPtr data, const Type& /*type*/, const TypeDB& typeDB, OutputArchive& archive, LinearAllocator& tempAllocator) {
 	const Variant* variant = cast<Variant>(data);
-	const Type&    type = typeDB.getType(variant->getTypeId());
+	const Type&    realType = typeDB.getType(variant->getTypeId());
 	const char*    typeName = variant->getType().getName();
 	if (! typeName) {
 		return false;
@@ -196,7 +198,7 @@ bool writeVariant(ConstDataPtr data, const Type& /*type*/, const TypeDB& typeDB,
 	archive.write("type", typeName);
 	archive.write("name", variant->getName());
 	if (archive.beginElement("value")) {
-		writeObjectImpl(variant->getStorage(), type, typeDB, archive, tempAllocator);
+		writeObjectImpl(variant->getStorage(), realType, typeDB, archive, tempAllocator);
 		archive.endElement();
 	}
 	archive.endObject();

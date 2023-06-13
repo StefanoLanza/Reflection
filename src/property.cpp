@@ -8,19 +8,20 @@ namespace Typhoon::Reflection {
 Property::Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, uint32_t flags, Semantic semantic, Allocator& allocator)
     : setter { std::move(setter) }
     , getter { std::move(getter) }
-    , name(name)
-    , valueType(valueType)
-    , flags(flags)
-    , semantic(semantic)
-    , attributes(stdAllocator<const Attribute*>(allocator)) {
+    , name { name }
+    , valueType { valueType }
+    , flags { flags }
+    , semantic { semantic }
+    , attributes { stdAllocator<const Attribute*>(allocator) } {
 	assert(valueType);
 	// Override flags
 	if (! this->setter) {
-		this->flags &= ~Flags::writeable;
+		this->flags &= ~Flags::readable;
 		this->flags &= ~Flags::edit;
+		this->flags &= ~Flags::clonable;
 	}
 	if (! this->getter) {
-		this->flags &= ~Flags::readable;
+		this->flags &= ~Flags::writeable;
 		this->flags &= ~Flags::clonable;
 		this->flags &= ~Flags::view;
 	}
@@ -43,14 +44,18 @@ Semantic Property::getSemantic() const {
 }
 
 void Property::setValue(DataPtr self, ConstDataPtr value) const {
+	assert(setter);
 	setter(self, value);
 }
 
 void Property::getValue(ConstDataPtr self, DataPtr value) const {
+	assert(getter);
 	getter(self, value);
 }
 
 void Property::copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator& alloc) const {
+	assert(setter);
+	assert(getter);
 	void* allocOffs = alloc.getOffset();
 	if (void* temporary = alloc.alloc(valueType->getSize(), valueType->getAlignment()); temporary) {
 		valueType->constructObject(temporary);

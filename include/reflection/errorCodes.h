@@ -2,8 +2,7 @@
 
 namespace Typhoon::Reflection {
 
-enum class ErrorCode
-{
+enum class ErrorCode {
 	ok,
 	unknownType,
 };

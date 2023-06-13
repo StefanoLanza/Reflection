@@ -113,6 +113,13 @@ public:
 		return { nullptr, makeMemberGetter(getter), name, valueType, flags, semantic, *context.allocator };
 	}
 
+	template <typename A>
+	static Property createWOProperty(const char* name, uint32_t flags, Semantic semantic, void (C::*setter)(A), Context& context) {
+		using ValueType = std::decay_t<A>;
+		const Type* valueType = autoRegisterType<ValueType>(context);
+		return { makeMemberSetter(setter), nullptr, name, valueType, flags, semantic, *context.allocator };
+	}
+
 	template <typename T, typename A>
 	static Property createProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A), T C::*memberPtr, Context& context) {
 		static_assert(std::is_same_v<T, std::decay_t<A>>);

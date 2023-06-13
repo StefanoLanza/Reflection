@@ -113,24 +113,23 @@ public:
 	OutputArchive();
 	virtual ~OutputArchive() = default;
 
-	virtual bool             saveToFile(const char* filename) = 0;
-	virtual std::string      saveToString() = 0;
-	virtual std::string_view getString() = 0;
-	virtual bool             beginElement(const char* key) = 0;
-	virtual void             endElement() = 0;
-	virtual bool             beginObject() = 0;
-	virtual void             endObject() = 0;
-	virtual bool             beginArray() = 0;
-	virtual void             endArray() = 0;
-	virtual bool             write(bool value) = 0;
-	virtual bool             write(int value) = 0;
-	virtual bool             write(unsigned int value) = 0;
-	virtual bool             write(int64_t value) = 0;
-	virtual bool             write(uint64_t value) = 0;
-	virtual bool             write(float value) = 0;
-	virtual bool             write(double value) = 0;
-	virtual bool             write(const char* str) = 0;
-	virtual bool             write(std::string_view str) = 0;
+	virtual bool        saveToFile(const char* filename) = 0;
+	virtual std::string saveToString() = 0;
+	virtual bool        beginElement(const char* key) = 0;
+	virtual void        endElement() = 0;
+	virtual bool        beginObject() = 0;
+	virtual void        endObject() = 0;
+	virtual bool        beginArray() = 0;
+	virtual void        endArray() = 0;
+	virtual bool        write(bool value) = 0;
+	virtual bool        write(int value) = 0;
+	virtual bool        write(unsigned int value) = 0;
+	virtual bool        write(int64_t value) = 0;
+	virtual bool        write(uint64_t value) = 0;
+	virtual bool        write(float value) = 0;
+	virtual bool        write(double value) = 0;
+	virtual bool        write(const char* str) = 0;
+	virtual bool        write(std::string_view str) = 0;
 
 	// Serialization of attributes
 	virtual void writeAttribute(const char* name, bool value) = 0;
@@ -183,7 +182,7 @@ public:
 	explicit operator bool() const;
 
 private:
-	InputArchive* archive;
+	InputArchive& archive;
 	bool          isValid;
 };
 
@@ -195,7 +194,7 @@ public:
 	explicit operator bool() const;
 
 private:
-	OutputArchive* archive;
+	OutputArchive& archive;
 	bool           isValid;
 };
 

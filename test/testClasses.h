@@ -78,6 +78,12 @@ public:
 	const Material& getMaterial() const {
 		return material;
 	}
+	int getReadOnly() const {
+		return readOnly;
+	}
+	void setWriteOnly(float value) {
+		writeOnly = value;
+	}
 
 private:
 	int         lives = 0;
@@ -85,6 +91,8 @@ private:
 	ActionFlags actionFlags = {};
 	Coords      position { 0.f, 0.f, 0.f };
 	Material    material;
+	int         readOnly = 0xFF;
+	float writeOnly = -1.f;
 };
 
 class DerivedGameObject : public GameObject {

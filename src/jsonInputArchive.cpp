@@ -221,7 +221,8 @@ bool JSONInputArchive::iterateChild(ArchiveIterator& it) {
 	return true;
 }
 
-bool JSONInputArchive::iterateChild(ArchiveIterator& it, const char* name) {
+// Legacy
+bool JSONInputArchive::iterateChild(ArchiveIterator&, const char*) {
 	assert(false);
 	return false;
 }

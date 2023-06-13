@@ -810,6 +810,8 @@ void registerUserTypes() {
 	PROPERTY("position", getPosition, setPosition);
 	PROPERTY_EX("action", getActionFlags, setActionFlags, Flags::all, Semantic::none);
 	PROPERTY("material", getMaterial, setMaterial);
+	GETTER("readOnly", getReadOnly);
+	SETTER("writeOnly", setWriteOnly);
 	END_CLASS();
 
 	BEGIN_SUB_CLASS(DerivedGameObject, GameObject);

@@ -49,14 +49,14 @@ Context& getContext();
 	}                    \
 	while (false)
 
-#define BEGIN_NAMESPACE(name)                                                             \
-	do {                                                                                  \
-		const auto parentNamespace = currNamespace;                                       \
-		Namespace* newNamespace = parentNamespace->getNestedNamespace(#name);             \
-		if (! newNamespace) {                                                             \
+#define BEGIN_NAMESPACE(name)                                                   \
+	do {                                                                        \
+		const auto parentNamespace = currNamespace;                             \
+		Namespace* newNamespace = parentNamespace->getNestedNamespace(#name);   \
+		if (! newNamespace) {                                                   \
 			newNamespace = scopedAllocator_.make<Namespace>(#name, allocator_); \
-			parentNamespace->addNestedNamespace(newNamespace);                            \
-		}                                                                                 \
+			parentNamespace->addNestedNamespace(newNamespace);                  \
+		}                                                                       \
 		currNamespace = newNamespace;
 
 #define END_NAMESPACE()              \
@@ -76,7 +76,7 @@ Context& getContext();
 		using class_ = class;                                                                                                                         \
 		constexpr bool isClass = false;                                                                                                               \
 		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-                                                                  detail::buildMethodTable<class_>(), allocator_);                      \
+                                                                  detail::buildMethodTable<class_>(), allocator_);                                \
 		do {                                                                                                                                          \
 	} while (0)
 
@@ -85,21 +85,21 @@ Context& getContext();
 		using class_ = class;                                                                                                                         \
 		constexpr bool isClass = true;                                                                                                                \
 		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-                                                                  detail::buildMethodTable<class_>(), allocator_);                      \
+                                                                  detail::buildMethodTable<class_>(), allocator_);                                \
 		do {                                                                                                                                          \
 	} while (0)
 
-#define BEGIN_SUB_CLASS(class, parentClass)                                                                                               \
-	do {                                                                                                                                  \
-		using class_ = class;                                                                                                             \
-		constexpr bool isClass = true;                                                                                                    \
-		static_assert(! std::is_same_v<parentClass, class>, #parentClass " and " #class " are the same class");                           \
-		static_assert(std::is_base_of_v<parentClass, class>, #parentClass " is not a base class of " #class);                             \
-		const StructType& parentType = static_cast<const StructType&>(typeDB_.getType<parentClass>());                                    \
-		assert(parentType.getSubClass() == Type::Subclass::Struct);                                                                       \
-		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_),  \
-		                                                          &parentType, detail::buildMethodTable<class_>(), allocator_); \
-		do {                                                                                                                              \
+#define BEGIN_SUB_CLASS(class, parentClass)                                                                                              \
+	do {                                                                                                                                 \
+		using class_ = class;                                                                                                            \
+		constexpr bool isClass = true;                                                                                                   \
+		static_assert(! std::is_same_v<parentClass, class>, #parentClass " and " #class " are the same class");                          \
+		static_assert(std::is_base_of_v<parentClass, class>, #parentClass " is not a base class of " #class);                            \
+		const StructType& parentType = static_cast<const StructType&>(typeDB_.getType<parentClass>());                                   \
+		assert(parentType.getSubClass() == Type::Subclass::Struct);                                                                      \
+		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), \
+		                                                          &parentType, detail::buildMethodTable<class_>(), allocator_);          \
+		do {                                                                                                                             \
 	} while (0)
 
 #define FIELD_RENAMED_EXT(field, name, flags, semantic)                                                       \
@@ -115,7 +115,6 @@ Context& getContext();
 
 #define PROPERTY(name, getter, setter)                                                                                                       \
 	do {                                                                                                                                     \
-		static_assert(isClass);                                                                                                              \
 		structType->addProperty(                                                                                                             \
 		    detail::PropertyHelpers<class_>::createRWProperty(name, Flags::all, Semantic::none, &class_::setter, &class_::getter, context)); \
 	} while (false)
@@ -125,9 +124,9 @@ Context& getContext();
 		structType->addProperty(detail::PropertyHelpers<class_>::createROProperty(name, Flags::all, Semantic::none, &class_::getter, context)); \
 	} while (false)
 
-#define SETTER(name, setter)                                                                                                         \
-	do {                                                                                                                             \
-		structType->addProperty(detail::PropertyHelpers<class_>::createProperty(name, Flags::all, Semantic::none, setter, context)); \
+#define SETTER(name, setter)                                                                                                                    \
+	do {                                                                                                                                        \
+		structType->addProperty(detail::PropertyHelpers<class_>::createWOProperty(name, Flags::all, Semantic::none, &class_::setter, context)); \
 	} while (false)
 
 #define PROPERTY_EX(name, getter, setter, flags, semantic)                                                                        \
@@ -191,8 +190,8 @@ Context& getContext();
 #define BEGIN_ENUM(enumClass)                                    \
 	do {                                                         \
 		using enumClass_ = enumClass;                            \
-		static const char* enumName = #enumClass;                \
 		static_assert(std::is_enum_v<enumClass>, "Not an enum"); \
+		constexpr const char* enumName = #enumClass;             \
 	static const Enumerator enumerators[] = {
 
 #define ENUMERATOR_NAMED(name, value) makeEnumerator(name, enumClass_::value),

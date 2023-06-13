@@ -41,10 +41,6 @@ std::string JSONOutputArchive::saveToString() {
 	return stream->GetString();
 }
 
-std::string_view JSONOutputArchive::getString() {
-	return { stream->GetString(), stream->GetSize() };
-}
-
 bool JSONOutputArchive::beginElement(const char* name) {
 	assert(name);
 	return writer->Key(name);
