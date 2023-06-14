@@ -12,7 +12,9 @@ XMLOutputArchive::XMLOutputArchive()
 	// Insert declaration "xml version=\"1.0\" encoding=\"UTF-8\""
 	document->LinkEndChild(document->NewDeclaration());
 	currentNode = document.get();
-	beginElement("root");
+
+	setKey("root");
+	beginObject();
 	endRoot = true;
 }
 
@@ -22,9 +24,8 @@ XMLOutputArchive::~XMLOutputArchive() {
 
 bool XMLOutputArchive::saveToFile(const char* fileName) {
 	assert(fileName);
-
 	if (endRoot) {
-		endElement(); // end root
+		endObject(); // end root
 		endRoot = false;
 	}
 	const tinyxml2::XMLError error = document->SaveFile(fileName);
@@ -32,13 +33,13 @@ bool XMLOutputArchive::saveToFile(const char* fileName) {
 }
 
 std::string XMLOutputArchive::saveToString() {
-	std::string str;
+	std::string          str;
 	tinyxml2::XMLPrinter printer;
 	// attach it to the document you want to convert in to a std::string
 	if (document->Accept(&printer)) {
 		// Create a std::string and copy your document data in to the string
 		if (endRoot) {
-			endElement(); // end root
+			endObject(); // end root
 			endRoot = false;
 		}
 		str = printer.CStr();
@@ -46,18 +47,20 @@ std::string XMLOutputArchive::saveToString() {
 	return str;
 }
 
-bool XMLOutputArchive::beginElement(const char* name) {
+void XMLOutputArchive::setKey(const char* name) {
+	beginElement(name);
+}
+
+void XMLOutputArchive::beginElement(const char* name) {
 	assert(name);
 	beginArrayElement();
 	auto element = document->NewElement(name);
 	currentNode = currentNode->InsertEndChild(element);
-	return true;
 }
 
 void XMLOutputArchive::endElement() {
 	assert(currentNode);
 	currentNode = currentNode->Parent();
-	endArrayElement();
 }
 
 bool XMLOutputArchive::beginObject() {
@@ -70,10 +73,11 @@ bool XMLOutputArchive::beginObject() {
 void XMLOutputArchive::endObject() {
 	assert(typeStack.top() == Type::object);
 	typeStack.pop();
-	endArrayElement();
+	endElement();
 }
 
 bool XMLOutputArchive::beginArray() {
+	beginArrayElement();
 	typeStack.push(Type::array);
 	writeAttribute("type", "array");
 	return true;
@@ -82,7 +86,7 @@ bool XMLOutputArchive::beginArray() {
 void XMLOutputArchive::endArray() {
 	assert(typeStack.top() == Type::array);
 	typeStack.pop();
-	endArrayElement();
+	endElement();
 }
 
 void XMLOutputArchive::writeAttribute(const char* name, const char* str) {
@@ -113,74 +117,67 @@ void XMLOutputArchive::writeAttribute(const char* name, double value) {
 bool XMLOutputArchive::write(bool value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
+	endElement();
 	return true;
 }
 
 bool XMLOutputArchive::write(int value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
+	endElement();
 	return true;
 }
 
 bool XMLOutputArchive::write(unsigned int value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
+	endElement();
 	return true;
 }
 
 bool XMLOutputArchive::write(int64_t value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
+	endElement();
 	return true;
 }
 
 bool XMLOutputArchive::write(uint64_t value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
+	endElement();
 	return true;
 }
 
 bool XMLOutputArchive::write(float value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
+	endElement();
 	return true;
 }
 
 bool XMLOutputArchive::write(double value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
+	endElement();
 	return true;
 }
 
 bool XMLOutputArchive::write(const char* str) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(str);
-	endArrayElement();
+	endElement();
 	return true;
 }
 
 bool XMLOutputArchive::write(std::string_view sv) {
-	return write(sv.data());//FIXME Not necessarily null terminated
+	return write(sv.data()); // FIXME Not necessarily null terminated
 }
 
 void XMLOutputArchive::beginArrayElement() {
 	if (! typeStack.empty() && typeStack.top() == Type::array) {
 		auto element = document->NewElement("element");
 		currentNode = currentNode->InsertEndChild(element);
-	}
-}
-
-void XMLOutputArchive::endArrayElement() {
-	if (! typeStack.empty() && typeStack.top() == Type::array) {
-		assert(currentNode);
-		currentNode = currentNode->Parent();
 	}
 }
 

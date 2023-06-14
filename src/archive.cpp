@@ -24,22 +24,29 @@ ArchiveElement::operator bool() const {
 	return isValid;
 }
 
-WriteTag::WriteTag(OutputArchive& archive, const char* tag)
-    : archive { archive }
-    , isValid { archive.beginElement(tag) } {
-	assert(tag);
-}
-
-WriteTag::~WriteTag() {
-	if (isValid) {
-		archive.endElement();
+ArrayScope::ArrayScope(OutputArchive& archive, const char* key)
+    : archive { archive } {
+	if (key) {
+		archive.setKey(key);
 	}
+	archive.beginArray();
 }
 
-WriteTag::operator bool() const {
-	return isValid;
+ArrayScope::~ArrayScope() {
+	archive.endArray();
 }
 
+ObjectScope::ObjectScope(OutputArchive& archive, const char* key)
+    : archive { archive } {
+	if (key) {
+		archive.setKey(key);
+	}
+	archive.beginObject();
+}
+
+ObjectScope::~ObjectScope() {
+	archive.endObject();
+}
 InputArchive::InputArchive()
     : context(detail::getContext()) {
 }
@@ -74,9 +81,8 @@ OutputArchive::OutputArchive()
 }
 
 void OutputArchive::write(const char* key, const void* data, TypeId typeId) {
-	beginElement(key);
+	setKey(key);
 	write(data, typeId);
-	endElement();
 }
 
 void OutputArchive::write(const void* data, TypeId typeId) {
@@ -86,9 +92,8 @@ void OutputArchive::write(const void* data, TypeId typeId) {
 }
 
 void OutputArchive::write(const char* key, const char* str) {
-	beginElement(key);
+	setKey(key);
 	write(str);
-	endElement();
 }
 
 } // namespace Typhoon::Reflection

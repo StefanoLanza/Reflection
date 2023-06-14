@@ -26,8 +26,7 @@ public:
 
 	bool        saveToFile(const char* filename) override;
 	std::string saveToString() override;
-	bool        beginElement(const char* name) override;
-	void        endElement() override;
+	void        setKey(const char* name) override;
 	bool        beginObject() override;
 	void        endObject() override;
 	bool        beginArray() override;
@@ -51,8 +50,9 @@ public:
 	using OutputArchive::write;
 
 private:
+	void beginElement(const char* key);
+	void endElement();
 	void beginArrayElement();
-	void endArrayElement();
 
 private:
 	enum class Type {

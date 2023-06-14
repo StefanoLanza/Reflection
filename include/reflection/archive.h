@@ -115,8 +115,7 @@ public:
 
 	virtual bool        saveToFile(const char* filename) = 0;
 	virtual std::string saveToString() = 0;
-	virtual bool        beginElement(const char* key) = 0;
-	virtual void        endElement() = 0;
+	virtual void        setKey(const char* key) = 0;
 	virtual bool        beginObject() = 0;
 	virtual void        endObject() = 0;
 	virtual bool        beginArray() = 0;
@@ -186,16 +185,22 @@ private:
 	bool          isValid;
 };
 
-class WriteTag : Uncopyable {
+class ArrayScope : Uncopyable {
 public:
-	WriteTag(OutputArchive& archive, const char* tag);
-	~WriteTag();
-
-	explicit operator bool() const;
+	ArrayScope(OutputArchive& archive, const char* key = nullptr);
+	~ArrayScope();
 
 private:
 	OutputArchive& archive;
-	bool           isValid;
+};
+
+class ObjectScope : Uncopyable {
+public:
+	ObjectScope(OutputArchive& archive, const char* key = nullptr);
+	~ObjectScope();
+
+private:
+	OutputArchive& archive;
 };
 
 template <class T>
@@ -229,9 +234,8 @@ bool InputArchive::read(T& object) {
 
 template <class T>
 void OutputArchive::write(const char* key, const T& data) {
-	beginElement(key);
+	setKey(key);
 	write(data);
-	endElement();
 }
 
 template <class T>

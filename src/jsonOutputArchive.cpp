@@ -41,12 +41,9 @@ std::string JSONOutputArchive::saveToString() {
 	return stream->GetString();
 }
 
-bool JSONOutputArchive::beginElement(const char* name) {
+void JSONOutputArchive::setKey(const char* name) {
 	assert(name);
-	return writer->Key(name);
-}
-
-void JSONOutputArchive::endElement() {
+	writer->Key(name);
 }
 
 bool JSONOutputArchive::beginObject() {
