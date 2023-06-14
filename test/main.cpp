@@ -48,15 +48,15 @@ TEST_CASE("Primitives") {
 	using namespace refl;
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(archive.write("c", c));
-		REQUIRE(archive.write("uc", uc));
-		REQUIRE(archive.write("i", i));
-		REQUIRE(archive.write("ui", ui));
-		REQUIRE(archive.write("l", l));
-		REQUIRE(archive.write("ul", ul));
-		REQUIRE(archive.write("f", f));
-		REQUIRE(archive.write("d", d));
-		REQUIRE(archive.write("b", b));
+		archive.write("c", c);
+		archive.write("uc", uc);
+		archive.write("i", i);
+		archive.write("ui", ui);
+		archive.write("l", l);
+		archive.write("ul", ul);
+		archive.write("f", f);
+		archive.write("d", d);
+		archive.write("b", b);
 		return archive.saveToString();
 	};
 
@@ -129,7 +129,7 @@ TEST_CASE("Enum") {
 	const char* elementName = "season";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(archive.write(elementName, season));
+		archive.write(elementName, season);
 		return archive.saveToString();
 	};
 
@@ -173,7 +173,7 @@ TEST_CASE("BitMask") {
 	const char* elementName = "flags";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(archive.write(elementName, flags));
+		archive.write(elementName, flags);
 		return archive.saveToString();
 	};
 
@@ -225,7 +225,7 @@ TEST_CASE("C array") {
 	const char* elementName = "array";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(archive.write(elementName, array));
+		archive.write(elementName, array);
 		return archive.saveToString();
 	};
 
@@ -269,7 +269,7 @@ TEST_CASE("std::vector") {
 	const char*  elementName = "vector";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(archive.write(elementName, vec));
+		archive.write(elementName, vec);
 		return archive.saveToString();
 	};
 
@@ -315,7 +315,7 @@ TEST_CASE("std::map") {
 	const char* elementName = "map";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(archive.write(elementName, map));
+		archive.write(elementName, map);
 		return archive.saveToString();
 	};
 
@@ -363,7 +363,7 @@ TEST_CASE("std::array") {
 	const char* elementName = "array";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(archive.write(elementName, array));
+		archive.write(elementName, array);
 		return archive.saveToString();
 	};
 
@@ -407,7 +407,7 @@ TEST_CASE("std::pair") {
 	const char* elementName = "pair";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(archive.write(elementName, pair));
+		archive.write(elementName, pair);
 		return archive.saveToString();
 	};
 
@@ -452,7 +452,7 @@ TEST_CASE("std::tuple") {
 	const char* elementName = "tuple";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(archive.write(elementName, tuple));
+		archive.write(elementName, tuple);
 		return archive.saveToString();
 	};
 
@@ -495,7 +495,7 @@ TEST_CASE("std::unique_ptr") {
 	const char* elementName = "material";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(archive.write(elementName, material));
+		archive.write(elementName, material);
 		return archive.saveToString();
 	};
 
@@ -538,7 +538,7 @@ TEST_CASE("std::shared_ptr") {
 	const char* elementName = "material";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(archive.write(elementName, material));
+		archive.write(elementName, material);
 		return archive.saveToString();
 	};
 
@@ -581,7 +581,7 @@ TEST_CASE("std::string_view") {
 	std::string_view sv = "ImAStringView";
 
 	auto write = [&](OutputArchive& archive) {
-		REQUIRE(archive.write(elementName, sv));
+		archive.write(elementName, sv);
 		return archive.saveToString();
 	};
 
@@ -635,7 +635,7 @@ TEST_CASE("Class") {
 	const char* elementName = "gameObject";
 
 	auto write = [&](OutputArchive& archive) {
-		CHECK(archive.write(elementName, gameObject));
+		archive.write(elementName, gameObject);
 		return archive.saveToString();
 	};
 
@@ -682,7 +682,7 @@ TEST_CASE("Struct") {
 	const char* elementName = "fog";
 
 	auto write = [&](OutputArchive& archive) {
-		CHECK(archive.write(elementName, fog));
+		archive.write(elementName, fog);
 		return archive.saveToString();
 	};
 
@@ -734,7 +734,7 @@ TEST_CASE("Variant") {
 	SECTION("XML Serialization") {
 		XMLOutputArchive outArchive;
 
-		CHECK(outArchive.write(key, variants));
+		outArchive.write(key, variants);
 		std::string archiveContent = outArchive.saveToString();
 
 		XMLInputArchive inArchive;
@@ -748,7 +748,7 @@ TEST_CASE("Variant") {
 	SECTION("JSON Serialization") {
 		JSONOutputArchive outArchive;
 
-		CHECK(outArchive.write(key, variants));
+		outArchive.write(key, variants);
 		std::string archiveContent = outArchive.saveToString();
 
 		JSONInputArchive inArchive;
