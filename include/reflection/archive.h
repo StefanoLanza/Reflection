@@ -139,18 +139,18 @@ public:
 	virtual void writeAttribute(const char* name, double value) = 0;
 	virtual void writeAttribute(const char* name, const char* str) = 0;
 
-	bool write(const char* key, const void* data, TypeId typeId);
-	bool write(const void* data, TypeId typeId);
+	void write(const char* key, const void* data, TypeId typeId);
+	void write(const void* data, TypeId typeId);
 
 	// Write data of user-defined type
 	template <class T>
-	bool write(const T& data);
+	void write(const T& data);
 
 	// Helpers
-	bool write(const char* key, const char* str);
+	void write(const char* key, const char* str);
 
 	template <class T>
-	bool write(const char* key, const T& data);
+	void write(const char* key, const T& data);
 
 private:
 	Context& context;
@@ -228,27 +228,20 @@ bool InputArchive::read(T& object) {
 }
 
 template <class T>
-bool OutputArchive::write(const char* key, const T& data) {
-	bool res = false;
-	if (beginElement(key)) {
-		res = write(data);
-		endElement();
-	}
-	return res;
+void OutputArchive::write(const char* key, const T& data) {
+	beginElement(key);
+	write(data);
+	endElement();
 }
 
 template <class T>
-bool OutputArchive::write(const T& data) {
+void OutputArchive::write(const T& data) {
 	const Type* type = context.typeDB->tryGetType<T>();
 	if (! type) {
 		type = detail::autoRegisterHelper<T>::autoRegister(context);
 	}
-	if (type) {
-		return detail::writeData(static_cast<const void*>(&data), *type, *this, context);
-	}
-	else {
-		return false;
-	}
+	assert(type);
+	detail::writeData(static_cast<const void*>(&data), *type, *this, context);
 }
 
 } // namespace Typhoon::Reflection

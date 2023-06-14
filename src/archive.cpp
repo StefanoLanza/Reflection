@@ -73,30 +73,22 @@ OutputArchive::OutputArchive()
     : context(detail::getContext()) {
 }
 
-bool OutputArchive::write(const char* key, const void* data, TypeId typeId) {
-	bool res = false;
-	if (beginElement(key)) {
-		res = write(data, typeId);
-		endElement();
-	}
-	return res;
+void OutputArchive::write(const char* key, const void* data, TypeId typeId) {
+	beginElement(key);
+	write(data, typeId);
+	endElement();
 }
 
-bool OutputArchive::write(const void* data, TypeId typeId) {
+void OutputArchive::write(const void* data, TypeId typeId) {
 	auto type = context.typeDB->tryGetType(typeId);
-	if (type) {
-		return detail::writeData(data, *type, *this, context);
-	}
-	return false;
+	assert(type);
+	detail::writeData(data, *type, *this, context);
 }
 
-bool OutputArchive::write(const char* key, const char* str) {
-	bool res = false;
-	if (beginElement(key)) {
-		res = write(str);
-		endElement();
-	}
-	return res;
+void OutputArchive::write(const char* key, const char* str) {
+	beginElement(key);
+	write(str);
+	endElement();
 }
 
 } // namespace Typhoon::Reflection
