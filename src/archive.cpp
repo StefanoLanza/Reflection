@@ -70,6 +70,7 @@ ArrayReadScope::ArrayReadScope(InputArchive& archive)
 
 ArrayReadScope::~ArrayReadScope() {
 	if (isValid) {
+		archive.endArray();
 		archive.endElement();
 	}
 }
@@ -90,6 +91,7 @@ ObjectReadScope::ObjectReadScope(InputArchive& archive)
 
 ObjectReadScope::~ObjectReadScope() {
 	if (isValid) {
+		archive.endObject();
 		archive.endElement();
 	}
 }
