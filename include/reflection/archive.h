@@ -120,15 +120,15 @@ public:
 	virtual void        endObject() = 0;
 	virtual bool        beginArray() = 0;
 	virtual void        endArray() = 0;
-	virtual bool        write(bool value) = 0;
-	virtual bool        write(int value) = 0;
-	virtual bool        write(unsigned int value) = 0;
-	virtual bool        write(int64_t value) = 0;
-	virtual bool        write(uint64_t value) = 0;
-	virtual bool        write(float value) = 0;
-	virtual bool        write(double value) = 0;
-	virtual bool        write(const char* str) = 0;
-	virtual bool        write(std::string_view str) = 0;
+	virtual void        write(bool value) = 0;
+	virtual void        write(int value) = 0;
+	virtual void        write(unsigned int value) = 0;
+	virtual void        write(int64_t value) = 0;
+	virtual void        write(uint64_t value) = 0;
+	virtual void        write(float value) = 0;
+	virtual void        write(double value) = 0;
+	virtual void        write(const char* str) = 0;
+	virtual void        write(std::string_view str) = 0;
 
 	// Serialization of attributes
 	virtual void writeAttribute(const char* name, bool value) = 0;
@@ -185,19 +185,19 @@ private:
 	bool          isValid;
 };
 
-class ArrayScope : Uncopyable {
+class ArrayWriteScope : Uncopyable {
 public:
-	ArrayScope(OutputArchive& archive, const char* key = nullptr);
-	~ArrayScope();
+	ArrayWriteScope(OutputArchive& archive, const char* key = nullptr);
+	~ArrayWriteScope();
 
 private:
 	OutputArchive& archive;
 };
 
-class ObjectScope : Uncopyable {
+class ObjectWriteScope : Uncopyable {
 public:
-	ObjectScope(OutputArchive& archive, const char* key = nullptr);
-	~ObjectScope();
+	ObjectWriteScope(OutputArchive& archive, const char* key = nullptr);
+	~ObjectWriteScope();
 
 private:
 	OutputArchive& archive;

@@ -18,8 +18,8 @@ bool readBuiltin(DataPtr data, InputArchive& archive) {
 }
 
 template <class T>
-bool writeBuiltin(ConstDataPtr data, OutputArchive& archive) {
-	return write(*cast<T>(data), archive);
+void writeBuiltin(ConstDataPtr data, OutputArchive& archive) {
+	write(*cast<T>(data), archive);
 }
 
 template <>
@@ -33,8 +33,8 @@ bool readBuiltin<std::string>(DataPtr data, InputArchive& archive) {
 }
 
 template <>
-bool writeBuiltin<std::string>(ConstDataPtr data, OutputArchive& archive) {
-	return archive.write(std::string_view{*cast<std::string>(data)});
+void writeBuiltin<std::string>(ConstDataPtr data, OutputArchive& archive) {
+	archive.write(std::string_view{*cast<std::string>(data)});
 }
 
 template <>
@@ -43,8 +43,8 @@ bool readBuiltin<std::string_view>(DataPtr data, InputArchive& archive) {
 }
 
 template <>
-bool writeBuiltin<std::string_view>(ConstDataPtr data, OutputArchive& archive) {
-	return archive.write(*cast<std::string_view>(data));
+void writeBuiltin<std::string_view>(ConstDataPtr data, OutputArchive& archive) {
+	archive.write(*cast<std::string_view>(data));
 }
 
 template <class T>

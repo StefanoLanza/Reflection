@@ -106,7 +106,7 @@ class InputArchive;
 class OutputArchive;
 
 // ? Error codes?
-using CustomWriter = std::function<bool(ConstDataPtr, OutputArchive&)>;
+using CustomWriter = std::function<void(ConstDataPtr, OutputArchive&)>;
 using CustomReader = std::function<void(DataPtr, InputArchive&)>;
 using CustomCloner = std::function<void(DataPtr, ConstDataPtr)>;
 

@@ -29,15 +29,15 @@ public:
 	void        writeAttribute(const char* name, float value) override;
 	void        writeAttribute(const char* name, double value) override;
 	void        writeAttribute(const char* name, const char* str) override;
-	bool        write(bool value) override;
-	bool        write(int value) override;
-	bool        write(unsigned int value) override;
-	bool        write(int64_t value) override;
-	bool        write(uint64_t value) override;
-	bool        write(float value) override;
-	bool        write(double value) override;
-	bool        write(const char* str) override;
-	bool        write(std::string_view str) override;
+	void        write(bool value) override;
+	void        write(int value) override;
+	void        write(unsigned int value) override;
+	void        write(int64_t value) override;
+	void        write(uint64_t value) override;
+	void        write(float value) override;
+	void        write(double value) override;
+	void        write(const char* str) override;
+	void        write(std::string_view str) override;
 
 	using OutputArchive::write;
 

@@ -18,19 +18,19 @@ bool read(float& data, InputArchive& archive);
 bool read(double& data, InputArchive& archive);
 bool read(const char*& data, InputArchive& archive);
 
-bool write(bool data, OutputArchive& archive);
-bool write(char data, OutputArchive& archive);
-bool write(unsigned char data, OutputArchive& archive);
-bool write(short data, OutputArchive& archive);
-bool write(unsigned short data, OutputArchive& archive);
-bool write(int data, OutputArchive& archive);
-bool write(unsigned int data, OutputArchive& archive);
-bool write(long data, OutputArchive& archive);
-bool write(unsigned long data, OutputArchive& archive);
-bool write(long long data, OutputArchive& archive);
-bool write(unsigned long long data, OutputArchive& archive);
-bool write(float data, OutputArchive& archive);
-bool write(double data, OutputArchive& archive);
-bool write(const char* str, OutputArchive& archive);
+void write(bool data, OutputArchive& archive);
+void write(char data, OutputArchive& archive);
+void write(unsigned char data, OutputArchive& archive);
+void write(short data, OutputArchive& archive);
+void write(unsigned short data, OutputArchive& archive);
+void write(int data, OutputArchive& archive);
+void write(unsigned int data, OutputArchive& archive);
+void write(long data, OutputArchive& archive);
+void write(unsigned long data, OutputArchive& archive);
+void write(long long data, OutputArchive& archive);
+void write(unsigned long long data, OutputArchive& archive);
+void write(float data, OutputArchive& archive);
+void write(double data, OutputArchive& archive);
+void write(const char* str, OutputArchive& archive);
 
 } // namespace Typhoon::Reflection

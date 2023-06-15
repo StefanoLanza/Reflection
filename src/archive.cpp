@@ -24,7 +24,7 @@ ArchiveElement::operator bool() const {
 	return isValid;
 }
 
-ArrayScope::ArrayScope(OutputArchive& archive, const char* key)
+ArrayWriteScope::ArrayWriteScope(OutputArchive& archive, const char* key)
     : archive { archive } {
 	if (key) {
 		archive.setKey(key);
@@ -32,11 +32,11 @@ ArrayScope::ArrayScope(OutputArchive& archive, const char* key)
 	archive.beginArray();
 }
 
-ArrayScope::~ArrayScope() {
+ArrayWriteScope::~ArrayWriteScope() {
 	archive.endArray();
 }
 
-ObjectScope::ObjectScope(OutputArchive& archive, const char* key)
+ObjectWriteScope::ObjectWriteScope(OutputArchive& archive, const char* key)
     : archive { archive } {
 	if (key) {
 		archive.setKey(key);
@@ -44,7 +44,7 @@ ObjectScope::ObjectScope(OutputArchive& archive, const char* key)
 	archive.beginObject();
 }
 
-ObjectScope::~ObjectScope() {
+ObjectWriteScope::~ObjectWriteScope() {
 	archive.endObject();
 }
 InputArchive::InputArchive()

@@ -114,64 +114,56 @@ void XMLOutputArchive::writeAttribute(const char* name, double value) {
 	currentNode->ToElement()->SetAttribute(name, value);
 }
 
-bool XMLOutputArchive::write(bool value) {
+void XMLOutputArchive::write(bool value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endElement();
-	return true;
 }
 
-bool XMLOutputArchive::write(int value) {
+void XMLOutputArchive::write(int value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endElement();
-	return true;
 }
 
-bool XMLOutputArchive::write(unsigned int value) {
+void XMLOutputArchive::write(unsigned int value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endElement();
-	return true;
 }
 
-bool XMLOutputArchive::write(int64_t value) {
+void XMLOutputArchive::write(int64_t value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endElement();
-	return true;
 }
 
-bool XMLOutputArchive::write(uint64_t value) {
+void XMLOutputArchive::write(uint64_t value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endElement();
-	return true;
 }
 
-bool XMLOutputArchive::write(float value) {
+void XMLOutputArchive::write(float value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endElement();
-	return true;
 }
 
-bool XMLOutputArchive::write(double value) {
+void XMLOutputArchive::write(double value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
 	endElement();
-	return true;
 }
 
-bool XMLOutputArchive::write(const char* str) {
+void XMLOutputArchive::write(const char* str) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(str);
 	endElement();
-	return true;
 }
 
-bool XMLOutputArchive::write(std::string_view sv) {
-	return write(sv.data()); // FIXME Not necessarily null terminated
+void XMLOutputArchive::write(std::string_view sv) {
+	write(sv.data()); // FIXME Not necessarily null terminated
 }
 
 void XMLOutputArchive::beginArrayElement() {

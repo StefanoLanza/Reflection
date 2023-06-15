@@ -10,7 +10,7 @@ struct Context;
 
 namespace detail {
 
-bool writeData(ConstDataPtr data, const Type& type, OutputArchive& archive, const Context& context);
+void writeData(ConstDataPtr data, const Type& type, OutputArchive& archive, const Context& context);
 
 } // namespace detail
 
