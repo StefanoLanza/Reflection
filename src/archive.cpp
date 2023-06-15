@@ -9,44 +9,6 @@ Context& getContext();
 
 }
 
-ArchiveElement::ArchiveElement(InputArchive& archive, const char* tag)
-    : archive { archive }
-    , isValid { archive.beginElement(tag) } {
-}
-
-ArchiveElement::~ArchiveElement() {
-	if (isValid) {
-		archive.endElement();
-	}
-}
-
-ArchiveElement::operator bool() const {
-	return isValid;
-}
-
-ArrayWriteScope::ArrayWriteScope(OutputArchive& archive, const char* key)
-    : archive { archive } {
-	if (key) {
-		archive.setKey(key);
-	}
-	archive.beginArray();
-}
-
-ArrayWriteScope::~ArrayWriteScope() {
-	archive.endArray();
-}
-
-ObjectWriteScope::ObjectWriteScope(OutputArchive& archive, const char* key)
-    : archive { archive } {
-	if (key) {
-		archive.setKey(key);
-	}
-	archive.beginObject();
-}
-
-ObjectWriteScope::~ObjectWriteScope() {
-	archive.endObject();
-}
 InputArchive::InputArchive()
     : context(detail::getContext()) {
 }
@@ -94,6 +56,70 @@ void OutputArchive::write(const void* data, TypeId typeId) {
 void OutputArchive::write(const char* key, const char* str) {
 	setKey(key);
 	write(str);
+}
+
+ArrayReadScope::ArrayReadScope(InputArchive& archive, const char* key)
+    : archive { archive }
+    , isValid { archive.beginElement(key) && archive.beginArray()} {
+}
+
+ArrayReadScope::ArrayReadScope(InputArchive& archive)
+    : archive { archive }
+    , isValid { archive.beginArray()} {
+}
+
+ArrayReadScope::~ArrayReadScope() {
+	if (isValid) {
+		archive.endElement();
+	}
+}
+
+ArrayReadScope::operator bool() const {
+	return isValid;
+}
+
+ObjectReadScope::ObjectReadScope(InputArchive& archive, const char* key)
+    : archive { archive }
+    , isValid { archive.beginElement(key) && archive.beginObject()} {
+}
+
+ObjectReadScope::ObjectReadScope(InputArchive& archive)
+    : archive { archive }
+    , isValid { archive.beginObject()} {
+}
+
+ObjectReadScope::~ObjectReadScope() {
+	if (isValid) {
+		archive.endElement();
+	}
+}
+
+ObjectReadScope::operator bool() const {
+	return isValid;
+}
+
+ArrayWriteScope::ArrayWriteScope(OutputArchive& archive, const char* key)
+    : archive { archive } {
+	if (key) {
+		archive.setKey(key);
+	}
+	archive.beginArray();
+}
+
+ArrayWriteScope::~ArrayWriteScope() {
+	archive.endArray();
+}
+
+ObjectWriteScope::ObjectWriteScope(OutputArchive& archive, const char* key)
+    : archive { archive } {
+	if (key) {
+		archive.setKey(key);
+	}
+	archive.beginObject();
+}
+
+ObjectWriteScope::~ObjectWriteScope() {
+	archive.endObject();
 }
 
 } // namespace Typhoon::Reflection

@@ -173,36 +173,6 @@ bool operator&(InputArchive& archive, const AttributeNamer<T>& namedAttribute) {
 	return archive.readAttribute(namedAttribute.name, namedAttribute.objectPtr);
 }
 
-class ArchiveElement : Uncopyable {
-public:
-	ArchiveElement(InputArchive& archive, const char* tag);
-	~ArchiveElement();
-
-	explicit operator bool() const;
-
-private:
-	InputArchive& archive;
-	bool          isValid;
-};
-
-class ArrayWriteScope : Uncopyable {
-public:
-	ArrayWriteScope(OutputArchive& archive, const char* key = nullptr);
-	~ArrayWriteScope();
-
-private:
-	OutputArchive& archive;
-};
-
-class ObjectWriteScope : Uncopyable {
-public:
-	ObjectWriteScope(OutputArchive& archive, const char* key = nullptr);
-	~ObjectWriteScope();
-
-private:
-	OutputArchive& archive;
-};
-
 template <class T>
 T InputArchive::read(const char* key, T&& defaultValue) {
 	T obj = std::move(defaultValue);
@@ -247,5 +217,47 @@ void OutputArchive::write(const T& data) {
 	assert(type);
 	detail::writeData(static_cast<const void*>(&data), *type, *this, context);
 }
+
+class ArrayReadScope : Uncopyable {
+public:
+	ArrayReadScope(InputArchive& archive, const char* key);
+	ArrayReadScope(InputArchive& archive);
+	~ArrayReadScope();
+	operator bool() const;
+
+private:
+	InputArchive& archive;
+	bool          isValid;
+};
+
+class ObjectReadScope : Uncopyable {
+public:
+	ObjectReadScope(InputArchive& archive, const char* key);
+	ObjectReadScope(InputArchive& archive);
+	~ObjectReadScope();
+	operator bool() const;
+
+private:
+	InputArchive& archive;
+	bool          isValid;
+};
+
+class ArrayWriteScope : Uncopyable {
+public:
+	ArrayWriteScope(OutputArchive& archive, const char* key = nullptr);
+	~ArrayWriteScope();
+
+private:
+	OutputArchive& archive;
+};
+
+class ObjectWriteScope : Uncopyable {
+public:
+	ObjectWriteScope(OutputArchive& archive, const char* key = nullptr);
+	~ObjectWriteScope();
+
+private:
+	OutputArchive& archive;
+};
 
 } // namespace Typhoon::Reflection
