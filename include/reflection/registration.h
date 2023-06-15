@@ -64,35 +64,31 @@ Context& getContext();
 	}                                \
 	while (0)
 
-#define BEGIN_BASE_CLASS(class)                                                                                                                       \
-	do {                                                                                                                                              \
-		using class_ = class;                                                                                                                         \
-		constexpr bool isClass = true;                                                                                                                \
-		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-                                                                  MethodTable {}, allocator_);
+#define BEGIN_BASE_CLASS(class)                                                                                                                   \
+	do {                                                                                                                                          \
+		using class_ = class;                                                                                                                     \
+		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+		                                                          MethodTable {}, allocator_);
 
-#define BEGIN_STRUCT(class)                                                                                                                           \
-	do {                                                                                                                                              \
-		using class_ = class;                                                                                                                         \
-		constexpr bool isClass = false;                                                                                                               \
-		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-                                                                  detail::buildMethodTable<class_>(), allocator_);                                \
-		do {                                                                                                                                          \
+#define BEGIN_STRUCT(class)                                                                                                                       \
+	do {                                                                                                                                          \
+		using class_ = class;                                                                                                                     \
+		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+		                                                          detail::buildMethodTable<class_>(), allocator_);                                \
+		do {                                                                                                                                      \
 	} while (0)
 
-#define BEGIN_CLASS(class)                                                                                                                            \
-	do {                                                                                                                                              \
-		using class_ = class;                                                                                                                         \
-		constexpr bool isClass = true;                                                                                                                \
-		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-                                                                  detail::buildMethodTable<class_>(), allocator_);                                \
-		do {                                                                                                                                          \
+#define BEGIN_CLASS(class)                                                                                                                        \
+	do {                                                                                                                                          \
+		using class_ = class;                                                                                                                     \
+		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+		                                                          detail::buildMethodTable<class_>(), allocator_);                                \
+		do {                                                                                                                                      \
 	} while (0)
 
 #define BEGIN_SUB_CLASS(class, parentClass)                                                                                              \
 	do {                                                                                                                                 \
 		using class_ = class;                                                                                                            \
-		constexpr bool isClass = true;                                                                                                   \
 		static_assert(! std::is_same_v<parentClass, class>, #parentClass " and " #class " are the same class");                          \
 		static_assert(std::is_base_of_v<parentClass, class>, #parentClass " is not a base class of " #class);                            \
 		const StructType& parentType = static_cast<const StructType&>(typeDB_.getType<parentClass>());                                   \
@@ -143,16 +139,16 @@ Context& getContext();
 		structType->addProperty(detail::createProperty(name, flags, semantic, setter, getter, context)); \
 	} while (0)
 
-#define C_SETTER_EX(member, setter, flags, semantic)                                                                 \
+#define C_SETTER_EX(name, setter, flags, semantic)                                                                 \
 	do {                                                                                                             \
-		structType->addProperty(detail::createProperty(#member, flags, semantic, setter, &class_::member, context)); \
+		structType->addProperty(detail::createProperty(name, flags, semantic, setter, context)); \
 	} while (0)
 
-#define C_SETTER(member, setter) C_SETTER_EX(member, setter, Flags::all, Semantic::none)
+#define C_SETTER(name, setter) C_SETTER_EX(name, setter, Flags::all, Semantic::none)
 
 #define C_GETTER(name, getter)                                                                                                  \
 	do {                                                                                                                        \
-		structType->addProperty(detail::createProperty(name, Flags::view | Flags::writeable, Semantic::none, getter, context)); \
+		structType->addProperty(detail::createProperty(name, Flags::all, Semantic::none, getter, context)); \
 	} while (0)
 
 #define READER(reader)                       \
@@ -171,14 +167,12 @@ Context& getContext();
 	} while (0)
 
 #define END_STRUCT()                    \
-	static_assert(! isClass);           \
 	typeDB_.registerType(structType);   \
 	currNamespace->addType(structType); \
 	}                                   \
 	while (0)
 
 #define END_CLASS()                     \
-	static_assert(isClass);             \
 	typeDB_.registerType(structType);   \
 	currNamespace->addType(structType); \
 	}                                   \

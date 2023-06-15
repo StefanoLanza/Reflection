@@ -678,6 +678,8 @@ TEST_CASE("Struct") {
 	Fog fog;
 	setDensity(fog, 10.f);
 	setColor(fog, { 1.f, 0.5f, 0.5f });
+	setElevationProfile(fog, { 0.f, 33.f });
+	fog.tag[0] = 'f';
 
 	const char* elementName = "fog";
 
@@ -689,7 +691,7 @@ TEST_CASE("Struct") {
 	auto read = [&](InputArchive& archive) {
 		Fog inFog;
 		REQUIRE(archive.read(elementName, inFog));
-		REQUIRE(fog == inFog);
+		CHECK(fog == inFog);
 	};
 
 #if TY_REFLECTION_XML
@@ -715,7 +717,7 @@ TEST_CASE("Struct") {
 	SECTION("Clone") {
 		Fog clonedFog;
 		cloneObject(&clonedFog, fog);
-		REQUIRE(fog == clonedFog);
+		CHECK(fog == clonedFog);
 	}
 }
 
@@ -787,7 +789,9 @@ void registerUserTypes() {
 
 	BEGIN_STRUCT(Fog);
 	C_PROPERTY("density", getDensity, setDensity);
-	C_SETTER(color, setColor);
+	C_PROPERTY("color", getColor, setColor);
+	C_PROPERTY("elevationProfile", getElevationProfile, setElevationProfile);
+	FIELD(tag);
 	END_STRUCT();
 
 	BEGIN_ENUM(SeasonType)
