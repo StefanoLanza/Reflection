@@ -60,17 +60,21 @@ void OutputArchive::write(const char* key, const char* str) {
 
 ArrayReadScope::ArrayReadScope(InputArchive& archive, const char* key)
     : archive { archive }
-    , isValid { archive.beginElement(key) && archive.beginArray()} {
+    , hasKey { archive.beginElement(key) }
+    , isValid { hasKey && archive.beginArray() } {
 }
 
 ArrayReadScope::ArrayReadScope(InputArchive& archive)
     : archive { archive }
-    , isValid { archive.beginArray()} {
+    , hasKey { false }
+    , isValid { archive.beginArray() } {
 }
 
 ArrayReadScope::~ArrayReadScope() {
 	if (isValid) {
 		archive.endArray();
+	}
+	if (hasKey) {
 		archive.endElement();
 	}
 }
@@ -81,17 +85,21 @@ ArrayReadScope::operator bool() const {
 
 ObjectReadScope::ObjectReadScope(InputArchive& archive, const char* key)
     : archive { archive }
-    , isValid { archive.beginElement(key) && archive.beginObject()} {
+    , hasKey { archive.beginElement(key) }
+    , isValid { hasKey && archive.beginObject() } {
 }
 
 ObjectReadScope::ObjectReadScope(InputArchive& archive)
     : archive { archive }
-    , isValid { archive.beginObject()} {
+    , hasKey { false }
+    , isValid { archive.beginObject() } {
 }
 
 ObjectReadScope::~ObjectReadScope() {
 	if (isValid) {
 		archive.endObject();
+	}
+	if (hasKey) {
 		archive.endElement();
 	}
 }

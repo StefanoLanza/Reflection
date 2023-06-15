@@ -99,6 +99,9 @@ public:
 	T read(const char* key, T&& defaultValue);
 
 	template <class T>
+	T read(T&& defaultValue);
+
+	template <class T>
 	bool read(const char* key, T& object);
 
 private:
@@ -181,6 +184,13 @@ T InputArchive::read(const char* key, T&& defaultValue) {
 }
 
 template <class T>
+T InputArchive::read(T&& defaultValue) {
+	T obj = std::move(defaultValue);
+	read(obj);
+	return obj;
+}
+
+template <class T>
 bool InputArchive::read(const char* key, T& object) {
 	bool res = false;
 	if (beginElement(key)) {
@@ -227,6 +237,7 @@ public:
 
 private:
 	InputArchive& archive;
+	bool          hasKey;
 	bool          isValid;
 };
 
@@ -239,6 +250,7 @@ public:
 
 private:
 	InputArchive& archive;
+	bool          hasKey;
 	bool          isValid;
 };
 
