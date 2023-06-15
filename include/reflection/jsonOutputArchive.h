@@ -13,7 +13,7 @@ namespace Typhoon::Reflection {
 
 class JSONOutputArchive final : public OutputArchive {
 public:
-	JSONOutputArchive();
+	JSONOutputArchive(bool openRoot=true);
 	~JSONOutputArchive();
 
 	bool        saveToFile(const char* filename) override;

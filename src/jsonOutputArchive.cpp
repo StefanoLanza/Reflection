@@ -2,8 +2,8 @@
 
 #if TY_REFLECTION_JSON
 
-#include <fstream>
 #include <cassert>
+#include <fstream>
 #include <rapidjson/include/rapidjson/document.h>
 #include <rapidjson/include/rapidjson/prettywriter.h>
 #include <rapidjson/include/rapidjson/rapidjson.h>
@@ -13,17 +13,19 @@ using namespace rapidjson;
 
 namespace Typhoon::Reflection {
 
-JSONOutputArchive::JSONOutputArchive()
+JSONOutputArchive::JSONOutputArchive(bool openRoot)
     : stream(std::make_unique<StringBuffer>())
     , writer(std::make_unique<PrettyWriter<StringBuffer>>(*stream))
-    , endRoot(true) {
-	writer->StartObject(); // begin root
+    , endRoot { openRoot } {
+	if (openRoot) {
+		writer->StartObject(); // begin root
+	}
 }
 
 JSONOutputArchive::~JSONOutputArchive() = default;
 
 bool JSONOutputArchive::saveToFile(const char* fileName) {
-	std::string str = saveToString();
+	std::string   str = saveToString();
 	std::ofstream file(fileName);
 	if (file) {
 		file.write(str.data(), str.size());
