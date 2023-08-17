@@ -124,8 +124,7 @@ void XMLInputArchive::endElement() {
 }
 
 bool XMLInputArchive::beginObject() {
-	const char* type = nullptr;
-	if (readAttribute("type", type)) {
+	if (const char* type = nullptr; readAttribute("type", type)) {
 		if (strcmp(type, "object")) {
 			return false;
 		}
@@ -140,8 +139,7 @@ void XMLInputArchive::endObject() {
 }
 
 bool XMLInputArchive::beginArray() {
-	const char* type = nullptr;
-	if (readAttribute("type", type)) {
+	if (const char* type = nullptr; readAttribute("type", type)) {
 		if (strcmp(type, "array")) {
 			return false;
 		}

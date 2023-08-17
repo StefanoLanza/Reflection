@@ -31,8 +31,8 @@ public:
 	TypeId getTypeId() const {
 		return typeId;
 	}
-	const char* getName() const;
-	void*       getStorage() {
+	const std::string& getName() const;
+	void*              getStorage() {
         return &storage;
 	}
 	const void* getStorage() const {

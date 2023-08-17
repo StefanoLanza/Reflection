@@ -135,7 +135,7 @@ Context& getContext();
 		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, Flags::all, Semantic::none, setter, getter, context)); \
 	} while (0)
 
-#define C_PROPERTY_EXT(name, setter, getter, flags, semantic)                                                             \
+#define C_PROPERTY_EX(name, getter, setter, flags, semantic)                                                             \
 	do {                                                                                                                  \
 		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, flags, semantic, setter, getter, context)); \
 	} while (0)
