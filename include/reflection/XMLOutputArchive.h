@@ -21,7 +21,7 @@ namespace Typhoon::Reflection {
 
 class XMLOutputArchive final : public OutputArchive {
 public:
-	XMLOutputArchive();
+	XMLOutputArchive(bool createRoot = true);
 	~XMLOutputArchive();
 
 	bool        saveToFile(const char* filename) override;

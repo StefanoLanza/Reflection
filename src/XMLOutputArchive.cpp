@@ -7,15 +7,20 @@
 
 namespace Typhoon::Reflection {
 
-XMLOutputArchive::XMLOutputArchive()
+XMLOutputArchive::XMLOutputArchive(bool createRoot)
     : document(std::make_unique<tinyxml2::XMLDocument>()) {
 	// Insert declaration "xml version=\"1.0\" encoding=\"UTF-8\""
 	document->LinkEndChild(document->NewDeclaration());
 	currentNode = document.get();
 
-	setKey("root");
-	beginObject();
-	endRoot = true;
+	if (createRoot) {
+		setKey("root");
+		beginObject();
+		endRoot = true;
+	}
+	else {
+		endRoot = false;
+	}
 }
 
 XMLOutputArchive::~XMLOutputArchive() {
@@ -53,7 +58,9 @@ void XMLOutputArchive::setKey(const char* name) {
 
 void XMLOutputArchive::beginElement(const char* name) {
 	assert(name);
-	beginArrayElement();
+	if (! typeStack.empty()) {
+		assert(typeStack.top() != Type::array);
+	}
 	auto element = document->NewElement(name);
 	currentNode = currentNode->InsertEndChild(element);
 }
