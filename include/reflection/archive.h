@@ -61,14 +61,10 @@ public:
 
 	virtual bool beginElement(const char* name) const = 0;
 	virtual void endElement() const = 0;
-	virtual bool beginObject() const = 0;
-	virtual void endObject() const = 0;
-	virtual bool beginArray() const = 0;
-	virtual void endArray() const = 0;
+	virtual bool isObject() const = 0;
+	virtual bool isArray() const = 0;
 	virtual bool iterateChild(ArchiveIterator& it) const = 0;
 	virtual bool iterateChild(ArchiveIterator& it, const char* name) const = 0;
-	virtual bool beginObject(const char* key) const = 0;
-	virtual bool beginArray(const char* key) const = 0;
 	virtual bool readAttribute(const char* name, bool& value) const = 0;
 	virtual bool readAttribute(const char* name, int& value) const = 0;
 	virtual bool readAttribute(const char* name, unsigned int& value) const = 0;
@@ -88,6 +84,8 @@ public:
 	virtual bool read(std::string_view& sv) const = 0;
 
 	//  Helpers
+	bool beginObject(const char* key) const;
+	bool beginArray(const char* key) const;
 	bool read(const char* key, void* data, TypeId typeId) const;
 	bool read(void* data, TypeId typeId) const;
 

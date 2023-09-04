@@ -13,6 +13,27 @@ InputArchive::InputArchive()
     : context(detail::getContext()) {
 }
 
+bool InputArchive::beginObject(const char* key) const {
+	bool res = false;
+	if (beginElement(key)) {
+		res = isObject();
+		if (! res) {
+			endElement();
+		}
+	}
+	return res;
+}
+
+bool InputArchive::beginArray(const char* key) const {
+	bool res = false;
+	if (beginElement(key)) {
+		res = isArray();
+		if (! res) {
+			endElement();
+		}
+	}
+	return res;
+}
 bool InputArchive::read(void* data, TypeId typeId) const {
 	bool res = false;
 	auto type = context.typeDB->tryGetType(typeId);
@@ -61,19 +82,16 @@ void OutputArchive::write(const char* key, const char* str) {
 ArrayReadScope::ArrayReadScope(InputArchive& archive, const char* key)
     : archive { archive }
     , hasKey { archive.beginElement(key) }
-    , isValid { hasKey && archive.beginArray() } {
+    , isValid { hasKey && archive.isArray() } {
 }
 
 ArrayReadScope::ArrayReadScope(InputArchive& archive)
     : archive { archive }
     , hasKey { false }
-    , isValid { archive.beginArray() } {
+    , isValid { archive.isArray() } {
 }
 
 ArrayReadScope::~ArrayReadScope() {
-	if (isValid) {
-		archive.endArray();
-	}
 	if (hasKey) {
 		archive.endElement();
 	}
@@ -86,19 +104,16 @@ ArrayReadScope::operator bool() const {
 ObjectReadScope::ObjectReadScope(InputArchive& archive, const char* key)
     : archive { archive }
     , hasKey { archive.beginElement(key) }
-    , isValid { hasKey && archive.beginObject() } {
+    , isValid { hasKey && archive.isObject() } {
 }
 
 ObjectReadScope::ObjectReadScope(InputArchive& archive)
     : archive { archive }
     , hasKey { false }
-    , isValid { archive.beginObject() } {
+    , isValid { archive.isObject() } {
 }
 
 ObjectReadScope::~ObjectReadScope() {
-	if (isValid) {
-		archive.endObject();
-	}
 	if (hasKey) {
 		archive.endElement();
 	}

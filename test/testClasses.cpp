@@ -57,9 +57,8 @@ void customSaveMaterial(const void* data, refl::OutputArchive& archive) {
 
 void customReadMaterial(void* data, const refl::InputArchive& archive) {
 	Material* material = static_cast<Material*>(data);
-	if (archive.beginObject()) {
+	if (archive.isObject()) {
 		archive.read("name", material->name);
 		archive.read("color", material->color);
-		archive.endObject();
 	}
 }

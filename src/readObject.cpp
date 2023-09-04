@@ -243,30 +243,25 @@ bool readReference(DataPtr data, const Type& type, Semantic semantic, const Type
 
 bool readVariant(DataPtr data, const Type& /*type*/, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator) {
 	bool res = false;
-	if (archive.beginObject()) {
+	if (archive.isObject()) {
 		const char* typeName = nullptr;
 		if (! archive.read("type", typeName)) {
-			archive.endObject();
 			return false;
 		}
 
 		const Type* type = typeDB.tryGetType(typeName);
 		if (! type) {
-			archive.endObject();
 			return false;
 		}
 
 		const char* name = nullptr;
 		if (! archive.read("name", name)) {
-			archive.endObject();
 			return false;
 		}
 
 		Variant* variant = cast<Variant>(data);
 		*variant = Variant(type->getTypeId(), name);
 		res = readObjectImpl("value", variant->getStorage(), *type, semantic, typeDB, archive, tempAllocator);
-
-		archive.endObject();
 	}
 	return res;
 }

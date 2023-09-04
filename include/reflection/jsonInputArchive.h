@@ -19,12 +19,8 @@ public:
 	ParseResult initialize(const char* buffer);
 	bool        beginElement(const char* name) const override;
 	void        endElement() const override;
-	bool        beginObject() const override;
-	void        endObject() const override;
-	bool        beginArray() const override;
-	void        endArray() const override;
-	bool        beginObject(const char* key) const override;
-	bool        beginArray(const char* key) const override;
+	bool        isObject() const override;
+	bool        isArray() const override;
 	bool        iterateChild(ArchiveIterator& it) const override;
 	bool        iterateChild(ArchiveIterator& it, const char* name) const override;
 	bool        read(bool& value) const override;

@@ -13,7 +13,7 @@ XMLInputArchive::XMLInputArchive()
 }
 
 XMLInputArchive::~XMLInputArchive() {
-	assert(typeStack.empty());
+	assert(typeStack.size() <= 1); // "root" might be open
 }
 
 ParseResult XMLInputArchive::initialize(const char* buffer) {
@@ -121,58 +121,15 @@ bool XMLInputArchive::read(std::string_view& sv) const {
 void XMLInputArchive::endElement() const {
 	assert(currentNode);
 	currentNode = currentNode->Parent();
-}
-
-bool XMLInputArchive::beginObject() const {
-	if (const char* type = nullptr; readAttribute("type", type)) {
-		if (strcmp(type, "object")) {
-			return false;
-		}
-	}
-	typeStack.push(Type::object);
-	return true;
-}
-
-void XMLInputArchive::endObject() const {
-	assert(typeStack.top() == Type::object);
 	typeStack.pop();
 }
 
-bool XMLInputArchive::beginArray() const {
-	if (const char* type = nullptr; readAttribute("type", type)) {
-		if (strcmp(type, "array")) {
-			return false;
-		}
-	}
-	typeStack.push(Type::array);
-	return true;
+bool XMLInputArchive::isObject() const {
+	return typeStack.top() == Type::object;
 }
 
-void XMLInputArchive::endArray() const {
-	assert(typeStack.top() == Type::array);
-	typeStack.pop();
-}
-
-bool XMLInputArchive::beginObject(const char* key) const {
-	bool res = false;
-	if (beginElement(key)) {
-		res = beginObject();
-		if (! res) {
-			endElement();
-		}
-	}
-	return res;
-}
-
-bool XMLInputArchive::beginArray(const char* key) const {
-	bool res = false;
-	if (beginElement(key)) {
-		res = beginArray();
-		if (! res) {
-			endElement();
-		}
-	}
-	return res;
+bool XMLInputArchive::isArray() const {
+	return typeStack.top() == Type::array;
 }
 
 bool XMLInputArchive::beginElement(const char* name) const {
@@ -181,6 +138,7 @@ bool XMLInputArchive::beginElement(const char* name) const {
 	}
 	if (auto element = currentNode->FirstChildElement(name); element) {
 		currentNode = element;
+		readElementType();
 		return true;
 	}
 	else {
@@ -191,6 +149,7 @@ bool XMLInputArchive::beginElement(const char* name) const {
 bool XMLInputArchive::iterateChild(ArchiveIterator& it) const {
 	tinyxml2::XMLNode* childIt = nullptr;
 	if (it.getNode()) {
+		typeStack.pop();
 		childIt = static_cast<tinyxml2::XMLNode*>(it.getNode())->NextSibling();
 	}
 	else {
@@ -213,6 +172,7 @@ bool XMLInputArchive::iterateChild(ArchiveIterator& it) const {
 	}
 
 	currentNode = childIt;
+	readElementType();
 	it.setNode(childIt);
 	return true;
 }
@@ -298,6 +258,19 @@ bool XMLInputArchive::readAttribute(const char* name, std::string_view& sv) cons
 		return true;
 	}
 	return false;
+}
+
+void XMLInputArchive::readElementType() const {
+	Type type = Type::value;
+	if (const char* typeAttrib = nullptr; readAttribute("type", typeAttrib)) {
+		if (! strcmp(typeAttrib, "object")) {
+			type = Type::object;
+		}
+		else if (! strcmp(typeAttrib, "array")) {
+			type = Type::array;
+		}
+	}
+	typeStack.push(type);
 }
 
 } // namespace Typhoon::Reflection

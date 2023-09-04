@@ -113,53 +113,12 @@ void JSONInputArchive::endElement() const {
 	stack.pop();
 }
 
-// TODO beginObject(name). This operates on the stack. value(name) returns a string to be parsed
-bool JSONInputArchive::beginObject() const {
-	StackItem& top = stack.top();
-	if (top->IsObject()) {
-		return true;
-	}
-	else {
-		return false;
-	}
+bool JSONInputArchive::isObject() const {
+	return stack.top()->IsObject();
 }
 
-void JSONInputArchive::endObject() const {
-	[[maybe_unused]] const StackItem& top = stack.top();
-	assert(top->IsObject());
-}
-
-bool JSONInputArchive::beginArray() const {
-	const StackItem& top = stack.top();
-	return top->IsArray();
-}
-
-void JSONInputArchive::endArray() const {
-	[[maybe_unused]] const StackItem& top = stack.top();
-	assert(top->IsArray());
-	stack.pop();
-}
-
-bool JSONInputArchive::beginObject(const char* key) const {
-	bool res = false;
-	if (beginElement(key)) {
-		res = beginObject();
-		if (! res) {
-			endElement();
-		}
-	}
-	return res;
-}
-
-bool JSONInputArchive::beginArray(const char* key) const {
-	bool res = false;
-	if (beginElement(key)) {
-		res = beginArray();
-		if (! res) {
-			endElement();
-		}
-	}
-	return res;
+bool JSONInputArchive::isArray() const {
+	return stack.top()->IsArray();
 }
 
 bool JSONInputArchive::iterateChild(ArchiveIterator& it) const {
