@@ -59,53 +59,53 @@ public:
 	InputArchive();
 	virtual ~InputArchive() = default;
 
-	virtual bool beginElement(const char* name) = 0;
-	virtual void endElement() = 0;
-	virtual bool beginObject() = 0;
-	virtual void endObject() = 0;
-	virtual bool beginArray() = 0;
-	virtual void endArray() = 0;
-	virtual bool iterateChild(ArchiveIterator& it) = 0;
-	virtual bool iterateChild(ArchiveIterator& it, const char* name) = 0;
-	virtual bool beginObject(const char* key) = 0;
-	virtual bool beginArray(const char* key) = 0;
-	virtual bool readAttribute(const char* name, bool& value) = 0;
-	virtual bool readAttribute(const char* name, int& value) = 0;
-	virtual bool readAttribute(const char* name, unsigned int& value) = 0;
-	virtual bool readAttribute(const char* name, float& value) = 0;
-	virtual bool readAttribute(const char* name, double& value) = 0;
-	virtual bool readAttribute(const char* name, const char*& str) = 0;
-	virtual bool readAttribute(const char* name, std::string_view& sv) = 0;
+	virtual bool beginElement(const char* name) const = 0;
+	virtual void endElement() const = 0;
+	virtual bool beginObject() const = 0;
+	virtual void endObject() const = 0;
+	virtual bool beginArray() const = 0;
+	virtual void endArray() const = 0;
+	virtual bool iterateChild(ArchiveIterator& it) const = 0;
+	virtual bool iterateChild(ArchiveIterator& it, const char* name) const = 0;
+	virtual bool beginObject(const char* key) const = 0;
+	virtual bool beginArray(const char* key) const = 0;
+	virtual bool readAttribute(const char* name, bool& value) const = 0;
+	virtual bool readAttribute(const char* name, int& value) const = 0;
+	virtual bool readAttribute(const char* name, unsigned int& value) const = 0;
+	virtual bool readAttribute(const char* name, float& value) const = 0;
+	virtual bool readAttribute(const char* name, double& value) const = 0;
+	virtual bool readAttribute(const char* name, const char*& str) const = 0;
+	virtual bool readAttribute(const char* name, std::string_view& sv) const = 0;
 	// Primitives
-	virtual bool read(bool& value) = 0;
-	virtual bool read(int& value) = 0;
-	virtual bool read(unsigned int& value) = 0;
-	virtual bool read(int64_t& value) = 0;
-	virtual bool read(uint64_t& value) = 0;
-	virtual bool read(float& value) = 0;
-	virtual bool read(double& value) = 0;
-	virtual bool read(const char*& str) = 0;
-	virtual bool read(std::string_view& sv) = 0;
+	virtual bool read(bool& value) const = 0;
+	virtual bool read(int& value) const = 0;
+	virtual bool read(unsigned int& value) const = 0;
+	virtual bool read(int64_t& value) const = 0;
+	virtual bool read(uint64_t& value) const = 0;
+	virtual bool read(float& value) const = 0;
+	virtual bool read(double& value) const = 0;
+	virtual bool read(const char*& str) const = 0;
+	virtual bool read(std::string_view& sv) const = 0;
 
 	//  Helpers
-	bool read(const char* key, void* data, TypeId typeId);
-	bool read(void* data, TypeId typeId);
+	bool read(const char* key, void* data, TypeId typeId) const;
+	bool read(void* data, TypeId typeId) const;
 
 	// Read data of user-defined type
 	template <class T>
-	bool read(T& object);
+	bool read(T& object) const;
 
 	template <class T>
-	T read(const char* key, T&& defaultValue);
+	T read(const char* key, T&& defaultValue) const;
 
 	template <class T>
-	T read(T&& defaultValue);
+	T read(T&& defaultValue) const;
 
 	template <class T>
-	bool read(const char* key, T& object);
+	bool read(const char* key, T& object) const;
 
 private:
-	bool readAny(void* data, const Type& type);
+	bool readAny(void* data, const Type& type) const;
 
 private:
 	Context& context;
@@ -177,21 +177,21 @@ bool operator&(InputArchive& archive, const AttributeNamer<T>& namedAttribute) {
 }
 
 template <class T>
-T InputArchive::read(const char* key, T&& defaultValue) {
+T InputArchive::read(const char* key, T&& defaultValue) const {
 	T obj = std::move(defaultValue);
 	read(key, obj);
 	return obj;
 }
 
 template <class T>
-T InputArchive::read(T&& defaultValue) {
+T InputArchive::read(T&& defaultValue) const {
 	T obj = std::move(defaultValue);
 	read(obj);
 	return obj;
 }
 
 template <class T>
-bool InputArchive::read(const char* key, T& object) {
+bool InputArchive::read(const char* key, T& object) const {
 	bool res = false;
 	if (beginElement(key)) {
 		res = read(object);
@@ -201,7 +201,7 @@ bool InputArchive::read(const char* key, T& object) {
 }
 
 template <class T>
-bool InputArchive::read(T& object) {
+bool InputArchive::read(T& object) const {
 	const Type* type = context.typeDB->tryGetType<T>();
 	if (! type) {
 		type = detail::autoRegisterHelper<T>::autoRegister(context);

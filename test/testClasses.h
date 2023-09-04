@@ -42,7 +42,7 @@ struct Material {
 };
 
 void customSaveMaterial(const void* data, refl::OutputArchive& archive);
-void customReadMaterial(void* data, refl::InputArchive& archive);
+void customReadMaterial(void* data, const refl::InputArchive& archive);
 bool operator==(const Material& a, const Material& b);
 
 class GameObject {

@@ -107,7 +107,7 @@ class OutputArchive;
 
 // ? Error codes?
 using CustomWriter = std::function<void(ConstDataPtr, OutputArchive&)>;
-using CustomReader = std::function<void(DataPtr, InputArchive&)>;
+using CustomReader = std::function<void(DataPtr, const InputArchive&)>;
 using CustomCloner = std::function<void(DataPtr, ConstDataPtr)>;
 
 class Type : Uncopyable {

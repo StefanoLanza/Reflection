@@ -4,7 +4,7 @@
 
 namespace Typhoon::Reflection {
 
-bool read(char& data, InputArchive& archive) {
+bool read(char& data, const InputArchive& archive) {
 	int  i = 0;
 	bool res = false;
 	if (archive.read(i)) {
@@ -15,7 +15,7 @@ bool read(char& data, InputArchive& archive) {
 	return res;
 }
 
-bool read(unsigned char& data, InputArchive& archive) {
+bool read(unsigned char& data, const InputArchive& archive) {
 	unsigned int ui = 0;
 	bool         res = false;
 	if (archive.read(ui)) {
@@ -26,7 +26,7 @@ bool read(unsigned char& data, InputArchive& archive) {
 	return res;
 }
 
-bool read(short& data, InputArchive& archive) {
+bool read(short& data, const InputArchive& archive) {
 	int i = 0;
 	if (archive.read(i)) {
 		// TODO check overflow
@@ -36,7 +36,7 @@ bool read(short& data, InputArchive& archive) {
 	return false;
 }
 
-bool read(unsigned short& data, InputArchive& archive) {
+bool read(unsigned short& data, const InputArchive& archive) {
 	unsigned int ui = 0;
 	if (archive.read(ui)) {
 		// TODO check overflow
@@ -46,15 +46,15 @@ bool read(unsigned short& data, InputArchive& archive) {
 	return false;
 }
 
-bool read(int& data, InputArchive& archive) {
+bool read(int& data, const InputArchive& archive) {
 	return archive.read(data);
 }
 
-bool read(unsigned int& data, InputArchive& archive) {
+bool read(unsigned int& data, const InputArchive& archive) {
 	return archive.read(data);
 }
 
-bool read(long& data, InputArchive& archive) {
+bool read(long& data, const InputArchive& archive) {
 	// InputArchive::read(long) overload does not exist
 	if constexpr (std::is_same_v<long, int64_t>) {
 		int64_t i64 = 0;
@@ -73,7 +73,7 @@ bool read(long& data, InputArchive& archive) {
 	return false;
 }
 
-bool read(unsigned long& data, InputArchive& archive) {
+bool read(unsigned long& data, const InputArchive& archive) {
 	// InputArchive::read(unsigned long) overload does not exist
 	if constexpr (std::is_same_v<unsigned long, uint64_t>) {
 		uint64_t ui64 = 0;
@@ -92,7 +92,7 @@ bool read(unsigned long& data, InputArchive& archive) {
 	return false;
 }
 
-bool read(long long& data, InputArchive& archive) {
+bool read(long long& data, const InputArchive& archive) {
 	bool res = false;
 	if (int64_t i64 = 0; archive.read(i64)) {
 		data = static_cast<long long>(i64);
@@ -101,7 +101,7 @@ bool read(long long& data, InputArchive& archive) {
 	return res;
 }
 
-bool read(unsigned long long& data, InputArchive& archive) {
+bool read(unsigned long long& data, const InputArchive& archive) {
 	if (uint64_t ui64 = 0; archive.read(ui64)) {
 		data = static_cast<unsigned long long>(ui64);
 		return true;
@@ -109,19 +109,19 @@ bool read(unsigned long long& data, InputArchive& archive) {
 	return false;
 }
 
-bool read(bool& data, InputArchive& archive) {
+bool read(bool& data, const InputArchive& archive) {
 	return archive.read(data);
 }
 
-bool read(float& data, InputArchive& archive) {
+bool read(float& data, const InputArchive& archive) {
 	return archive.read(data);
 }
 
-bool read(double& data, InputArchive& archive) {
+bool read(double& data, const InputArchive& archive) {
 	return archive.read(data);
 }
 
-bool read(const char*& data, InputArchive& archive) {
+bool read(const char*& data, const InputArchive& archive) {
 	return archive.read(data);
 }
 

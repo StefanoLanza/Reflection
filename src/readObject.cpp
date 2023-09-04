@@ -30,17 +30,17 @@ namespace {
 
 bool readObjectImpl(const char* key, DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive,
                 LinearAllocator& tempAllocator);
-bool readObjectImpl(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator);
+bool readObjectImpl(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator);
 // Readers
-bool readStruct(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator);
-bool readEnum(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator);
-bool readBitMask(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator);
-bool readContainer(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator);
-bool readPointer(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator);
-bool readReference(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator);
-bool readVariant(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator);
+bool readStruct(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator);
+bool readEnum(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator);
+bool readBitMask(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator);
+bool readContainer(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator);
+bool readPointer(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator);
+bool readReference(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator);
+bool readVariant(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator);
 
-using Reader = bool (*)(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive&, LinearAllocator&);
+using Reader = bool (*)(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive&, LinearAllocator&);
 constexpr Reader perClassReaders[] = {
 	nullptr, // builtins use per-type readers
 	readStruct, readEnum, readBitMask, readContainer, readPointer, readReference, readVariant,
@@ -50,14 +50,14 @@ constexpr Reader perClassReaders[] = {
 
 namespace detail {
 
-bool readData(DataPtr object, const Type& type, InputArchive& archive, const Context& context, Semantic semantic) {
+bool readData(DataPtr object, const Type& type, const InputArchive& archive, const Context& context, Semantic semantic) {
 	assert(object);
 	return readObjectImpl(object, type, semantic, *context.typeDB, archive, *context.pagedAllocator);
 }
 
 }
 
-std::pair<bool, size_t> readArray(DataPtr array, size_t arraySize, TypeId elementTypeId, const char* arrayName, InputArchive& archive) {
+std::pair<bool, size_t> readArray(DataPtr array, size_t arraySize, TypeId elementTypeId, const char* arrayName, const InputArchive& archive) {
 	const auto& typeDB = detail::getTypeDB();
 	const Type* elementType = typeDB.tryGetType(elementTypeId);
 	if (! elementType) {
@@ -96,7 +96,7 @@ bool readContainer(DataPtr container, const char* containerName, const Container
 
 namespace {
 
-bool readObjectImpl(const char* key, DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive,
+bool readObjectImpl(const char* key, DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive,
                 LinearAllocator& tempAllocator) {
 	bool res = false;
 	if (archive.beginElement(key)) {
@@ -106,7 +106,7 @@ bool readObjectImpl(const char* key, DataPtr data, const Type& type, Semantic se
 	return res;
 }
 
-bool readObjectImpl(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator) {
+bool readObjectImpl(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator) {
 	bool res = false;
 	if (const CustomReader& customReader = type.getCustomReader(); customReader) {
 		customReader(data, archive);
@@ -118,7 +118,7 @@ bool readObjectImpl(DataPtr data, const Type& type, Semantic semantic, const Typ
 	return res;
 }
 
-void readStructProperties(DataPtr data, const StructType& type, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator) {
+void readStructProperties(DataPtr data, const StructType& type, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator) {
 	for (const auto& property : type.getProperties()) {
 		if (property.getFlags() & Flags::readable) {
 			if (archive.beginElement(property.getName())) {
@@ -141,7 +141,7 @@ void readStructProperties(DataPtr data, const StructType& type, const TypeDB& ty
 	}
 }
 
-bool readStruct(DataPtr data, const Type& type, [[maybe_unused]] Semantic semantic, const TypeDB& typeDB, InputArchive& archive,
+bool readStruct(DataPtr data, const Type& type, [[maybe_unused]] Semantic semantic, const TypeDB& typeDB, const InputArchive& archive,
                 LinearAllocator& tempAllocator) {
 	const StructType* structType = static_cast<const StructType*>(&type);
 	do {
@@ -151,7 +151,7 @@ bool readStruct(DataPtr data, const Type& type, [[maybe_unused]] Semantic semant
 	return true;
 }
 
-bool readEnum(DataPtr dstData, const Type& type, Semantic /*semantic*/, const TypeDB& /*typeDB*/, InputArchive& archive,
+bool readEnum(DataPtr dstData, const Type& type, Semantic /*semantic*/, const TypeDB& /*typeDB*/, const InputArchive& archive,
               LinearAllocator& /*tempAllocator*/) {
 	const EnumType& enumType = static_cast<const EnumType&>(type);
 	bool            res = false;
@@ -169,7 +169,7 @@ bool readEnum(DataPtr dstData, const Type& type, Semantic /*semantic*/, const Ty
 	return res;
 }
 
-bool readBitMask(DataPtr dstData, const Type& type, Semantic /*semantic*/, const TypeDB& /*typeDB*/, InputArchive& archive,
+bool readBitMask(DataPtr dstData, const Type& type, Semantic /*semantic*/, const TypeDB& /*typeDB*/, const InputArchive& archive,
                  LinearAllocator& /*tempAllocator*/) {
 	const BitMaskType& bitMaskType = static_cast<const BitMaskType&>(type);
 	assert(bitMaskType.getSize() <= sizeof(BitMaskStorageType));
@@ -188,7 +188,7 @@ bool readBitMask(DataPtr dstData, const Type& type, Semantic /*semantic*/, const
 	return res;
 }
 
-bool readContainer(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator) {
+bool readContainer(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator) {
 	const ContainerType& containerType = static_cast<const ContainerType&>(type);
 	const Type*          key_type = containerType.getKeyType();
 	const Type*          value_type = containerType.getValueType();
@@ -228,7 +228,7 @@ bool readContainer(DataPtr data, const Type& type, Semantic semantic, const Type
 	return true;
 }
 
-bool readPointer(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator) {
+bool readPointer(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator) {
 	const PointerType& pointerType = static_cast<const PointerType&>(type);
 	if (const DataPtr pointer = pointerType.resolvePointer(data); pointer) {
 		return readObjectImpl(pointer, pointerType.getPointedType(), semantic, typeDB, archive, tempAllocator);
@@ -236,12 +236,12 @@ bool readPointer(DataPtr data, const Type& type, Semantic semantic, const TypeDB
 	return false;
 }
 
-bool readReference(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator) {
+bool readReference(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator) {
 	const ReferenceType& referenceType = static_cast<const ReferenceType&>(type);
 	return readObjectImpl(referenceType.resolvePointer(data), referenceType.getReferencedType(), semantic, typeDB, archive, tempAllocator);
 }
 
-bool readVariant(DataPtr data, const Type& /*type*/, Semantic semantic, const TypeDB& typeDB, InputArchive& archive, LinearAllocator& tempAllocator) {
+bool readVariant(DataPtr data, const Type& /*type*/, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator) {
 	bool res = false;
 	if (archive.beginObject()) {
 		const char* typeName = nullptr;

@@ -13,7 +13,7 @@ namespace Typhoon::Reflection {
 namespace {
 
 template <class T>
-bool readBuiltin(DataPtr data, InputArchive& archive) {
+bool readBuiltin(DataPtr data, const InputArchive& archive) {
 	return read(*cast<T>(data), archive);
 }
 
@@ -23,7 +23,7 @@ void writeBuiltin(ConstDataPtr data, OutputArchive& archive) {
 }
 
 template <>
-bool readBuiltin<std::string>(DataPtr data, InputArchive& archive) {
+bool readBuiltin<std::string>(DataPtr data, const InputArchive& archive) {
 	const char* cstr = nullptr;
 	if (archive.read(cstr)) {
 		*cast<std::string>(data) = cstr;
@@ -38,7 +38,7 @@ void writeBuiltin<std::string>(ConstDataPtr data, OutputArchive& archive) {
 }
 
 template <>
-bool readBuiltin<std::string_view>(DataPtr data, InputArchive& archive) {
+bool readBuiltin<std::string_view>(DataPtr data, const InputArchive& archive) {
 	return archive.read(*cast<std::string_view>(data));
 }
 

@@ -48,16 +48,18 @@ const Fog::ElvProfile& getElevationProfile(const Fog& fog) {
 
 void customSaveMaterial(const void* data, refl::OutputArchive& archive) {
 	const Material* material = static_cast<const Material*>(data);
-	archive.beginObject();
-	archive.write("name", material->name);
-	archive.write("color", material->color);
-	archive.endObject();
+	if (archive.beginObject()) {
+		archive.write("name", material->name);
+		archive.write("color", material->color);
+		archive.endObject();
+	}
 }
 
-void customReadMaterial(void* data, refl::InputArchive& archive) {
+void customReadMaterial(void* data, const refl::InputArchive& archive) {
 	Material* material = static_cast<Material*>(data);
-	archive.beginObject();
-	archive.read("name", material->name);
-	archive.read("color", material->color);
-	archive.endObject();
+	if (archive.beginObject()) {
+		archive.read("name", material->name);
+		archive.read("color", material->color);
+		archive.endObject();
+	}
 }

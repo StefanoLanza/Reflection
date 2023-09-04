@@ -13,7 +13,7 @@ InputArchive::InputArchive()
     : context(detail::getContext()) {
 }
 
-bool InputArchive::read(void* data, TypeId typeId) {
+bool InputArchive::read(void* data, TypeId typeId) const {
 	bool res = false;
 	auto type = context.typeDB->tryGetType(typeId);
 	if (type) {
@@ -22,7 +22,7 @@ bool InputArchive::read(void* data, TypeId typeId) {
 	return res;
 }
 
-bool InputArchive::read(const char* key, void* data, TypeId typeId) {
+bool InputArchive::read(const char* key, void* data, TypeId typeId) const {
 	bool res = false;
 	if (beginElement(key)) {
 		auto type = context.typeDB->tryGetType(typeId);
@@ -34,7 +34,7 @@ bool InputArchive::read(const char* key, void* data, TypeId typeId) {
 	return res;
 }
 
-bool InputArchive::readAny(void* data, const Type& type) {
+bool InputArchive::readAny(void* data, const Type& type) const {
 	return detail::readData(data, type, *this, context);
 }
 
