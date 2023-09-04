@@ -9,6 +9,54 @@ Context& getContext();
 
 }
 
+bool InputArchiveElement::isNull() const {
+	return data == nullptr;
+}
+
+bool InputArchiveElement::isObject() const {
+	return archive.isObject(data);
+}
+
+bool InputArchiveElement::isArray() const {
+	return archive.isArray(data);
+}
+
+bool InputArchiveElement::read(bool& value) const {
+	return archive.read(data, value);
+}
+
+bool InputArchiveElement::read(int& value) const {
+	return archive.read(data, value);
+}
+
+bool InputArchiveElement::read(unsigned int& value) const {
+	return archive.read(data, value);
+}
+
+bool InputArchiveElement::read(int64_t& value) const {
+	return archive.read(data, value);
+}
+
+bool InputArchiveElement::read(uint64_t& value) const {
+	return archive.read(data, value);
+}
+
+bool InputArchiveElement::read(float& value) const {
+	return archive.read(data, value);
+}
+
+bool InputArchiveElement::read(double& value) const {
+	return archive.read(data, value);
+}
+
+bool InputArchiveElement::read(const char*& str) const {
+	return archive.read(data, str);
+}
+
+bool InputArchiveElement::read(std::string_view& sv) const {
+	return archive.read(data, sv);
+}
+
 InputArchive::InputArchive()
     : context(detail::getContext()) {
 }

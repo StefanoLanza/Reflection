@@ -54,38 +54,58 @@ struct ParseResult {
 	}
 };
 
+class InputArchiveElement {
+public:
+	InputArchiveElement(InputArchive& archive, const void* data)
+	    : archive { archive }
+	    , data { data } {
+	}
+	constexpr InputArchiveElement(InputArchive& archive)
+	    : archive { archive }
+	    , data { nullptr } {
+	}
+	const void* getData() const {
+		return data;
+	}
+	operator bool() const {
+		return data != nullptr;
+	}
+	bool isNull() const;
+	bool isObject() const;
+	bool isArray() const;
+	bool read(bool& value) const;
+	bool read(int& value) const;
+	bool read(unsigned int& value) const;
+	bool read(int64_t& value) const;
+	bool read(uint64_t& value) const;
+	bool read(float& value) const;
+	bool read(double& value) const;
+	bool read(const char*& str) const;
+	bool read(std::string_view& sv) const;
+
+private:
+	InputArchive& archive;
+	const void*   data;
+};
+
 class InputArchive : Uncopyable {
 public:
 	InputArchive();
 	virtual ~InputArchive() = default;
 
-	virtual bool beginElement(const char* name) = 0;
-	virtual void endElement() = 0;
-	virtual bool beginObject() = 0;
-	virtual void endObject() = 0;
-	virtual bool beginArray() = 0;
-	virtual void endArray() = 0;
-	virtual bool iterateChild(ArchiveIterator& it) = 0;
-	virtual bool iterateChild(ArchiveIterator& it, const char* name) = 0;
-	virtual bool beginObject(const char* key) = 0;
-	virtual bool beginArray(const char* key) = 0;
-	virtual bool readAttribute(const char* name, bool& value) = 0;
-	virtual bool readAttribute(const char* name, int& value) = 0;
-	virtual bool readAttribute(const char* name, unsigned int& value) = 0;
-	virtual bool readAttribute(const char* name, float& value) = 0;
-	virtual bool readAttribute(const char* name, double& value) = 0;
-	virtual bool readAttribute(const char* name, const char*& str) = 0;
-	virtual bool readAttribute(const char* name, std::string_view& sv) = 0;
-	// Primitives
-	virtual bool read(bool& value) = 0;
-	virtual bool read(int& value) = 0;
-	virtual bool read(unsigned int& value) = 0;
-	virtual bool read(int64_t& value) = 0;
-	virtual bool read(uint64_t& value) = 0;
-	virtual bool read(float& value) = 0;
-	virtual bool read(double& value) = 0;
-	virtual bool read(const char*& str) = 0;
-	virtual bool read(std::string_view& sv) = 0;
+	virtual InputArchiveElement beginElement(const void* element, const char* name) = 0;
+	virtual void                endElement() = 0;
+	virtual bool                iterateChild(ArchiveIterator& it) = 0;
+	virtual bool                iterateChild(ArchiveIterator& it, const char* name) = 0;
+	virtual bool                beginObject(const char* key) = 0;
+	virtual bool                beginArray(const char* key) = 0;
+	virtual bool                readAttribute(const void* element, const char* name, bool& value) const = 0;
+	virtual bool                readAttribute(const void* element, const char* name, int& value) const = 0;
+	virtual bool                readAttribute(const void* element, const char* name, unsigned int& value) const = 0;
+	virtual bool                readAttribute(const void* element, const char* name, float& value) const = 0;
+	virtual bool                readAttribute(const void* element, const char* name, double& value) const = 0;
+	virtual bool                readAttribute(const void* element, const char* name, const char*& str) const = 0;
+	virtual bool                readAttribute(const void* element, const char* name, std::string_view& sv) const = 0;
 
 	//  Helpers
 	bool read(const char* key, void* data, TypeId typeId);
@@ -105,7 +125,20 @@ public:
 	bool read(const char* key, T& object);
 
 private:
-	bool readAny(void* data, const Type& type);
+	bool         readAny(void* data, const Type& type);
+	virtual bool isObject(const void* element) const = 0;
+	virtual bool isArray(const void* element) const = 0;
+	virtual bool read(const void* element, bool& value) const = 0;
+	virtual bool read(const void* element, int& value) const = 0;
+	virtual bool read(const void* element, unsigned int& value) const = 0;
+	virtual bool read(const void* element, int64_t& value) const = 0;
+	virtual bool read(const void* element, uint64_t& value) const = 0;
+	virtual bool read(const void* element, float& value) const = 0;
+	virtual bool read(const void* element, double& value) const = 0;
+	virtual bool read(const void* element, const char*& str) const = 0;
+	virtual bool read(const void* element, std::string_view& sv) const = 0;
+
+	friend class InputArchiveElement;
 
 private:
 	Context& context;

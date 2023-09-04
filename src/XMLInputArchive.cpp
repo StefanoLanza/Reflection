@@ -8,8 +8,7 @@
 namespace Typhoon::Reflection {
 
 XMLInputArchive::XMLInputArchive()
-    : document(std::make_unique<tinyxml2::XMLDocument>())
-    , currentNode(nullptr) {
+    : document(std::make_unique<tinyxml2::XMLDocument>()) {
 }
 
 XMLInputArchive::~XMLInputArchive() {
@@ -18,7 +17,6 @@ XMLInputArchive::~XMLInputArchive() {
 
 ParseResult XMLInputArchive::initialize(const char* buffer) {
 	assert(buffer);
-	currentNode = nullptr;
 	const auto error = document->Parse(buffer);
 	if (error == tinyxml2::XML_SUCCESS) {
 		currentNode = document.get();
@@ -30,79 +28,79 @@ ParseResult XMLInputArchive::initialize(const char* buffer) {
 	}
 }
 
-bool XMLInputArchive::read(bool& value) {
+bool XMLInputArchive::read(const void* element, bool& value) const {
 	bool res = false;
-	if (auto element = currentNode->ToElement(); element) {
-		if (auto error = element->QueryBoolText(&value); error == tinyxml2::XML_SUCCESS) {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); element) {
+		if (auto error = elm->QueryBoolText(&value); error == tinyxml2::XML_SUCCESS) {
 			res = true;
 		}
 	}
 	return res;
 }
 
-bool XMLInputArchive::read(int& value) {
+bool XMLInputArchive::read(const void* element, int& value)const  {
 	bool res = false;
-	if (auto element = currentNode->ToElement(); element) {
-		if (auto error = element->QueryIntText(&value); error == tinyxml2::XML_SUCCESS) {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); element) {
+		if (auto error = elm->QueryIntText(&value); error == tinyxml2::XML_SUCCESS) {
 			res = true;
 		}
 	}
 	return res;
 }
 
-bool XMLInputArchive::read(unsigned int& value) {
+bool XMLInputArchive::read(const void* element, unsigned int& value)const  {
 	bool res = false;
-	if (auto element = currentNode->ToElement(); element) {
-		if (auto error = element->QueryUnsignedText(&value); error == tinyxml2::XML_SUCCESS) {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); element) {
+		if (auto error = elm->QueryUnsignedText(&value); error == tinyxml2::XML_SUCCESS) {
 			res = true;
 		}
 	}
 	return res;
 }
 
-bool XMLInputArchive::read(int64_t& value) {
+bool XMLInputArchive::read(const void* element, int64_t& value)const  {
 	bool res = false;
-	if (auto element = currentNode->ToElement(); element) {
-		if (auto error = element->QueryInt64Text(&value); error == tinyxml2::XML_SUCCESS) {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); element) {
+		if (auto error = elm->QueryInt64Text(&value); error == tinyxml2::XML_SUCCESS) {
 			res = true;
 		}
 	}
 	return res;
 }
 
-bool XMLInputArchive::read(uint64_t& value) {
+bool XMLInputArchive::read(const void* element, uint64_t& value) const {
 	bool res = false;
-	if (auto element = currentNode->ToElement(); element) {
-		if (auto error = element->QueryUnsigned64Text(&value); error == tinyxml2::XML_SUCCESS) {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); element) {
+		if (auto error = elm->QueryUnsigned64Text(&value); error == tinyxml2::XML_SUCCESS) {
 			res = true;
 		}
 	}
 	return res;
 }
-bool XMLInputArchive::read(float& value) {
+bool XMLInputArchive::read(const void* element, float& value)const  {
 	bool res = false;
-	if (auto element = currentNode->ToElement(); element) {
-		if (auto error = element->QueryFloatText(&value); error == tinyxml2::XML_SUCCESS) {
-			res = true;
-		}
-	}
-	return res;
-}
-
-bool XMLInputArchive::read(double& value) {
-	bool res = false;
-	if (auto element = currentNode->ToElement(); element) {
-		if (auto error = element->QueryDoubleText(&value); error == tinyxml2::XML_SUCCESS) {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); element) {
+		if (auto error = elm->QueryFloatText(&value); error == tinyxml2::XML_SUCCESS) {
 			res = true;
 		}
 	}
 	return res;
 }
 
-bool XMLInputArchive::read(const char*& str) {
+bool XMLInputArchive::read(const void* element, double& value)const  {
 	bool res = false;
-	if (auto element = currentNode->ToElement(); element) {
-		if (const char* text = element->GetText(); text) {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); element) {
+		if (auto error = elm->QueryDoubleText(&value); error == tinyxml2::XML_SUCCESS) {
+			res = true;
+		}
+	}
+	return res;
+}
+
+bool XMLInputArchive::read(const void* element, const char*& str)const  {
+	bool res = false;
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); element) {
+		if (const char* text = elm->GetText(); text) {
 			str = text;
 			res = true;
 		}
@@ -110,8 +108,8 @@ bool XMLInputArchive::read(const char*& str) {
 	return res;
 }
 
-bool XMLInputArchive::read(std::string_view& sv) {
-	if (const char* str = nullptr; read(str)) {
+bool XMLInputArchive::read(const void* element, std::string_view& sv)const  {
+	if (const char* str = nullptr; read(element, str)) {
 		sv = str;
 		return true;
 	}
@@ -119,8 +117,6 @@ bool XMLInputArchive::read(std::string_view& sv) {
 }
 
 void XMLInputArchive::endElement() {
-	assert(currentNode);
-	currentNode = currentNode->Parent();
 }
 
 bool XMLInputArchive::beginObject() {
@@ -175,16 +171,12 @@ bool XMLInputArchive::beginArray(const char* key) {
 	return res;
 }
 
-bool XMLInputArchive::beginElement(const char* name) {
-	if (! currentNode) {
-		return false;
-	}
-	if (auto element = currentNode->FirstChildElement(name); element) {
-		currentNode = element;
-		return true;
+InputArchiveElement XMLInputArchive::beginElement(const void* element, const char* name) {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); element) {
+		return { *this, elm };
 	}
 	else {
-		return false;
+		return {*this };
 	}
 }
 
@@ -237,7 +229,7 @@ bool XMLInputArchive::iterateChild(ArchiveIterator& it, const char* name) {
 	it.setNode(childIt);
 	return true;
 }
-bool XMLInputArchive::readAttribute(const char* name, bool& value) {
+bool XMLInputArchive::readAttribute(const void* element, const char* name, bool& value) {
 	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
 		if (auto error = elem->QueryBoolAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
 			return true;
@@ -246,7 +238,7 @@ bool XMLInputArchive::readAttribute(const char* name, bool& value) {
 	return false;
 }
 
-bool XMLInputArchive::readAttribute(const char* name, int& value) {
+bool XMLInputArchive::readAttribute(const void* element, const char* name, int& value) {
 	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
 		if (auto error = elem->QueryIntAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
 			return true;
@@ -255,7 +247,7 @@ bool XMLInputArchive::readAttribute(const char* name, int& value) {
 	return false;
 }
 
-bool XMLInputArchive::readAttribute(const char* name, unsigned int& value) {
+bool XMLInputArchive::readAttribute(const void* element, const char* name, unsigned int& value) {
 	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
 		if (auto error = elem->QueryUnsignedAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
 			return true;
@@ -264,7 +256,7 @@ bool XMLInputArchive::readAttribute(const char* name, unsigned int& value) {
 	return false;
 }
 
-bool XMLInputArchive::readAttribute(const char* name, float& value) {
+bool XMLInputArchive::readAttribute(const void* element, const char* name, float& value) {
 	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
 		if (auto error = elem->QueryFloatAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
 			return true;
@@ -273,7 +265,7 @@ bool XMLInputArchive::readAttribute(const char* name, float& value) {
 	return false;
 }
 
-bool XMLInputArchive::readAttribute(const char* name, double& value) {
+bool XMLInputArchive::readAttribute(const void* element, const char* name, double& value) {
 	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
 		if (auto error = elem->QueryDoubleAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
 			return true;
@@ -282,7 +274,7 @@ bool XMLInputArchive::readAttribute(const char* name, double& value) {
 	return false;
 }
 
-bool XMLInputArchive::readAttribute(const char* name, const char*& str) {
+bool XMLInputArchive::readAttribute(const void* element, const char* name, const char*& str) {
 	tinyxml2::XMLElement* elem = currentNode->ToElement();
 	if (elem) {
 		if (auto error = elem->QueryStringAttribute(name, &str); error == tinyxml2::XML_SUCCESS) {
@@ -292,7 +284,7 @@ bool XMLInputArchive::readAttribute(const char* name, const char*& str) {
 	return false;
 }
 
-bool XMLInputArchive::readAttribute(const char* name, std::string_view& sv) {
+bool XMLInputArchive::readAttribute(const void* element, const char* name, std::string_view& sv) {
 	if (const char* str = nullptr; readAttribute(name, str)) {
 		sv = str;
 		return true;
@@ -300,6 +292,30 @@ bool XMLInputArchive::readAttribute(const char* name, std::string_view& sv) {
 	return false;
 }
 
+bool  XMLInputArchive::readAttribute(const void* element, const char* attributeName, const char*& str) const {
+	if (auto error = static_cast<const tinyxml2::XMLElement*>(element)->QueryStringAttribute(attributeName, &str); error == tinyxml2::XML_SUCCESS) {
+		return true;
+	}
+	return false;
+}
+
+bool XMLInputArchive::isObject(const void* element) const {
+	if (const char* type = nullptr; readAttribute(element, "type", type)) {
+		if (strcmp(type, "object")) {
+			return false;
+		}
+	}
+	return false;
+}
+
+bool XMLInputArchive::isArray(const void* element) const {
+	if (const char* type = nullptr; readAttribute(element, "type", type)) {
+		if (strcmp(type, "object")) {
+			return false;
+		}
+	}
+	return false;
+}
 
 } // namespace Typhoon::Reflection
 
