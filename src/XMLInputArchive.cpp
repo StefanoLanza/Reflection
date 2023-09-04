@@ -180,6 +180,7 @@ InputArchiveElement XMLInputArchive::beginElement(const void* element, const cha
 	}
 }
 
+#if 0
 bool XMLInputArchive::iterateChild(ArchiveIterator& it) {
 	tinyxml2::XMLNode* childIt = nullptr;
 	if (it.getNode()) {
@@ -229,63 +230,64 @@ bool XMLInputArchive::iterateChild(ArchiveIterator& it, const char* name) {
 	it.setNode(childIt);
 	return true;
 }
-bool XMLInputArchive::readAttribute(const void* element, const char* name, bool& value) {
-	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
-		if (auto error = elem->QueryBoolAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
+#endif
+
+bool XMLInputArchive::readAttribute(const void* element, const char* name, bool& value) const {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); elm) {
+		if (auto error = elm->QueryBoolAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
 			return true;
 		}
 	}
 	return false;
 }
 
-bool XMLInputArchive::readAttribute(const void* element, const char* name, int& value) {
-	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
-		if (auto error = elem->QueryIntAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
+bool XMLInputArchive::readAttribute(const void* element, const char* name, int& value) const {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); elm) {
+		if (auto error = elm->QueryIntAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
 			return true;
 		}
 	}
 	return false;
 }
 
-bool XMLInputArchive::readAttribute(const void* element, const char* name, unsigned int& value) {
-	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
-		if (auto error = elem->QueryUnsignedAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
+bool XMLInputArchive::readAttribute(const void* element, const char* name, unsigned int& value) const {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); elm) {
+		if (auto error = elm->QueryUnsignedAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
 			return true;
 		}
 	}
 	return false;
 }
 
-bool XMLInputArchive::readAttribute(const void* element, const char* name, float& value) {
-	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
-		if (auto error = elem->QueryFloatAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
+bool XMLInputArchive::readAttribute(const void* element, const char* name, float& value) const {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); elm) {
+		if (auto error = elm->QueryFloatAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
 			return true;
 		}
 	}
 	return false;
 }
 
-bool XMLInputArchive::readAttribute(const void* element, const char* name, double& value) {
-	if (tinyxml2::XMLElement* elem = currentNode->ToElement()) {
-		if (auto error = elem->QueryDoubleAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
+bool XMLInputArchive::readAttribute(const void* element, const char* name, double& value) const {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); elm) {
+		if (auto error = elm->QueryDoubleAttribute(name, &value); error == tinyxml2::XML_SUCCESS) {
 			return true;
 		}
 	}
 	return false;
 }
 
-bool XMLInputArchive::readAttribute(const void* element, const char* name, const char*& str) {
-	tinyxml2::XMLElement* elem = currentNode->ToElement();
-	if (elem) {
-		if (auto error = elem->QueryStringAttribute(name, &str); error == tinyxml2::XML_SUCCESS) {
+bool XMLInputArchive::readAttribute(const void* element, const char* name, const char*& str) const {
+	if (auto elm = static_cast<const tinyxml2::XMLNode*>(element)->ToElement(); elm) {
+		if (auto error = elm->QueryStringAttribute(name, &str); error == tinyxml2::XML_SUCCESS) {
 			return true;
 		}
 	}
 	return false;
 }
 
-bool XMLInputArchive::readAttribute(const void* element, const char* name, std::string_view& sv) {
-	if (const char* str = nullptr; readAttribute(name, str)) {
+bool XMLInputArchive::readAttribute(const void* element, const char* name, std::string_view& sv) const {
+	if (const char* str = nullptr; readAttribute(element, name, str)) {
 		sv = str;
 		return true;
 	}

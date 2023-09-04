@@ -99,6 +99,15 @@ public:
 	virtual bool                iterateChild(ArchiveIterator& it, const char* name) = 0;
 	virtual bool                beginObject(const char* key) = 0;
 	virtual bool                beginArray(const char* key) = 0;
+	virtual bool                read(const void* element, bool& value) const = 0;
+	virtual bool                read(const void* element, int& value) const = 0;
+	virtual bool                read(const void* element, unsigned int& value) const = 0;
+	virtual bool                read(const void* element, int64_t& value) const = 0;
+	virtual bool                read(const void* element, uint64_t& value) const = 0;
+	virtual bool                read(const void* element, float& value) const = 0;
+	virtual bool                read(const void* element, double& value) const = 0;
+	virtual bool                read(const void* element, const char*& str) const = 0;
+	virtual bool                read(const void* element, std::string_view& sv) const = 0;
 	virtual bool                readAttribute(const void* element, const char* name, bool& value) const = 0;
 	virtual bool                readAttribute(const void* element, const char* name, int& value) const = 0;
 	virtual bool                readAttribute(const void* element, const char* name, unsigned int& value) const = 0;
@@ -128,15 +137,6 @@ private:
 	bool         readAny(void* data, const Type& type);
 	virtual bool isObject(const void* element) const = 0;
 	virtual bool isArray(const void* element) const = 0;
-	virtual bool read(const void* element, bool& value) const = 0;
-	virtual bool read(const void* element, int& value) const = 0;
-	virtual bool read(const void* element, unsigned int& value) const = 0;
-	virtual bool read(const void* element, int64_t& value) const = 0;
-	virtual bool read(const void* element, uint64_t& value) const = 0;
-	virtual bool read(const void* element, float& value) const = 0;
-	virtual bool read(const void* element, double& value) const = 0;
-	virtual bool read(const void* element, const char*& str) const = 0;
-	virtual bool read(const void* element, std::string_view& sv) const = 0;
 
 	friend class InputArchiveElement;
 

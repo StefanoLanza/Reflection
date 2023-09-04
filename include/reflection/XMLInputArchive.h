@@ -53,8 +53,6 @@ public:
 	bool readAttribute(const void* element, const char* name, const char*& str) const override;
 	bool readAttribute(const void* element, const char* name, std::string_view& sv) const override;
 
-	bool readAttribute(const void* element, const char* attributeName, const char*& str) const;
-
 	using InputArchive::read;
 
 private:
