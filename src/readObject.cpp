@@ -85,7 +85,7 @@ std::pair<bool, size_t> readArray(DataPtr array, size_t arraySize, TypeId elemen
 	return { res, count };
 }
 
-bool readContainer(DataPtr container, const char* containerName, const ContainerType& type, InputArchive& archive) {
+bool readContainer(DataPtr container, const char* containerName, const ContainerType& type, const InputArchive& archive) {
 	bool res = false;
 	if (archive.beginElement(containerName)) {
 		res = readContainer(container, type, Semantic::none, detail::getTypeDB(), archive, *detail::getContext().pagedAllocator);

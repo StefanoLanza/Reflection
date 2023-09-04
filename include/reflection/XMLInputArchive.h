@@ -58,6 +58,7 @@ private:
 	mutable tinyxml2::XMLNode*             currentNode; // The node that is currently being processed
 
 	enum class Type {
+		undefined,
 		array,
 		object,
 		value,
