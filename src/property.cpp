@@ -43,13 +43,13 @@ Semantic Property::getSemantic() const {
 	return semantic;
 }
 
-Property& Property::setFlags(uint32_t flags) {
-	this->flags = flags;
+Property& Property::setFlags(uint32_t value) {
+	flags = value;
 	return *this;
 }
 
-Property& Property::setSemantic(Semantic semantic) {
-	this->semantic = semantic;
+Property& Property::setSemantic(Semantic value) {
+	semantic = value;
 	return *this;
 }
 
@@ -76,8 +76,9 @@ void Property::copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator&
 	alloc.rewind(allocOffs);
 }
 
-void Property::addAttribute(const Attribute* attribute) {
+Property& Property::addAttribute(const Attribute* attribute) {
 	attributes.push_back(attribute);
+	return *this;
 }
 
 span<const Attribute* const> Property::getAttributes() const {

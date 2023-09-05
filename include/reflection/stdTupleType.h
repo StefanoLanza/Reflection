@@ -27,7 +27,7 @@ Property tupleElementProperty(const char* name, Context& context) {
 		std::get<index>(*tuple) = *cast<E>(value);
 	};
 
-	return { setter, getter, name, varType, Flags::all, Semantic::none, *context.allocator };
+	return { setter, getter, name, varType, *context.allocator };
 }
 
 template <typename Tuple, size_t ElementIndex>

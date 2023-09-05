@@ -1,5 +1,6 @@
 #pragma once
 
+#include "attribute.h"
 #include "config.h"
 #include "dataPtr.h"
 #include "semantics.h"
@@ -12,7 +13,6 @@
 namespace Typhoon::Reflection {
 
 class Type;
-class Attribute;
 
 using Getter = std::function<ConstDataPtr(ConstDataPtr self, DataPtr temporary)>;
 using Setter = std::function<void(DataPtr self, ConstDataPtr value)>; // TODO DataPtr value to allow move?
@@ -29,8 +29,11 @@ public:
 	void                         setValue(DataPtr self, ConstDataPtr value) const;
 	void                         getValue(ConstDataPtr self, DataPtr value) const;
 	void                         copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator& alloc) const;
-	void                         addAttribute(const Attribute* attribute);
+	Property&                    addAttribute(const Attribute* attribute);
 	span<const Attribute* const> getAttributes() const;
+
+	template <class T>
+	const Attribute* queryAttribute() const;
 
 private:
 	using AttributeVec = std::vector<const Attribute*, stdAllocator<const Attribute*>>;
@@ -43,5 +46,15 @@ private:
 	Semantic     semantic;
 	AttributeVec attributes;
 };
+
+template <class T>
+const Attribute* Property::queryAttribute() const {
+	for (auto a : attributes) {
+		if (a->tryCast<T>()) {
+			return a;
+		}
+	}
+	return nullptr;
+}
 
 } // namespace Typhoon::Reflection

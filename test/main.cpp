@@ -803,7 +803,7 @@ void registerUserTypes() {
 
 	BEGIN_STRUCT(Material);
 	FIELD(name);
-	FIELD(color);
+	FIELD(color).SEMANTIC(refl::Semantic::color);
 	READER(customReadMaterial);
 	WRITER(customSaveMaterial);
 	END_STRUCT();
@@ -812,7 +812,7 @@ void registerUserTypes() {
 	PROPERTY("lives", getLives, setLives);
 	PROPERTY("name", getName, setName);
 	PROPERTY("position", getPosition, setPosition);
-	PROPERTY_EX("action", getActionFlags, setActionFlags, Flags::all, Semantic::none);
+	PROPERTY("action", getActionFlags, setActionFlags);
 	PROPERTY("material", getMaterial, setMaterial);
 	GETTER("readOnly", getReadOnly);
 	SETTER("writeOnly", setWriteOnly);

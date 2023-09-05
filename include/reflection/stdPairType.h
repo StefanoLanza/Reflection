@@ -27,8 +27,8 @@ struct autoRegisterHelper<std::pair<first_type, second_type>> {
 
 		auto type = context.scopedAllocator->make<StructType>(typeName, typeId, sizeof(PairType), alignof(PairType), nullptr,
 		                                                      buildMethodTable<PairType>(), *context.allocator);
-		type->addProperty(ClassUtil<PairType>::makeProperty("first", Flags::all, Semantic::none, &PairType::first, context));
-		type->addProperty(ClassUtil<PairType>::makeProperty("second", Flags::all, Semantic::none, &PairType::second, context));
+		type->addProperty(ClassUtil<PairType>::makeProperty("first", &PairType::first, context));
+		type->addProperty(ClassUtil<PairType>::makeProperty("second", &PairType::second, context));
 		return type;
 	}
 };

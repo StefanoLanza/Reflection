@@ -35,19 +35,4 @@ inline const T& Attribute::cast() const {
 	return static_cast<const T&>(*this);
 }
 
-class FloatMin : public Attribute {
-public:
-	FloatMin(float minValue)
-	    : Attribute(getTypeId<FloatMin>())
-	    , min(minValue) {
-	}
-
-	float getMin() const {
-		return min;
-	}
-
-private:
-	float min;
-};
-
 } // namespace Typhoon::Reflection

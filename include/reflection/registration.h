@@ -4,6 +4,7 @@
 
 #include "arrayType.h"
 #include "bitMaskType.h"
+#include "commonAttributes.h"
 #include "containerType.h"
 #include "enumType.h"
 #include "flags.h"
@@ -105,9 +106,6 @@ Context& getContext();
 #define PROPERTY(name, getter, setter) \
 	structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::setter, &class_::getter, context))
 
-#define FLAGS(flags)       setFlags((flags))
-#define SEMANTIC(semantic) setSemantic((semantic))
-
 #define GETTER(name, getter)                                                                              \
 	do {                                                                                                  \
 		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::getter, context)); \
@@ -118,27 +116,12 @@ Context& getContext();
 		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::setter, context)); \
 	} while (false)
 
-#define PROPERTY_EX(name, getter, setter, flags, semantic)                                                                                  \
-	do {                                                                                                                                    \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, flags, semantic, &class_::setter, &class_::getter, context)); \
-	} while (false)
-
 #define C_PROPERTY(name, getter, setter)                                                                 \
 	do {                                                                                                 \
 		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, setter, getter, context)); \
 	} while (0)
 
-#define C_PROPERTY_EX(name, getter, setter, flags, semantic)                                                              \
-	do {                                                                                                                  \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, flags, semantic, setter, getter, context)); \
-	} while (0)
-
-#define C_SETTER_EX(name, setter, flags, semantic)                                                                \
-	do {                                                                                                          \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, flags, semantic, setter, context)); \
-	} while (0)
-
-#define C_SETTER(name, setter) C_SETTER_EX(name, setter, Flags::all, Semantic::none)
+#define C_SETTER(name, setter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, setter, context))
 
 #define C_GETTER(name, getter)                                                                   \
 	do {                                                                                         \
@@ -208,15 +191,19 @@ Context& getContext();
 
 #define BITMASK_VALUE(name) { #name, static_cast<BitMaskStorageType>(bitMaskStruct_::name) },
 
-#define END_BITMASK()                                                                                                                             \
-	}                                                                                                                                             \
-	;                                                                                                                                             \
-	const Type& underlyingType = typeDB_.getType<bitMaskStruct_::StorageType>();                                                                  \
-	const auto  bitmaskType =                                                                                                                     \
-	    scopedAllocator_.make<BitMaskType>(typeName, Typhoon::getTypeId<bitMaskStruct_>(), &underlyingType, enumerators, std::size(enumerators)); \
-	typeDB_.registerType(bitmaskType);                                                                                                            \
-	currNamespace->addType(bitmaskType);                                                                                                          \
-	}                                                                                                                                             \
+#define END_BITMASK()                                                                                                                    \
+	}                                                                                                                                    \
+	;                                                                                                                                    \
+	const Type& underlyingType = typeDB_.getType<bitMaskStruct_::StorageType>();                                                         \
+	const auto  bitmaskType =                                                                                                            \
+	    scopedAllocator_.make<BitMaskType>(typeName, getTypeId<bitMaskStruct_>(), &underlyingType, enumerators, std::size(enumerators)); \
+	typeDB_.registerType(bitmaskType);                                                                                                   \
+	currNamespace->addType(bitmaskType);                                                                                                 \
+	}                                                                                                                                    \
 	while (false)
+
+#define FLAGS(flags)         setFlags((flags))
+#define SEMANTIC(semantic)   setSemantic((semantic))
+#define ATTRIBUTE(type, ...) addAttribute(scopedAllocator_.make<type>(__VA_ARGS__))
 
 } // namespace Typhoon::Reflection

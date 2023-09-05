@@ -156,24 +156,6 @@ private:
 	Context& context;
 };
 
-template <typename T>
-struct AttributeNamer {
-	const char* name;
-	T*          objectPtr;
-};
-
-template <typename T>
-AttributeNamer<T> NameAttribute(T& object, const char* name) {
-	return { name, &object };
-}
-
-#define ATTRIBUTE(x) Typhoon::Reflection::NameAttribute(x##, #x)
-
-template <typename T>
-bool operator&(InputArchive& archive, const AttributeNamer<T>& namedAttribute) {
-	return archive.readAttribute(namedAttribute.name, namedAttribute.objectPtr);
-}
-
 template <class T>
 T InputArchive::read(const char* key, T&& defaultValue) const {
 	T obj = std::move(defaultValue);
