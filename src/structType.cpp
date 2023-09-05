@@ -30,8 +30,9 @@ bool StructType::inheritsFrom(const StructType* type) const {
 	return false;
 }
 
-void StructType::addProperty(Property&& property) {
+Property& StructType::addProperty(Property&& property) {
 	properties.push_back(std::move(property));
+	return properties.back();
 }
 
 void StructType::addAttribute(const Attribute* attribute) {

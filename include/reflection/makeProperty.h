@@ -74,63 +74,61 @@ private:
 
 public:
 	template <typename R, typename A>
-	static Property makeProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A), R (*getter)(const C&),
-	                             Context& context) {
+	static Property makeProperty(const char* name, void (*setter)(C&, A), R (*getter)(const C&), Context& context) {
 		static_assert(std::is_same_v<std::decay_t<R>, std::decay_t<A>>);
 		using ValueType = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<ValueType>(context);
-		return { wrapSetter(setter), wrapGetter(getter), name, valueType, flags, semantic, *context.allocator };
+		return { wrapSetter(setter), wrapGetter(getter), name, valueType, *context.allocator };
 	}
 
 	template <typename A>
-	static Property makeProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A), Context& context) {
+	static Property makeProperty(const char* name, void (*setter)(C&, A), Context& context) {
 		using ValueType = std::decay_t<A>;
 		const Type* type = autoRegisterType<ValueType>(context);
-		return { wrapSetter(setter), nullptr, name, type, flags, semantic, *context.allocator };
+		return { wrapSetter(setter), nullptr, name, type, *context.allocator };
 	}
 
 	template <typename T, typename A>
-	static Property makeProperty(const char* name, uint32_t flags, Semantic semantic, void (*setter)(C&, A), T C::*memberPtr, Context& context) {
+	static Property makeProperty(const char* name, void (*setter)(C&, A), T C::*memberPtr, Context& context) {
 		static_assert(std::is_same_v<T, std::decay_t<A>>);
 		const Type* varType = autoRegisterType<T>(context);
-		return { wrapSetter(setter), wrapGetter(memberPtr), name, varType, flags, semantic, *context.allocator };
+		return { wrapSetter(setter), wrapGetter(memberPtr), name, varType, *context.allocator };
 	}
 
 	template <typename R, typename A>
-	static Property makeProperty(const char* name, uint32_t flags, Semantic semantic, void (C::*setter)(A), R (C::*getter)() const,
-	                             Context& context) {
+	static Property makeProperty(const char* name, void (C::*setter)(A), R (C::*getter)() const, Context& context) {
 		static_assert(std::is_same_v<std::decay_t<R>, std::decay_t<A>>);
 		using ValueType = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<ValueType>(context);
-		return { wrapSetter(setter), wrapGetter(getter), name, valueType, flags, semantic, *context.allocator };
+		return { wrapSetter(setter), wrapGetter(getter), name, valueType, *context.allocator };
 	}
 
 	template <typename R>
-	static Property makeProperty(const char* name, uint32_t flags, Semantic semantic, R (*getter)(const C&), Context& context) {
+	static Property makeProperty(const char* name, R (*getter)(const C&), Context& context) {
 		using ValueType = std::decay_t<R>;
 		const Type* A = autoRegisterType<ValueType>(context);
 		assert(A);
-		return { nullptr, wrapGetter(getter), name, A, flags, semantic, *context.allocator };
+		return { nullptr, wrapGetter(getter), name, A, *context.allocator };
 	}
 
 	template <typename R>
-	static Property makeProperty(const char* name, uint32_t flags, Semantic semantic, R (C::*getter)() const, Context& context) {
+	static Property makeProperty(const char* name, R (C::*getter)() const, Context& context) {
 		using ValueType = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<ValueType>(context);
-		return { nullptr, wrapGetter(getter), name, valueType, flags, semantic, *context.allocator };
+		return { nullptr, wrapGetter(getter), name, valueType, *context.allocator };
 	}
 
 	template <typename A>
-	static Property makeProperty(const char* name, uint32_t flags, Semantic semantic, void (C::*setter)(A), Context& context) {
+	static Property makeProperty(const char* name, void (C::*setter)(A), Context& context) {
 		using ValueType = std::decay_t<A>;
 		const Type* valueType = autoRegisterType<ValueType>(context);
-		return { wrapSetter(setter), nullptr, name, valueType, flags, semantic, *context.allocator };
+		return { wrapSetter(setter), nullptr, name, valueType, *context.allocator };
 	}
 
 	template <typename T>
-	static Property makeProperty(const char* name, uint32_t flags, Semantic semantic, T C::*memberPtr, Context& context) {
+	static Property makeProperty(const char* name, T C::*memberPtr, Context& context) {
 		const Type* varType = autoRegisterType<T>(context);
-		return { wrapSetter(memberPtr), wrapGetter(memberPtr), name, varType, flags, semantic, *context.allocator };
+		return { wrapSetter(memberPtr), wrapGetter(memberPtr), name, varType, *context.allocator };
 	}
 };
 

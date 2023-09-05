@@ -20,7 +20,7 @@ public:
 
 	const StructType*            getParentType() const;
 	bool                         inheritsFrom(const StructType* type) const;
-	void                         addProperty(Property&& property);
+	Property&                    addProperty(Property&& property);
 	void                         addAttribute(const Attribute* attribute);
 	span<const Property>         getProperties() const;
 	span<const Attribute* const> getAttributes() const;

@@ -19,13 +19,13 @@ using Setter = std::function<void(DataPtr self, ConstDataPtr value)>; // TODO Da
 
 class Property {
 public:
-	Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, uint32_t flags, Semantic semantic, Allocator& allocator);
-
-	const char* getName() const;
-	const Type& getValueType() const;
-	uint32_t    getFlags() const;
-	Semantic    getSemantic() const;
-
+	Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, Allocator& allocator);
+	const char*                  getName() const;
+	const Type&                  getValueType() const;
+	uint32_t                     getFlags() const;
+	Semantic                     getSemantic() const;
+	Property&                    setFlags(uint32_t flags);
+	Property&                    setSemantic(Semantic semantic);
 	void                         setValue(DataPtr self, ConstDataPtr value) const;
 	void                         getValue(ConstDataPtr self, DataPtr value) const;
 	void                         copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator& alloc) const;

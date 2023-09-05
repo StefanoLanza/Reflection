@@ -5,25 +5,25 @@
 
 namespace Typhoon::Reflection {
 
-Property::Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, uint32_t flags, Semantic semantic, Allocator& allocator)
+Property::Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, Allocator& allocator)
     : setter { std::move(setter) }
     , getter { std::move(getter) }
     , name { name }
     , valueType { valueType }
-    , flags { flags }
-    , semantic { semantic }
+    , flags { Flags::all }
+    , semantic { Semantic::none }
     , attributes { stdAllocator<const Attribute*>(allocator) } {
 	assert(valueType);
 	// Override flags
 	if (! this->setter) {
-		this->flags &= ~Flags::readable;
-		this->flags &= ~Flags::edit;
-		this->flags &= ~Flags::clonable;
+		flags &= ~Flags::readable;
+		flags &= ~Flags::edit;
+		flags &= ~Flags::clonable;
 	}
 	if (! this->getter) {
-		this->flags &= ~Flags::writeable;
-		this->flags &= ~Flags::clonable;
-		this->flags &= ~Flags::view;
+		flags &= ~Flags::writeable;
+		flags &= ~Flags::clonable;
+		flags &= ~Flags::view;
 	}
 }
 
@@ -41,6 +41,16 @@ uint32_t Property::getFlags() const {
 
 Semantic Property::getSemantic() const {
 	return semantic;
+}
+
+Property& Property::setFlags(uint32_t flags) {
+	this->flags = flags;
+	return *this;
+}
+
+Property& Property::setSemantic(Semantic semantic) {
+	this->semantic = semantic;
+	return *this;
 }
 
 void Property::setValue(DataPtr self, ConstDataPtr value) const {

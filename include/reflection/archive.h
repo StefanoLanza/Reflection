@@ -241,15 +241,15 @@ private:
 
 class ObjectReadScope : Uncopyable {
 public:
-	ObjectReadScope(InputArchive& archive, const char* key);
-	ObjectReadScope(InputArchive& archive);
+	ObjectReadScope(const InputArchive& archive, const char* key);
+	ObjectReadScope(const InputArchive& archive);
 	~ObjectReadScope();
 	operator bool() const;
 
 private:
-	InputArchive& archive;
-	bool          hasKey;
-	bool          isValid;
+	const InputArchive& archive;
+	bool                hasKey;
+	bool                isValid;
 };
 
 class ArrayWriteScope : Uncopyable {

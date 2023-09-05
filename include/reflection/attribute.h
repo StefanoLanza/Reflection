@@ -8,7 +8,7 @@ namespace Typhoon::Reflection {
 class Attribute {
 public:
 	Attribute(TypeId typeId)
-	    : typeId(typeId) {
+	    : typeId { typeId } {
 	}
 
 	template <class T>

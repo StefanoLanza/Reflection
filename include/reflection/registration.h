@@ -98,31 +98,24 @@ Context& getContext();
 		do {                                                                                                                             \
 	} while (0)
 
-#define FIELD_RENAMED_EXT(field, name, flags, semantic)                                                                   \
-	do {                                                                                                                  \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, flags, semantic, &class_::field, context)); \
-	} while (false)
-
-#define FIELD_RENAMED(field, name) FIELD_RENAMED_EXT(field, name, Flags::all, Semantic::none)
+#define FIELD_RENAMED(field, name) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::field, context))
 
 #define FIELD(field) FIELD_RENAMED(field, #field)
 
-#define FIELD_EXT(field, flags, semantic) FIELD_RENAMED_EXT(field, #field, flags, semantic)
+#define PROPERTY(name, getter, setter) \
+	structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::setter, &class_::getter, context))
 
-#define PROPERTY(name, getter, setter)                                                                                             \
-	do {                                                                                                                           \
-		structType->addProperty(                                                                                                   \
-		    detail::ClassUtil<class_>::makeProperty(name, Flags::all, Semantic::none, &class_::setter, &class_::getter, context)); \
+#define FLAGS(flags)       setFlags((flags))
+#define SEMANTIC(semantic) setSemantic((semantic))
+
+#define GETTER(name, getter)                                                                              \
+	do {                                                                                                  \
+		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::getter, context)); \
 	} while (false)
 
-#define GETTER(name, getter)                                                                                                          \
-	do {                                                                                                                              \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, Flags::all, Semantic::none, &class_::getter, context)); \
-	} while (false)
-
-#define SETTER(name, setter)                                                                                                          \
-	do {                                                                                                                              \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, Flags::all, Semantic::none, &class_::setter, context)); \
+#define SETTER(name, setter)                                                                              \
+	do {                                                                                                  \
+		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::setter, context)); \
 	} while (false)
 
 #define PROPERTY_EX(name, getter, setter, flags, semantic)                                                                                  \
@@ -130,12 +123,12 @@ Context& getContext();
 		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, flags, semantic, &class_::setter, &class_::getter, context)); \
 	} while (false)
 
-#define C_PROPERTY(name, getter, setter)                                                                                             \
-	do {                                                                                                                             \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, Flags::all, Semantic::none, setter, getter, context)); \
+#define C_PROPERTY(name, getter, setter)                                                                 \
+	do {                                                                                                 \
+		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, setter, getter, context)); \
 	} while (0)
 
-#define C_PROPERTY_EX(name, getter, setter, flags, semantic)                                                             \
+#define C_PROPERTY_EX(name, getter, setter, flags, semantic)                                                              \
 	do {                                                                                                                  \
 		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, flags, semantic, setter, getter, context)); \
 	} while (0)
@@ -147,14 +140,14 @@ Context& getContext();
 
 #define C_SETTER(name, setter) C_SETTER_EX(name, setter, Flags::all, Semantic::none)
 
-#define C_GETTER(name, getter)                                                                            \
-	do {                                                                                                  \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, Flags::all, Semantic::none, getter, context)); \
+#define C_GETTER(name, getter)                                                                   \
+	do {                                                                                         \
+		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, getter, context)); \
 	} while (0)
 
-#define FIELD_WITH_SETTER(field, setter)                                                                                                       \
-	do {                                                                                                                                       \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(#field, Flags::all, Semantic::none, setter, &class_::field, context)); \
+#define FIELD_WITH_SETTER(field, setter)                                                                           \
+	do {                                                                                                           \
+		structType->addProperty(detail::ClassUtil<class_>::makeProperty(#field, setter, &class_::field, context)); \
 	} while (false)
 
 #define READER(reader)                       \

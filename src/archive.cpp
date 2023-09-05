@@ -101,13 +101,13 @@ ArrayReadScope::operator bool() const {
 	return isValid;
 }
 
-ObjectReadScope::ObjectReadScope(InputArchive& archive, const char* key)
+ObjectReadScope::ObjectReadScope(const InputArchive& archive, const char* key)
     : archive { archive }
     , hasKey { archive.beginElement(key) }
     , isValid { hasKey && archive.isObject() } {
 }
 
-ObjectReadScope::ObjectReadScope(InputArchive& archive)
+ObjectReadScope::ObjectReadScope(const InputArchive& archive)
     : archive { archive }
     , hasKey { false }
     , isValid { archive.isObject() } {
