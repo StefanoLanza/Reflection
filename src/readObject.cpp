@@ -28,7 +28,7 @@ Context& getContext();
 
 namespace {
 
-bool readObjectImpl(const char* key, DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, InputArchive& archive,
+bool readObjectImpl(const char* key, DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive,
                 LinearAllocator& tempAllocator);
 bool readObjectImpl(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, LinearAllocator& tempAllocator);
 // Readers

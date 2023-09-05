@@ -36,7 +36,7 @@
   * Run ```premake gmake -cc=gcc --with-tests --with-examples``` to generate GNU makefiles
   * cd build/gmake
   * Build and run the examples and the UnitTest application
-     * make --config=configuration (e.g. release_x86)
+     * make config=configuration (e.g. release_x86)
 * For integration in your own application
   * Add the folders include, src, external/core, external/TinyXML, external/rapidjson to your build configuration. Please see premake5.lua as a reference.
 
