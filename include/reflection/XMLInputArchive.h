@@ -29,6 +29,7 @@ public:
 	void        endElement() const override;
 	bool        isObject() const override;
 	bool        isArray() const override;
+	ValueType   getValueType() const override;
 	bool        iterateChild(ArchiveIterator& it) const override;
 	bool        iterateChild(ArchiveIterator& it, const char* name) const override;
 	bool        read(bool& value) const override;
@@ -56,14 +57,7 @@ private:
 private:
 	std::unique_ptr<tinyxml2::XMLDocument> document;    // The tinyxml document object
 	mutable tinyxml2::XMLNode*             currentNode; // The node that is currently being processed
-
-	enum class Type {
-		undefined,
-		array,
-		object,
-		value,
-	};
-	mutable std::stack<Type> typeStack;
+	mutable std::stack<ValueType>          typeStack;
 };
 
 } // namespace Typhoon::Reflection

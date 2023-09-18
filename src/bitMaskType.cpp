@@ -4,8 +4,8 @@
 
 namespace Typhoon::Reflection {
 
-BitMaskType::BitMaskType(const char* typeName, TypeId typeID, const Type* underlyingType, const BitMaskConstant enumerators[], size_t numEnumerators)
-    : Type(typeName, typeID, Subclass::BitMask, underlyingType->getSize(), underlyingType->getAlignment(), {})
+BitMaskType::BitMaskType(const char* typeName, TypeId typeID, const Type* underlyingType, const BitMaskConstant enumerators[], size_t numEnumerators, Allocator& allocator)
+    : Type(typeName, typeID, Subclass::BitMask, underlyingType->getSize(), underlyingType->getAlignment(), {}, allocator)
     , underlyingType(underlyingType)
     , enumerators(enumerators)
     , numEnumerators(numEnumerators) {

@@ -74,8 +74,8 @@ private:
 template <typename MAP_TYPE>
 class StdMapContainer final : public ContainerType {
 public:
-	StdMapContainer(const char* typeName, TypeId typeID, const Type* keyType, const Type* valueType)
-	    : ContainerType(typeName, typeID, sizeof(MAP_TYPE), keyType, valueType, buildMethodTable<MAP_TYPE>()) {
+	StdMapContainer(const char* typeName, TypeId typeID, const Type* keyType, const Type* valueType, Allocator& allocator)
+	    : ContainerType(typeName, typeID, sizeof(MAP_TYPE), keyType, valueType, buildMethodTable<MAP_TYPE>(), allocator) {
 	}
 
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
@@ -105,7 +105,7 @@ struct autoRegisterHelper<std::map<_Kty, T>> {
 		constexpr TypeId typeID = getTypeId<ContainerType>();
 		const char*      innerTypeNames[] = { keyType->getName(), mappedType->getName(), nullptr };
 		const char*      typeName = buildTemplateTypeName(innerTypeNames, "std::map<", ">", *context.scopedAllocator);
-		return context.scopedAllocator->make<StdMapContainer<ContainerType>>(typeName, typeID, keyType, mappedType);
+		return context.scopedAllocator->make<StdMapContainer<ContainerType>>(typeName, typeID, keyType, mappedType, *context.allocator);
 	}
 };
 

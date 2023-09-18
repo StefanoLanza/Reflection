@@ -176,7 +176,7 @@ Context& getContext();
 	;                                                                                                                                           \
 	const Type& underlyingType = typeDB_.getType<std::underlying_type_t<enumClass_>>();                                                         \
 	const auto  enumType = scopedAllocator_.make<EnumType>(enumName, Typhoon::getTypeId<enumClass_>(), sizeof(enumClass_), alignof(enumClass_), \
-                                                          enumerators, std::size(enumerators), &underlyingType);                               \
+                                                          enumerators, std::size(enumerators), &underlyingType, allocator_);                   \
 	typeDB_.registerType(enumType);                                                                                                             \
 	currNamespace->addType(enumType);                                                                                                           \
 	}                                                                                                                                           \
@@ -191,15 +191,15 @@ Context& getContext();
 
 #define BITMASK_VALUE(name) { #name, static_cast<BitMaskStorageType>(bitMaskStruct_::name) },
 
-#define END_BITMASK()                                                                                                                    \
-	}                                                                                                                                    \
-	;                                                                                                                                    \
-	const Type& underlyingType = typeDB_.getType<bitMaskStruct_::StorageType>();                                                         \
-	const auto  bitmaskType =                                                                                                            \
-	    scopedAllocator_.make<BitMaskType>(typeName, getTypeId<bitMaskStruct_>(), &underlyingType, enumerators, std::size(enumerators)); \
-	typeDB_.registerType(bitmaskType);                                                                                                   \
-	currNamespace->addType(bitmaskType);                                                                                                 \
-	}                                                                                                                                    \
+#define END_BITMASK()                                                                                                                                \
+	}                                                                                                                                                \
+	;                                                                                                                                                \
+	const Type& underlyingType = typeDB_.getType<bitMaskStruct_::StorageType>();                                                                     \
+	const auto  bitmaskType =                                                                                                                        \
+	    scopedAllocator_.make<BitMaskType>(typeName, getTypeId<bitMaskStruct_>(), &underlyingType, enumerators, std::size(enumerators), allocator_); \
+	typeDB_.registerType(bitmaskType);                                                                                                               \
+	currNamespace->addType(bitmaskType);                                                                                                             \
+	}                                                                                                                                                \
 	while (false)
 
 #define FLAGS(flags)         setFlags((flags))

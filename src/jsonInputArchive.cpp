@@ -121,6 +121,28 @@ bool JSONInputArchive::isArray() const {
 	return stack.top()->IsArray();
 }
 
+ValueType JSONInputArchive::getValueType() const {
+	auto jsonType = stack.top()->GetType();
+	switch (jsonType) {
+	case rapidjson::Type::kNullType:
+		return ValueType::Null;
+	case rapidjson::Type::kFalseType:
+		return ValueType::False;
+	case rapidjson::Type::kTrueType:
+		return ValueType::True;
+	case rapidjson::Type::kObjectType:
+		return ValueType::Object;
+	case rapidjson::Type::kArrayType:
+		return ValueType::Array;
+	case rapidjson::Type::kStringType:
+		return ValueType::String;
+	case rapidjson::Type::kNumberType:
+		return ValueType::Number;
+	default:
+		return ValueType::Undefined;
+	}
+}
+
 bool JSONInputArchive::iterateChild(ArchiveIterator& it) const {
 	if (it.hasValidIndex()) {
 		stack.pop();

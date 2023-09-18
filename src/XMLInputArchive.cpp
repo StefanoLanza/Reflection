@@ -125,11 +125,15 @@ void XMLInputArchive::endElement() const {
 }
 
 bool XMLInputArchive::isObject() const {
-	return (typeStack.top() == Type::object) || (typeStack.top() == Type::undefined);
+	return (typeStack.top() == ValueType::Object) || (typeStack.top() == ValueType::Undefined);
 }
 
 bool XMLInputArchive::isArray() const {
-	return (typeStack.top() == Type::array) || (typeStack.top() == Type::undefined);
+	return (typeStack.top() == ValueType::Array) || (typeStack.top() == ValueType::Undefined);
+}
+
+ValueType XMLInputArchive::getValueType() const {
+	return typeStack.top();
 }
 
 bool XMLInputArchive::beginElement(const char* name) const {
@@ -261,13 +265,13 @@ bool XMLInputArchive::readAttribute(const char* name, std::string_view& sv) cons
 }
 
 void XMLInputArchive::readElementType() const {
-	Type type = Type::undefined;
+	ValueType type = ValueType::Undefined;
 	if (const char* typeAttrib = nullptr; readAttribute("type", typeAttrib)) {
 		if (! strcmp(typeAttrib, "object")) {
-			type = Type::object;
+			type = ValueType::Object;
 		}
 		else if (! strcmp(typeAttrib, "array")) {
-			type = Type::array;
+			type = ValueType::Array;
 		}
 	}
 	typeStack.push(type);

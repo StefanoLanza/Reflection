@@ -49,7 +49,7 @@ void writeBuiltin<std::string_view>(ConstDataPtr data, OutputArchive& archive) {
 
 template <class T>
 void createBuiltin(Context& context, const char* typeName) {
-	auto type = context.scopedAllocator->make<BuiltinType>(typeName, getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>());
+	auto type = context.scopedAllocator->make<BuiltinType>(typeName, getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>(), *context.allocator);
 	type->setCustomReader(&readBuiltin<T>);
 	type->setCustomWriter(&writeBuiltin<T>);
 	context.typeDB->registerType(type);
@@ -76,7 +76,7 @@ void registerBuiltinTypes(Context& context) {
 	CREATE_BUILTIN(std::string, context);
 	CREATE_BUILTIN(std::string_view, context);
 
-	auto variantType = context.scopedAllocator->make<VariantType>();
+	auto variantType = context.scopedAllocator->make<VariantType>(*context.allocator);
 	context.typeDB->registerType(variantType);
 	context.typeDB->getGlobalNamespace().addType(variantType);
 }

@@ -4,8 +4,8 @@
 
 namespace Typhoon::Reflection {
 
-ReferenceType::ReferenceType(TypeId typeID, const Type* referencedType, bool bIsConst)
-    : Type("&", typeID, Subclass::Reference, 0, 0, {})
+ReferenceType::ReferenceType(TypeId typeID, const Type* referencedType, bool bIsConst, Allocator& allocator)
+    : Type("&", typeID, Subclass::Reference, 0, 0, {}, allocator)
     , referencedType(referencedType)
     , bIsConst(bIsConst) {
 }

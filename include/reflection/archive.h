@@ -54,24 +54,36 @@ struct ParseResult {
 	}
 };
 
+enum ValueType {
+	Array,
+	False,
+	Null,
+	Number,
+	Object,
+	String,
+	True,
+	Undefined,
+};
+
 class InputArchive : Uncopyable {
 public:
 	InputArchive();
 	virtual ~InputArchive() = default;
 
-	virtual bool beginElement(const char* name) const = 0;
-	virtual void endElement() const = 0;
-	virtual bool isObject() const = 0;
-	virtual bool isArray() const = 0;
-	virtual bool iterateChild(ArchiveIterator& it) const = 0;
-	virtual bool iterateChild(ArchiveIterator& it, const char* name) const = 0;
-	virtual bool readAttribute(const char* name, bool& value) const = 0;
-	virtual bool readAttribute(const char* name, int& value) const = 0;
-	virtual bool readAttribute(const char* name, unsigned int& value) const = 0;
-	virtual bool readAttribute(const char* name, float& value) const = 0;
-	virtual bool readAttribute(const char* name, double& value) const = 0;
-	virtual bool readAttribute(const char* name, const char*& str) const = 0;
-	virtual bool readAttribute(const char* name, std::string_view& sv) const = 0;
+	virtual bool      beginElement(const char* name) const = 0;
+	virtual void      endElement() const = 0;
+	virtual bool      isObject() const = 0;
+	virtual bool      isArray() const = 0;
+	virtual ValueType getValueType() const = 0;
+	virtual bool      iterateChild(ArchiveIterator& it) const = 0;
+	virtual bool      iterateChild(ArchiveIterator& it, const char* name) const = 0;
+	virtual bool      readAttribute(const char* name, bool& value) const = 0;
+	virtual bool      readAttribute(const char* name, int& value) const = 0;
+	virtual bool      readAttribute(const char* name, unsigned int& value) const = 0;
+	virtual bool      readAttribute(const char* name, float& value) const = 0;
+	virtual bool      readAttribute(const char* name, double& value) const = 0;
+	virtual bool      readAttribute(const char* name, const char*& str) const = 0;
+	virtual bool      readAttribute(const char* name, std::string_view& sv) const = 0;
 	// Primitives
 	virtual bool read(bool& value) const = 0;
 	virtual bool read(int& value) const = 0;
@@ -84,8 +96,6 @@ public:
 	virtual bool read(std::string_view& sv) const = 0;
 
 	//  Helpers
-	bool beginObject(const char* key) const;
-	bool beginArray(const char* key) const;
 	bool read(const char* key, void* data, TypeId typeId) const;
 	bool read(void* data, TypeId typeId) const;
 
@@ -94,13 +104,13 @@ public:
 	bool read(T& object) const;
 
 	template <class T>
-	T read(const char* key, T&& defaultValue) const;
+	bool read(const char* key, T& object) const;
 
 	template <class T>
 	T read(T&& defaultValue) const;
 
 	template <class T>
-	bool read(const char* key, T& object) const;
+	T read(const char* key, T&& defaultValue) const;
 
 private:
 	bool readAny(void* data, const Type& type) const;

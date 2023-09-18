@@ -21,6 +21,7 @@ public:
 	void        endElement() const override;
 	bool        isObject() const override;
 	bool        isArray() const override;
+	ValueType   getValueType() const override;
 	bool        iterateChild(ArchiveIterator& it) const override;
 	bool        iterateChild(ArchiveIterator& it, const char* name) const override;
 	bool        read(bool& value) const override;

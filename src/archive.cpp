@@ -10,34 +10,12 @@ Context& getContext();
 }
 
 InputArchive::InputArchive()
-    : context(detail::getContext()) {
+    : context { detail::getContext() } {
 }
 
-bool InputArchive::beginObject(const char* key) const {
-	bool res = false;
-	if (beginElement(key)) {
-		res = isObject();
-		if (! res) {
-			endElement();
-		}
-	}
-	return res;
-}
-
-bool InputArchive::beginArray(const char* key) const {
-	bool res = false;
-	if (beginElement(key)) {
-		res = isArray();
-		if (! res) {
-			endElement();
-		}
-	}
-	return res;
-}
 bool InputArchive::read(void* data, TypeId typeId) const {
 	bool res = false;
-	auto type = context.typeDB->tryGetType(typeId);
-	if (type) {
+	if (auto type = context.typeDB->tryGetType(typeId); type) {
 		res = readAny(data, *type);
 	}
 	return res;
@@ -46,8 +24,7 @@ bool InputArchive::read(void* data, TypeId typeId) const {
 bool InputArchive::read(const char* key, void* data, TypeId typeId) const {
 	bool res = false;
 	if (beginElement(key)) {
-		auto type = context.typeDB->tryGetType(typeId);
-		if (type) {
+		if (auto type = context.typeDB->tryGetType(typeId); type) {
 			res = readAny(data, *type);
 		}
 		endElement();
@@ -60,7 +37,7 @@ bool InputArchive::readAny(void* data, const Type& type) const {
 }
 
 OutputArchive::OutputArchive()
-    : context(detail::getContext()) {
+    : context { detail::getContext() } {
 }
 
 void OutputArchive::write(const char* key, const void* data, TypeId typeId) {

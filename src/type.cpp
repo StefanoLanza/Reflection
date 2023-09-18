@@ -2,13 +2,14 @@
 
 namespace Typhoon::Reflection {
 
-Type::Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods)
+Type::Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods, Allocator& allocator)
     : typeID(typeId)
     , size(size)
     , alignment(alignment)
     , subClass(subClass)
     , typeName(typeName)
-    , methods(methods) {
+    , methods(methods)
+    , attributes(stdAllocator<const Attribute*>(allocator)) {
 }
 
 const char* Type::getName() const {
@@ -93,6 +94,14 @@ void Type::setCustomCloner(CustomCloner cloner) {
 
 const CustomCloner& Type::getCustomCloner() const {
 	return customCloner;
+}
+
+void Type::addAttribute(const Attribute* attribute) {
+	attributes.push_back(attribute);
+}
+
+span<const Attribute* const> Type::getAttributes() const {
+	return { attributes.data(), attributes.size() };
 }
 
 } // namespace Typhoon::Reflection

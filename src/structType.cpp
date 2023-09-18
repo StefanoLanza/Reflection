@@ -7,10 +7,9 @@ namespace Typhoon::Reflection {
 
 StructType::StructType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const MethodTable& methods,
                        Allocator& allocator)
-    : Type { typeName, typeID, Subclass::Struct, size, alignment, methods }
+    : Type { typeName, typeID, Subclass::Struct, size, alignment, methods, allocator }
     , parentType(parentType)
-    , properties(stdAllocator<Property>(allocator))
-    , attributes(stdAllocator<const Attribute*>(allocator)) {
+    , properties(stdAllocator<Property>(allocator)) {
 }
 
 StructType::~StructType() = default;
@@ -35,16 +34,8 @@ Property& StructType::addProperty(Property&& property) {
 	return properties.back();
 }
 
-void StructType::addAttribute(const Attribute* attribute) {
-	attributes.push_back(attribute);
-}
-
 span<const Property> StructType::getProperties() const {
 	return { properties.data(), properties.size() };
-}
-
-span<const Attribute* const> StructType::getAttributes() const {
-	return { attributes.data(), attributes.size() };
 }
 
 } // namespace Typhoon::Reflection
