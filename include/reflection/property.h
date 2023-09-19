@@ -21,9 +21,11 @@ class Property {
 public:
 	Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, Allocator& allocator);
 	const char*                  getName() const;
+	const char*                  getPrettyName() const;
 	const Type&                  getValueType() const;
 	uint32_t                     getFlags() const;
 	Semantic                     getSemantic() const;
+	Property&                    setPrettyName(const char* str);
 	Property&                    setFlags(uint32_t flags);
 	Property&                    setSemantic(Semantic semantic);
 	void                         setValue(DataPtr self, ConstDataPtr value) const;
@@ -41,6 +43,7 @@ private:
 	Setter       setter;
 	Getter       getter;
 	const char*  name;
+	const char*  prettyName;
 	const Type*  valueType;
 	uint32_t     flags;
 	Semantic     semantic;

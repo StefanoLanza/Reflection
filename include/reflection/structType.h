@@ -16,10 +16,11 @@ public:
 	           Allocator& allocator);
 	~StructType();
 
-	const StructType*            getParentType() const;
-	bool                         inheritsFrom(const StructType* type) const;
-	Property&                    addProperty(Property&& property);
-	span<const Property>         getProperties() const;
+	const StructType*    getParentType() const;
+	bool                 inheritsFrom(const StructType* type) const;
+	Property&            addProperty(Property&& property);
+	span<const Property> getProperties() const;
+	const Property*      getProperty(const char* propertyName) const;
 
 private:
 	using Vector = std::vector<Property, stdAllocator<Property>>;

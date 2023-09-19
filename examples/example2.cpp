@@ -80,7 +80,7 @@ void registerUserTypes() {
 	BEGIN_STRUCT(GameObject);
 	FIELD(name);
 	FIELD_WITH_SETTER(lives, setLives);
-	C_GETTER("remainingLives", getRemainingLives);
+	C_GETTER("remainingLives", getRemainingLives).PRETTYNAME("remaining lives");
 	FIELD(position);
 	FIELD(velocity);
 	END_STRUCT();

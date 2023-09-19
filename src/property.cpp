@@ -5,22 +5,23 @@
 
 namespace Typhoon::Reflection {
 
-Property::Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, Allocator& allocator)
-    : setter { std::move(setter) }
-    , getter { std::move(getter) }
+Property::Property(Setter&& setter_, Getter&& getter_, const char* name, const Type* valueType, Allocator& allocator)
+    : setter { std::move(setter_) }
+    , getter { std::move(getter_) }
     , name { name }
+    , prettyName { name }
     , valueType { valueType }
     , flags { Flags::all }
     , semantic { Semantic::none }
     , attributes { stdAllocator<const Attribute*>(allocator) } {
 	assert(valueType);
 	// Override flags
-	if (! this->setter) {
+	if (! setter) {
 		flags &= ~Flags::readable;
 		flags &= ~Flags::edit;
 		flags &= ~Flags::clonable;
 	}
-	if (! this->getter) {
+	if (! getter) {
 		flags &= ~Flags::writeable;
 		flags &= ~Flags::clonable;
 		flags &= ~Flags::view;
@@ -29,6 +30,10 @@ Property::Property(Setter&& setter, Getter&& getter, const char* name, const Typ
 
 const char* Property::getName() const {
 	return name;
+}
+
+const char* Property::getPrettyName() const {
+	return prettyName;
 }
 
 const Type& Property::getValueType() const {
@@ -41,6 +46,12 @@ uint32_t Property::getFlags() const {
 
 Semantic Property::getSemantic() const {
 	return semantic;
+}
+
+Property& Property::setPrettyName(const char* str) {
+	assert(str);
+	prettyName = str;
+	return *this;
 }
 
 Property& Property::setFlags(uint32_t value) {

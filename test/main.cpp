@@ -776,9 +776,9 @@ void registerUserTypes() {
 	END_BITMASK();
 
 	BEGIN_STRUCT(Color);
-	FIELD(r);
-	FIELD(g);
-	FIELD(b);
+	FIELD(r).PRETTYNAME("red");
+	FIELD(g).PRETTYNAME("green");
+	FIELD(b).PRETTYNAME("blue");
 	END_STRUCT();
 
 	BEGIN_STRUCT(Coords);

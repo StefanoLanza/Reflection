@@ -106,32 +106,17 @@ Context& getContext();
 #define PROPERTY(name, getter, setter) \
 	structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::setter, &class_::getter, context))
 
-#define GETTER(name, getter)                                                                              \
-	do {                                                                                                  \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::getter, context)); \
-	} while (false)
+#define GETTER(name, getter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::getter, context))
 
-#define SETTER(name, setter)                                                                              \
-	do {                                                                                                  \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::setter, context)); \
-	} while (false)
+#define SETTER(name, setter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::setter, context))
 
-#define C_PROPERTY(name, getter, setter)                                                                 \
-	do {                                                                                                 \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, setter, getter, context)); \
-	} while (0)
+#define C_PROPERTY(name, getter, setter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, setter, getter, context))
 
 #define C_SETTER(name, setter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, setter, context))
 
-#define C_GETTER(name, getter)                                                                   \
-	do {                                                                                         \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, getter, context)); \
-	} while (0)
+#define C_GETTER(name, getter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, getter, context))
 
-#define FIELD_WITH_SETTER(field, setter)                                                                           \
-	do {                                                                                                           \
-		structType->addProperty(detail::ClassUtil<class_>::makeProperty(#field, setter, &class_::field, context)); \
-	} while (false)
+#define FIELD_WITH_SETTER(field, setter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(#field, setter, &class_::field, context))
 
 #define READER(reader)                       \
 	do {                                     \
@@ -174,6 +159,7 @@ Context& getContext();
 #define END_ENUM()                                                                                                                              \
 	}                                                                                                                                           \
 	;                                                                                                                                           \
+                                                                                                                                                \
 	const Type& underlyingType = typeDB_.getType<std::underlying_type_t<enumClass_>>();                                                         \
 	const auto  enumType = scopedAllocator_.make<EnumType>(enumName, Typhoon::getTypeId<enumClass_>(), sizeof(enumClass_), alignof(enumClass_), \
                                                           enumerators, std::size(enumerators), &underlyingType, allocator_);                   \
@@ -202,6 +188,7 @@ Context& getContext();
 	}                                                                                                                                                \
 	while (false)
 
+#define PRETTYNAME(name)     setPrettyName((name))
 #define FLAGS(flags)         setFlags((flags))
 #define SEMANTIC(semantic)   setSemantic((semantic))
 #define ATTRIBUTE(type, ...) addAttribute(scopedAllocator_.make<type>(__VA_ARGS__))

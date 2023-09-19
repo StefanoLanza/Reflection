@@ -38,4 +38,14 @@ span<const Property> StructType::getProperties() const {
 	return { properties.data(), properties.size() };
 }
 
+const Property* StructType::getProperty(const char* propertyName) const {
+	assert(propertyName);
+	for (const auto& p : properties) {
+		if (! strcmp(p.getName(), propertyName)) {
+			return &p;
+		}
+	}
+	return nullptr;
+}
+
 } // namespace Typhoon::Reflection

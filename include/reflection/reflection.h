@@ -67,9 +67,22 @@ const Type& getType(TypeId typeID);
 const Type* tryGetType(TypeId typeID);
 
 /**
+ * @brief helper
+ * @param typeID
+ * @return
+ */
+template <class T>
+const Type& getType();
+
+/**
  * @brief
  * @return the global namespace
  */
 const Namespace& getGlobalNamespace();
+
+template <class T>
+const Type& getType() {
+	return getType(getTypeId<T>());
+}
 
 } // namespace Typhoon::Reflection

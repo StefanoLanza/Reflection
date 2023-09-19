@@ -86,6 +86,18 @@ int main(int /*argc*/, char* /*argv*/[]) {
 	std::string archiveContent = writeGameObject(obj, element);
 	GameObject  otherObj;
 	readGameObject(otherObj, archiveContent, element);
+
+	std::cout << "GameObject.stamina attributes:" << std::endl;
+	const auto& type = static_cast<const refl::StructType&>(refl::getType<GameObject>());
+	for (auto a : type.getProperty("stamina")->getAttributes()) {
+		if (auto floatMin = a->tryCast<refl::FloatMin>(); floatMin) {
+			std::cout << "FloatMin. minValue:" << floatMin->getMin() << std::endl;
+		}
+		else if (auto floatMax = a->tryCast<refl::FloatMax>(); floatMax) {
+			std::cout << "FloatMax. maxValue:" << floatMax->getMax() << std::endl;
+		}
+	}
+
 	refl::deinitReflection();
 	return 0;
 }
