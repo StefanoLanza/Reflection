@@ -1,5 +1,6 @@
 #pragma once
 
+#include "context.h"
 #include "dataPtr.h"
 #include "errorCodes.h"
 #include "semantics.h"
@@ -16,9 +17,10 @@ namespace Typhoon::Reflection {
 class InputArchive;
 
 namespace detail {
-TypeDB& getTypeDB();
 
-bool readData(DataPtr object, const Type& type, const InputArchive& archive, const Context& context, Semantic semantic = Semantic::none);
+TypeDB&  getTypeDB();
+Context& getContext();
+bool     readData(DataPtr object, const Type& type, const InputArchive& archive, const Context& context, Semantic semantic = Semantic::none);
 
 } // namespace detail
 
@@ -44,7 +46,7 @@ bool readVector(std::vector<T>& vector, const char* vectorName, const InputArchi
 	using container_type = std::vector<T>;
 	const Type&                                      valueType = detail::getTypeDB().getType<T>();
 	constexpr TypeId                                 typeID = getTypeId<container_type>();
-	const detail::StdVectorContainer<container_type> type { nullptr, typeID, &valueType };
+	const detail::StdVectorContainer<container_type> type { nullptr, typeID, &valueType, *detail::getContext().allocator };
 	return readContainer(&vector, vectorName, type, archive);
 }
 
