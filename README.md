@@ -48,6 +48,5 @@ Look inside the examples folder for sample code.
 
 # TODO
 - [ ] YAML support
-- [ ] Support for attributes
 - [ ] Documentation
 - [ ] Conan package
