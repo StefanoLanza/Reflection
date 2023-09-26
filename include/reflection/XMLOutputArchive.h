@@ -21,43 +21,41 @@ namespace Typhoon::Reflection {
 
 class XMLOutputArchive final : public OutputArchive {
 public:
-	XMLOutputArchive();
+	XMLOutputArchive(bool createRoot = true);
 	~XMLOutputArchive();
 
-	bool             saveToFile(const char* filename) override;
-	bool             saveToString(std::string& string) override;
-	std::string_view getString() override;
-	bool             beginElement(const char* name) override;
-	void             endElement() override;
-	bool             beginObject() override;
-	void             endObject() override;
-	bool             beginArray() override;
-	void             endArray() override;
-	void             writeAttribute(const char* name, bool value) override;
-	void             writeAttribute(const char* name, int value) override;
-	void             writeAttribute(const char* name, unsigned int value) override;
-	void             writeAttribute(const char* name, float value) override;
-	void             writeAttribute(const char* name, double value) override;
-	void             writeAttribute(const char* name, const char* str) override;
-	bool             write(bool value) override;
-	bool             write(int value) override;
-	bool             write(unsigned int value) override;
-	bool             write(int64_t value) override;
-	bool             write(uint64_t value) override;
-	bool             write(float value) override;
-	bool             write(double value) override;
-	bool             write(const char* str) override;
-	bool             write(const std::string& str) override;
+	bool        saveToFile(const char* filename) override;
+	std::string saveToString() override;
+	void        setKey(const char* name) override;
+	bool        beginObject() override;
+	void        endObject() override;
+	bool        beginArray() override;
+	void        endArray() override;
+	void        writeAttribute(const char* name, bool value) override;
+	void        writeAttribute(const char* name, int value) override;
+	void        writeAttribute(const char* name, unsigned int value) override;
+	void        writeAttribute(const char* name, float value) override;
+	void        writeAttribute(const char* name, double value) override;
+	void        writeAttribute(const char* name, const char* str) override;
+	void        write(bool value) override;
+	void        write(int value) override;
+	void        write(unsigned int value) override;
+	void        write(int64_t value) override;
+	void        write(uint64_t value) override;
+	void        write(float value) override;
+	void        write(double value) override;
+	void        write(const char* str) override;
+	void        write(std::string_view str) override;
 
 	using OutputArchive::write;
 
 private:
+	void beginElement(const char* key);
+	void endElement();
 	void beginArrayElement();
-	void endArrayElement();
 
 private:
-	enum class Type
-	{
+	enum class Type {
 		array,
 		object
 	};

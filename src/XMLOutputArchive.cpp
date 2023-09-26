@@ -7,13 +7,20 @@
 
 namespace Typhoon::Reflection {
 
-XMLOutputArchive::XMLOutputArchive()
+XMLOutputArchive::XMLOutputArchive(bool createRoot)
     : document(std::make_unique<tinyxml2::XMLDocument>()) {
 	// Insert declaration "xml version=\"1.0\" encoding=\"UTF-8\""
 	document->LinkEndChild(document->NewDeclaration());
 	currentNode = document.get();
-	beginElement("root");
-	endRoot = true;
+
+	if (createRoot) {
+		setKey("root");
+		beginObject();
+		endRoot = true;
+	}
+	else {
+		endRoot = false;
+	}
 }
 
 XMLOutputArchive::~XMLOutputArchive() {
@@ -22,46 +29,45 @@ XMLOutputArchive::~XMLOutputArchive() {
 
 bool XMLOutputArchive::saveToFile(const char* fileName) {
 	assert(fileName);
-
 	if (endRoot) {
-		endElement(); // end root
+		endObject(); // end root
 		endRoot = false;
 	}
 	const tinyxml2::XMLError error = document->SaveFile(fileName);
 	return error == tinyxml2::XML_SUCCESS;
 }
 
-bool XMLOutputArchive::saveToString(std::string& string) {
+std::string XMLOutputArchive::saveToString() {
+	std::string          str;
 	tinyxml2::XMLPrinter printer;
 	// attach it to the document you want to convert in to a std::string
 	if (document->Accept(&printer)) {
 		// Create a std::string and copy your document data in to the string
 		if (endRoot) {
-			endElement(); // end root
+			endObject(); // end root
 			endRoot = false;
 		}
-		string = printer.CStr();
-		return true;
+		str = printer.CStr();
 	}
-	return false;
+	return str;
 }
 
-std::string_view XMLOutputArchive::getString() {
-	return {};
+void XMLOutputArchive::setKey(const char* name) {
+	beginElement(name);
 }
 
-bool XMLOutputArchive::beginElement(const char* name) {
-	beginArrayElement();
+void XMLOutputArchive::beginElement(const char* name) {
 	assert(name);
+	if (! typeStack.empty()) {
+		assert(typeStack.top() != Type::array);
+	}
 	auto element = document->NewElement(name);
 	currentNode = currentNode->InsertEndChild(element);
-	return true;
 }
 
 void XMLOutputArchive::endElement() {
 	assert(currentNode);
 	currentNode = currentNode->Parent();
-	endArrayElement();
 }
 
 bool XMLOutputArchive::beginObject() {
@@ -74,10 +80,11 @@ bool XMLOutputArchive::beginObject() {
 void XMLOutputArchive::endObject() {
 	assert(typeStack.top() == Type::object);
 	typeStack.pop();
-	endArrayElement();
+	endElement();
 }
 
 bool XMLOutputArchive::beginArray() {
+	beginArrayElement();
 	typeStack.push(Type::array);
 	writeAttribute("type", "array");
 	return true;
@@ -86,7 +93,7 @@ bool XMLOutputArchive::beginArray() {
 void XMLOutputArchive::endArray() {
 	assert(typeStack.top() == Type::array);
 	typeStack.pop();
-	endArrayElement();
+	endElement();
 }
 
 void XMLOutputArchive::writeAttribute(const char* name, const char* str) {
@@ -114,77 +121,62 @@ void XMLOutputArchive::writeAttribute(const char* name, double value) {
 	currentNode->ToElement()->SetAttribute(name, value);
 }
 
-bool XMLOutputArchive::write(bool value) {
+void XMLOutputArchive::write(bool value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
-	return true;
+	endElement();
 }
 
-bool XMLOutputArchive::write(int value) {
+void XMLOutputArchive::write(int value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
-	return true;
+	endElement();
 }
 
-bool XMLOutputArchive::write(unsigned int value) {
+void XMLOutputArchive::write(unsigned int value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
-	return true;
+	endElement();
 }
 
-bool XMLOutputArchive::write(int64_t value) {
+void XMLOutputArchive::write(int64_t value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
-	return true;
+	endElement();
 }
 
-bool XMLOutputArchive::write(uint64_t value) {
+void XMLOutputArchive::write(uint64_t value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
-	return true;
+	endElement();
 }
 
-bool XMLOutputArchive::write(float value) {
+void XMLOutputArchive::write(float value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
-	return true;
+	endElement();
 }
 
-bool XMLOutputArchive::write(double value) {
+void XMLOutputArchive::write(double value) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(value);
-	endArrayElement();
-	return true;
+	endElement();
 }
 
-bool XMLOutputArchive::write(const char* str) {
+void XMLOutputArchive::write(const char* str) {
 	beginArrayElement();
 	currentNode->ToElement()->SetText(str);
-	endArrayElement();
-	return true;
+	endElement();
 }
 
-bool XMLOutputArchive::write(const std::string& str) {
-	return write(str.c_str());
+void XMLOutputArchive::write(std::string_view sv) {
+	write(sv.data()); // FIXME Not necessarily null terminated
 }
 
 void XMLOutputArchive::beginArrayElement() {
 	if (! typeStack.empty() && typeStack.top() == Type::array) {
 		auto element = document->NewElement("element");
 		currentNode = currentNode->InsertEndChild(element);
-	}
-}
-
-void XMLOutputArchive::endArrayElement() {
-	if (! typeStack.empty() && typeStack.top() == Type::array) {
-		assert(currentNode);
-		currentNode = currentNode->Parent();
 	}
 }
 

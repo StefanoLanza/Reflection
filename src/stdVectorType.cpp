@@ -4,25 +4,6 @@
 
 namespace Typhoon::Reflection::detail {
 
-const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc) {
-	assert(typeName);
-	assert(prefix);
-	assert(suffix);
-	size_t tl = std::strlen(typeName);
-	size_t pl = std::strlen(prefix);
-	size_t sl = std::strlen(suffix);
-	char*  str = alloc.allocArray<char>(pl + sl + tl + 1);
-	size_t offs = 0;
-	memcpy(str + offs, prefix, pl);
-	offs += pl;
-	memcpy(str + offs, typeName, tl);
-	offs += tl;
-	memcpy(str + offs, suffix, sl);
-	offs += sl;
-	str[offs] = 0; // null terminate
-	return str;
-}
-
 const char* buildTemplateTypeName(const char* typeNames[], const char* prefix, const char* suffix, ScopedAllocator& alloc) {
 	size_t tl = 0;
 

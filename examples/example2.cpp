@@ -77,10 +77,10 @@ void registerUserTypes() {
 
 	BEGIN_NAMESPACE(Test)
 
-		BEGIN_STRUCT(GameObject);
+	BEGIN_STRUCT(GameObject);
 	FIELD(name);
-	C_SETTER(lives, setLives);
-	C_GETTER("remainingLives", getRemainingLives);
+	FIELD_WITH_SETTER(lives, setLives);
+	C_GETTER("remainingLives", getRemainingLives).PRETTYNAME("remaining lives");
 	FIELD(position);
 	FIELD(velocity);
 	END_STRUCT();
@@ -100,15 +100,13 @@ GameObject makeGameObject() {
 }
 
 std::string writeGameObject(const GameObject& obj, const char* element) {
-	std::string content;
 #if ARCHIVE_TYPE == XML
 	refl::XMLOutputArchive archive;
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
 	archive.write(element, obj);
-	archive.saveToString(content);
-	return content;
+	return archive.saveToString();
 }
 
 void readGameObject(GameObject& obj, const std::string& archiveContent, const char* element) {

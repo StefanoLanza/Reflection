@@ -2,6 +2,7 @@
 #include <reflection/archive.h>
 #include <reflection/readObject.h>
 #include <reflection/writeObject.h>
+
 #include <cstring>
 
 bool operator==(const Coords& a, const Coords& b) {
@@ -17,6 +18,7 @@ bool operator==(const Material& a, const Material& b) {
 }
 
 bool operator==(const Fog& a, const Fog& b) {
+	static_assert(std::is_trivially_copy_assignable_v<Fog>);
 	return ! std::memcmp(&a, &b, sizeof a);
 }
 
@@ -32,19 +34,31 @@ void setColor(Fog& fog, Color c) {
 	fog.color = c;
 }
 
-bool customSaveMaterial(const void* data, refl::OutputArchive& archive) {
-	const Material* material = static_cast<const Material*>(data);
-	archive.beginObject();
-	archive.write("name", material->name);
-	archive.write("color", material->color);
-	archive.endObject();
-	return true;
+Color getColor(const Fog& fog) {
+	return fog.color;
 }
 
-void customReadMaterial(void* data, refl::InputArchive& archive) {
+void setElevationProfile(Fog& fog, Fog::ElvProfile profile) {
+	fog.elevationProfile = profile;
+}
+
+const Fog::ElvProfile& getElevationProfile(const Fog& fog) {
+	return fog.elevationProfile;
+}
+
+void customSaveMaterial(const void* data, refl::OutputArchive& archive) {
+	const Material* material = static_cast<const Material*>(data);
+	if (archive.beginObject()) {
+		archive.write("name", material->name);
+		archive.write("color", material->color);
+		archive.endObject();
+	}
+}
+
+void customReadMaterial(void* data, const refl::InputArchive& archive) {
 	Material* material = static_cast<Material*>(data);
-	archive.beginObject();
-	archive.read("name", material->name);
-	archive.read("color", material->color);
-	archive.endObject();
+	if (archive.isObject()) {
+		archive.read("name", material->name);
+		archive.read("color", material->color);
+	}
 }

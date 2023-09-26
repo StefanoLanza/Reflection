@@ -67,12 +67,8 @@ private:
 template <typename TYPE, size_t LENGTH>
 class ArrayContainer : public ContainerType {
 public:
-	ArrayContainer(const char* typeName, TypeId typeID, const Type* valueType)
-	    : ContainerType(typeName, typeID, sizeof(TYPE) * LENGTH, nullptr, valueType, {}) {
-	}
-
-	bool isEmpty([[maybe_unused]] ConstDataPtr container) const override {
-		return LENGTH == 0;
+	ArrayContainer(const char* typeName, TypeId typeID, const Type* valueType, Allocator& allocator)
+	    : ContainerType(typeName, typeID, sizeof(TYPE) * LENGTH, nullptr, valueType, {}, allocator) {
 	}
 
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
@@ -82,15 +78,11 @@ public:
 	WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const override {
 		return allocator.make<WriteIteratorType>(cast<TYPE>(container));
 	}
-	void clear([[maybe_unused]] DataPtr container) const override {
-	}
 
 private:
 	using ReadIteratorType = ArrayReadIterator<TYPE, LENGTH>;
 	using WriteIteratorType = ArrayWriteIterator<TYPE, LENGTH>;
 };
-
-const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc);
 
 // C-style array
 template <class T, size_t N>
@@ -101,9 +93,7 @@ struct autoRegisterHelper<T[N]> {
 		const Type*      elementType = autoRegisterType<ElementType>(context);
 		constexpr TypeId typeID = getTypeId<ContainerType>();
 		const char*      typeName = decorateTypeName(elementType->getName(), "", "[]", *context.scopedAllocator);
-		auto             type = context.scopedAllocator->make<ArrayContainer<ElementType, N>>(typeName, typeID, elementType);
-		context.typeDB->registerType(type);
-		return type;
+		return context.scopedAllocator->make<ArrayContainer<ElementType, N>>(typeName, typeID, elementType, *context.allocator);
 	}
 };
 

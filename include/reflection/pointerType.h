@@ -9,7 +9,7 @@ namespace Typhoon::Reflection {
 
 class PointerType : public Type {
 public:
-	PointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType);
+	PointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType, Allocator& allocator);
 	virtual ~PointerType() = default;
 
 	const Type&          getPointedType() const;
@@ -24,13 +24,11 @@ namespace detail {
 
 class RawPointerType final : public PointerType {
 public:
-	RawPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType);
+	RawPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType, Allocator& allocator);
 
 	ConstDataPtr resolvePointer(ConstDataPtr ptr) const override;
 	DataPtr      resolvePointer(DataPtr ptr) const override;
 };
-
-const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc);
 
 // Specialization for raw pointers
 template <class T>
@@ -40,10 +38,8 @@ struct autoRegisterHelper<T*> {
 		using non_const_type = std::remove_const_t<T>;
 		const Type* valueType = autoRegisterType<non_const_type>(context);
 		const char* typeName = decorateTypeName(valueType->getName(), "", "*", *context.scopedAllocator);
-		auto type = context.scopedAllocator->make<RawPointerType>(typeName, getTypeId<pointer_type>(), sizeof(pointer_type), alignof(pointer_type),
-		                                                          valueType);
-		context.typeDB->registerType(type);
-		return type;
+		return context.scopedAllocator->make<RawPointerType>(typeName, getTypeId<pointer_type>(), sizeof(pointer_type), alignof(pointer_type),
+		                                                          valueType, *context.allocator);
 	}
 };
 

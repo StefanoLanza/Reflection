@@ -1,22 +1,17 @@
 #pragma once
 
 #include "config.h"
-#include <core/uncopyable.h>
-#include <cstdint>
-#include <string>
-
 #include "readObject.h"
 #include "writeObject.h"
+#include <core/uncopyable.h>
+
+#include <cstdint>
+#include <string>
 
 namespace Typhoon::Reflection {
 
 class ArchiveIterator {
 public:
-	ArchiveIterator()
-	    : node(nullptr)
-	    , index(static_cast<size_t>(-1))
-	    , key(nullptr) {
-	}
 	void* getNode() const {
 		return node;
 	}
@@ -44,9 +39,9 @@ public:
 	}
 
 private:
-	void*  node;
-	size_t index;
-	const char* key;
+	void*       node = nullptr;
+	size_t      index = (size_t)-1;
+	const char* key = nullptr;
 };
 
 struct ParseResult {
@@ -59,51 +54,66 @@ struct ParseResult {
 	}
 };
 
+enum ValueType {
+	Array,
+	False,
+	Null,
+	Number,
+	Object,
+	String,
+	True,
+	Undefined,
+};
+
 class InputArchive : Uncopyable {
 public:
 	InputArchive();
 	virtual ~InputArchive() = default;
 
-	virtual bool beginElement(const char* name) = 0;
-	virtual void endElement() = 0;
-	virtual bool beginObject() = 0;
-	virtual void endObject() = 0;
-	virtual bool beginArray() = 0;
-	virtual void endArray() = 0;
-	virtual bool iterateChild(ArchiveIterator&) = 0;
-#if TY_REFLECTION_DEPRECATED
-	virtual bool iterateChild(ArchiveIterator&, const char* name) = 0; // TODO remove
-#endif
-	virtual bool beginObject(const char* key) = 0;
-	virtual bool beginArray(const char* key) = 0;
-	virtual bool readAttribute(const char* name, bool& value) = 0;
-	virtual bool readAttribute(const char* name, int& value) = 0;
-	virtual bool readAttribute(const char* name, unsigned int& value) = 0;
-	virtual bool readAttribute(const char* name, float& value) = 0;
-	virtual bool readAttribute(const char* name, double& value) = 0;
-	virtual bool readAttribute(const char* name, const char*& str) = 0;
+	virtual bool      beginElement(const char* name) const = 0;
+	virtual void      endElement() const = 0;
+	virtual bool      isObject() const = 0;
+	virtual bool      isArray() const = 0;
+	virtual ValueType getValueType() const = 0;
+	virtual bool      iterateChild(ArchiveIterator& it) const = 0;
+	virtual bool      iterateChild(ArchiveIterator& it, const char* name) const = 0;
+	virtual bool      readAttribute(const char* name, bool& value) const = 0;
+	virtual bool      readAttribute(const char* name, int& value) const = 0;
+	virtual bool      readAttribute(const char* name, unsigned int& value) const = 0;
+	virtual bool      readAttribute(const char* name, float& value) const = 0;
+	virtual bool      readAttribute(const char* name, double& value) const = 0;
+	virtual bool      readAttribute(const char* name, const char*& str) const = 0;
+	virtual bool      readAttribute(const char* name, std::string_view& sv) const = 0;
 	// Primitives
-	virtual bool read(bool& value) = 0;
-	virtual bool read(int& value) = 0;
-	virtual bool read(unsigned int& value) = 0;
-	virtual bool read(int64_t& value) = 0;
-	virtual bool read(uint64_t& value) = 0;
-	virtual bool read(float& value) = 0;
-	virtual bool read(double& value) = 0;
-	virtual bool read(const char*& str) = 0;
+	virtual bool read(bool& value) const = 0;
+	virtual bool read(int& value) const = 0;
+	virtual bool read(unsigned int& value) const = 0;
+	virtual bool read(int64_t& value) const = 0;
+	virtual bool read(uint64_t& value) const = 0;
+	virtual bool read(float& value) const = 0;
+	virtual bool read(double& value) const = 0;
+	virtual bool read(const char*& str) const = 0;
+	virtual bool read(std::string_view& sv) const = 0;
 
-	bool read(const char* key, void* data, TypeId typeId);
-	bool read(void* data, TypeId typeId);
+	//  Helpers
+	bool read(const char* key, void* data, TypeId typeId) const;
+	bool read(void* data, TypeId typeId) const;
 
 	// Read data of user-defined type
 	template <class T>
-	bool read(T& object);
+	bool read(T& object) const;
 
 	template <class T>
-	T read(const char* key, T&& defaultValue);
+	bool read(const char* key, T& object) const;
 
 	template <class T>
-	bool read(const char* key, T& object);
+	T read(T&& defaultValue) const;
+
+	template <class T>
+	T read(const char* key, T&& defaultValue) const;
+
+private:
+	bool readAny(void* data, const Type& type) const;
 
 private:
 	Context& context;
@@ -114,24 +124,22 @@ public:
 	OutputArchive();
 	virtual ~OutputArchive() = default;
 
-	virtual bool             saveToFile(const char* filename) = 0;
-	virtual bool             saveToString(std::string& string) = 0;
-	virtual std::string_view getString() = 0;
-	virtual bool beginElement(const char* key) = 0;
-	virtual void endElement() = 0;
-	virtual bool             beginObject() = 0;
-	virtual void             endObject() = 0;
-	virtual bool             beginArray() = 0;
-	virtual void             endArray() = 0;
-	virtual bool write(bool value) = 0;
-	virtual bool write(int value) = 0;
-	virtual bool write(unsigned int value) = 0;
-	virtual bool write(int64_t value) = 0;
-	virtual bool write(uint64_t value) = 0;
-	virtual bool write(float value) = 0;
-	virtual bool write(double value) = 0;
-	virtual bool write(const char* str) = 0;
-	virtual bool write(const std::string& str) = 0;
+	virtual bool        saveToFile(const char* filename) = 0;
+	virtual std::string saveToString() = 0;
+	virtual void        setKey(const char* key) = 0;
+	virtual bool        beginObject() = 0;
+	virtual void        endObject() = 0;
+	virtual bool        beginArray() = 0;
+	virtual void        endArray() = 0;
+	virtual void        write(bool value) = 0;
+	virtual void        write(int value) = 0;
+	virtual void        write(unsigned int value) = 0;
+	virtual void        write(int64_t value) = 0;
+	virtual void        write(uint64_t value) = 0;
+	virtual void        write(float value) = 0;
+	virtual void        write(double value) = 0;
+	virtual void        write(const char* str) = 0;
+	virtual void        write(std::string_view str) = 0;
 
 	// Serialization of attributes
 	virtual void writeAttribute(const char* name, bool value) = 0;
@@ -141,73 +149,39 @@ public:
 	virtual void writeAttribute(const char* name, double value) = 0;
 	virtual void writeAttribute(const char* name, const char* str) = 0;
 
-	bool write(const char* key, const void* data, TypeId typeId);
-	bool write(const void* data, TypeId typeId);
+	void write(const char* key, const void* data, TypeId typeId);
+	void write(const void* data, TypeId typeId);
 
 	// Write data of user-defined type
 	template <class T>
-	bool write(const T& data);
+	void write(const T& data);
 
 	// Helpers
-	bool write(const char* key, const char* str);
+	void write(const char* key, const char* str);
 
 	template <class T>
-	bool write(const char* key, const T& data);
+	void write(const char* key, const T& data);
+
 private:
 	Context& context;
 };
 
-template <typename T>
-struct AttributeNamer {
-	const char* name;
-	T*          objectPtr;
-};
-
-template <typename T>
-AttributeNamer<T> NameAttribute(T& object, const char* name) {
-	return { name, &object };
-}
-
-#define ATTRIBUTE(x) Typhoon::Reflection::NameAttribute(x##, #x)
-
-template <typename T>
-bool operator&(InputArchive& archive, const AttributeNamer<T>& namedAttribute) {
-	return archive.readAttribute(namedAttribute.name, namedAttribute.objectPtr);
-}
-
-class ArchiveElement : Uncopyable {
-public:
-	ArchiveElement(InputArchive& archive, const char* tag);
-	~ArchiveElement();
-
-	explicit operator bool() const;
-
-private:
-	InputArchive* archive;
-	bool          isValid;
-};
-
-class WriteTag : Uncopyable {
-public:
-	WriteTag(OutputArchive& archive, const char* tag);
-	~WriteTag();
-
-	explicit operator bool() const;
-
-private:
-	OutputArchive* archive;
-	bool           isValid;
-};
-
 template <class T>
-T InputArchive::read(const char* key, T&& defaultValue) {
+T InputArchive::read(const char* key, T&& defaultValue) const {
 	T obj = std::move(defaultValue);
 	read(key, obj);
 	return obj;
 }
 
 template <class T>
-bool InputArchive::read(const char* key, T& object) {
+T InputArchive::read(T&& defaultValue) const {
+	T obj = std::move(defaultValue);
+	read(obj);
+	return obj;
+}
+
+template <class T>
+bool InputArchive::read(const char* key, T& object) const {
 	bool res = false;
 	if (beginElement(key)) {
 		res = read(object);
@@ -217,33 +191,75 @@ bool InputArchive::read(const char* key, T& object) {
 }
 
 template <class T>
-bool InputArchive::read(T& object) {
-	return read(static_cast<void*>(&object), getTypeId<T>());
-}
-
-template <class T>
-bool OutputArchive::write(const char* key, const T& data) {
-	bool res = false;
-	if (beginElement(key)) {
-		 res = write(data);
-		 endElement();
-	}
-	return res;
-}
-
-template <class T>
-bool OutputArchive::write(const T& data) {
+bool InputArchive::read(T& object) const {
 	const Type* type = context.typeDB->tryGetType<T>();
 	if (! type) {
-		// TODO Allocate a temporary Type, without registering it ?
 		type = detail::autoRegisterHelper<T>::autoRegister(context);
 	}
 	if (type) {
-		return detail::writeData(static_cast<const void*>(&data), *type, *this, context);
+		return readAny(static_cast<void*>(&object), *type);
 	}
-	else {
-		return false;
-	}
+	return false;
 }
+
+template <class T>
+void OutputArchive::write(const char* key, const T& data) {
+	setKey(key);
+	write(data);
+}
+
+template <class T>
+void OutputArchive::write(const T& data) {
+	const Type* type = context.typeDB->tryGetType<T>();
+	if (! type) {
+		type = detail::autoRegisterHelper<T>::autoRegister(context);
+	}
+	assert(type);
+	detail::writeData(static_cast<const void*>(&data), *type, *this, context);
+}
+
+class ArrayReadScope : Uncopyable {
+public:
+	ArrayReadScope(InputArchive& archive, const char* key);
+	ArrayReadScope(InputArchive& archive);
+	~ArrayReadScope();
+	operator bool() const;
+
+private:
+	InputArchive& archive;
+	bool          hasKey;
+	bool          isValid;
+};
+
+class ObjectReadScope : Uncopyable {
+public:
+	ObjectReadScope(const InputArchive& archive, const char* key);
+	ObjectReadScope(const InputArchive& archive);
+	~ObjectReadScope();
+	operator bool() const;
+
+private:
+	const InputArchive& archive;
+	bool                hasKey;
+	bool                isValid;
+};
+
+class ArrayWriteScope : Uncopyable {
+public:
+	ArrayWriteScope(OutputArchive& archive, const char* key = nullptr);
+	~ArrayWriteScope();
+
+private:
+	OutputArchive& archive;
+};
+
+class ObjectWriteScope : Uncopyable {
+public:
+	ObjectWriteScope(OutputArchive& archive, const char* key = nullptr);
+	~ObjectWriteScope();
+
+private:
+	OutputArchive& archive;
+};
 
 } // namespace Typhoon::Reflection

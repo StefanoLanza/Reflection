@@ -13,32 +13,43 @@ namespace Typhoon::Reflection {
 namespace {
 
 template <class T>
-void readBuiltin(DataPtr data, InputArchive& archive) {
-	read(*cast<T>(data), archive);
+bool readBuiltin(DataPtr data, const InputArchive& archive) {
+	return read(*cast<T>(data), archive);
 }
 
 template <class T>
-bool writeBuiltin(ConstDataPtr data, OutputArchive& archive) {
-	return write(*cast<T>(data), archive);
+void writeBuiltin(ConstDataPtr data, OutputArchive& archive) {
+	write(*cast<T>(data), archive);
 }
 
 template <>
-void readBuiltin<std::string>(DataPtr data, InputArchive& archive) {
+bool readBuiltin<std::string>(DataPtr data, const InputArchive& archive) {
 	const char* cstr = nullptr;
 	if (archive.read(cstr)) {
 		*cast<std::string>(data) = cstr;
+		return true;
 	}
+	return false;
 }
 
 template <>
-bool writeBuiltin<std::string>(ConstDataPtr data, OutputArchive& archive) {
-	archive.write(*cast<std::string>(data));
-	return true;
+void writeBuiltin<std::string>(ConstDataPtr data, OutputArchive& archive) {
+	archive.write(std::string_view{*cast<std::string>(data)});
+}
+
+template <>
+bool readBuiltin<std::string_view>(DataPtr data, const InputArchive& archive) {
+	return archive.read(*cast<std::string_view>(data));
+}
+
+template <>
+void writeBuiltin<std::string_view>(ConstDataPtr data, OutputArchive& archive) {
+	archive.write(*cast<std::string_view>(data));
 }
 
 template <class T>
 void createBuiltin(Context& context, const char* typeName) {
-	BuiltinType* type = context.scopedAllocator->make<BuiltinType>(typeName, getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>());
+	auto type = context.scopedAllocator->make<BuiltinType>(typeName, getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>(), *context.allocator);
 	type->setCustomReader(&readBuiltin<T>);
 	type->setCustomWriter(&writeBuiltin<T>);
 	context.typeDB->registerType(type);
@@ -63,14 +74,15 @@ void registerBuiltinTypes(Context& context) {
 	CREATE_BUILTIN(double, context);
 	CREATE_BUILTIN(const char*, context);
 	CREATE_BUILTIN(std::string, context);
+	CREATE_BUILTIN(std::string_view, context);
 
-	auto variantType = context.scopedAllocator->make<VariantType>();
+	auto variantType = context.scopedAllocator->make<VariantType>(*context.allocator);
 	context.typeDB->registerType(variantType);
 	context.typeDB->getGlobalNamespace().addType(variantType);
 }
 
 HeapAllocator  defaultAllocator;
-Context        context {};
+Context        defaultContext {};
 
 } // namespace
 
@@ -79,16 +91,18 @@ void initReflection() {
 }
 
 void initReflection(Allocator& allocator) {
+	auto& context = defaultContext;
 	assert(! context.typeDB);
 
 	context.allocator = &allocator;
-	context.pagedAllocator = allocator.construct<PagedAllocator>(std::ref(allocator), PagedAllocator::defaultPageSize);
-	context.scopedAllocator = allocator.construct<ScopedAllocator>(std::ref(*context.pagedAllocator));
-	context.typeDB = context.scopedAllocator->make<TypeDB>(std::ref(allocator), std::ref(*context.scopedAllocator));
+	context.pagedAllocator = allocator.construct<PagedAllocator>(allocator, PagedAllocator::defaultPageSize);
+	context.scopedAllocator = allocator.construct<ScopedAllocator>(*context.pagedAllocator);
+	context.typeDB = context.scopedAllocator->make<TypeDB>(allocator, *context.scopedAllocator);
 	registerBuiltinTypes(context);
 }
 
 void deinitReflection() {
+	auto& context = defaultContext;
 	assert(context.scopedAllocator);
 	context.allocator->destroy(context.scopedAllocator);
 	context.allocator->destroy(context.pagedAllocator);
@@ -98,26 +112,26 @@ void deinitReflection() {
 }
 
 const Type& getType(TypeId typeID) {
-	return context.typeDB->getType(typeID);
+	return defaultContext.typeDB->getType(typeID);
 }
 
 const Type* tryGetType(TypeId typeID) {
-	return context.typeDB->tryGetType(typeID);
+	return defaultContext.typeDB->tryGetType(typeID);
 }
 
 const Namespace& getGlobalNamespace() {
-	return context.typeDB->getGlobalNamespace();
+	return defaultContext.typeDB->getGlobalNamespace();
 }
 
 namespace detail {
 
 Context& getContext() {
-	return context;
+	return defaultContext;
 }
 
 TypeDB& getTypeDB() {
-	assert(context.typeDB);
-	return *context.typeDB;
+	assert(defaultContext.typeDB);
+	return *defaultContext.typeDB;
 }
 
 } // namespace detail

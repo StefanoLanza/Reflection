@@ -5,29 +5,35 @@
 
 namespace Typhoon::Reflection {
 
-Property::Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, uint32_t flags, Semantic semantic, Allocator& allocator)
-    : setter { std::move(setter) }
-    , getter { std::move(getter) }
-    , name(name)
-    , valueType(valueType)
-    , flags(flags)
-    , semantic(semantic)
-    , attributes(stdAllocator<const Attribute*>(allocator)) {
+Property::Property(Setter&& setter_, Getter&& getter_, const char* name, const Type* valueType, Allocator& allocator)
+    : setter { std::move(setter_) }
+    , getter { std::move(getter_) }
+    , name { name }
+    , prettyName { name }
+    , valueType { valueType }
+    , flags { Flags::all }
+    , semantic { Semantic::none }
+    , attributes { stdAllocator<const Attribute*>(allocator) } {
 	assert(valueType);
 	// Override flags
-	if (! this->setter) {
-		this->flags &= ~Flags::writeable;
-		this->flags &= ~Flags::edit;
+	if (! setter) {
+		flags &= ~Flags::readable;
+		flags &= ~Flags::edit;
+		flags &= ~Flags::clonable;
 	}
-	if (! this->getter) {
-		this->flags &= ~Flags::readable;
-		this->flags &= ~Flags::clonable;
-		this->flags &= ~Flags::view;
+	if (! getter) {
+		flags &= ~Flags::writeable;
+		flags &= ~Flags::clonable;
+		flags &= ~Flags::view;
 	}
 }
 
 const char* Property::getName() const {
 	return name;
+}
+
+const char* Property::getPrettyName() const {
+	return prettyName;
 }
 
 const Type& Property::getValueType() const {
@@ -42,15 +48,35 @@ Semantic Property::getSemantic() const {
 	return semantic;
 }
 
+Property& Property::setPrettyName(const char* str) {
+	assert(str);
+	prettyName = str;
+	return *this;
+}
+
+Property& Property::setFlags(uint32_t value) {
+	flags = value;
+	return *this;
+}
+
+Property& Property::setSemantic(Semantic value) {
+	semantic = value;
+	return *this;
+}
+
 void Property::setValue(DataPtr self, ConstDataPtr value) const {
+	assert(setter);
 	setter(self, value);
 }
 
 void Property::getValue(ConstDataPtr self, DataPtr value) const {
+	assert(getter);
 	getter(self, value);
 }
 
 void Property::copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator& alloc) const {
+	assert(setter);
+	assert(getter);
 	void* allocOffs = alloc.getOffset();
 	if (void* temporary = alloc.alloc(valueType->getSize(), valueType->getAlignment()); temporary) {
 		valueType->constructObject(temporary);
@@ -61,8 +87,9 @@ void Property::copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator&
 	alloc.rewind(allocOffs);
 }
 
-void Property::addAttribute(const Attribute* attribute) {
+Property& Property::addAttribute(const Attribute* attribute) {
 	attributes.push_back(attribute);
+	return *this;
 }
 
 span<const Attribute* const> Property::getAttributes() const {

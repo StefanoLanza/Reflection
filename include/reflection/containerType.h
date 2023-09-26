@@ -34,7 +34,8 @@ public:
 
 class ContainerType : public Type {
 public:
-	ContainerType(const char* typeName, TypeId typeID, size_t size, const Type* keyType, const Type* valueType, const MethodTable& methods);
+	ContainerType(const char* typeName, TypeId typeID, size_t size, const Type* keyType, const Type* valueType, const MethodTable& methods,
+	              Allocator& allocator);
 	virtual ~ContainerType() = default;
 
 	const Type* getKeyType() const {
@@ -44,10 +45,8 @@ public:
 		return valueType;
 	}
 
-	virtual bool           isEmpty(ConstDataPtr container) const = 0;
 	virtual ReadIterator*  newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const = 0;
 	virtual WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const = 0;
-	virtual void           clear(DataPtr container) const = 0;
 
 private:
 	const Type* keyType;

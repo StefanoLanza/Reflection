@@ -71,12 +71,8 @@ class StdArrayContainer final : public ContainerType {
 public:
 	using array_type = std::array<T, L>;
 
-	StdArrayContainer(const char* typeName, TypeId typeID, const Type* valueType)
-	    : ContainerType(typeName, typeID, sizeof(array_type), nullptr, valueType, buildMethodTable<array_type>()) {
-	}
-
-	bool isEmpty([[maybe_unused]] ConstDataPtr container) const override {
-		return L == 0;
+	StdArrayContainer(const char* typeName, TypeId typeID, const Type* valueType, Allocator& allocator)
+	    : ContainerType(typeName, typeID, sizeof(array_type), nullptr, valueType, buildMethodTable<array_type>(), allocator) {
 	}
 
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
@@ -86,15 +82,11 @@ public:
 	WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const override {
 		return allocator.make<WriteIteratorType>(cast<T>(container));
 	}
-	void clear([[maybe_unused]] DataPtr container) const override {
-	}
 
 private:
 	using ReadIteratorType = StdArrayReadIterator<T, L>;
 	using WriteIteratorType = StdArrayWriteIterator<T, L>;
 };
-
-const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc);
 
 template <class T, size_t N>
 struct autoRegisterHelper<std::array<T, N>> {
@@ -104,9 +96,7 @@ struct autoRegisterHelper<std::array<T, N>> {
 		const Type*      elementType = autoRegisterType<element_type>(context);
 		constexpr TypeId typeID = getTypeId<container_type>();
 		const char*      typeName = decorateTypeName(elementType->getName(), "std::array<", ">", *context.scopedAllocator);
-		auto             type = context.scopedAllocator->make<StdArrayContainer<element_type, N>>(typeName, typeID, elementType);
-		context.typeDB->registerType(type);
-		return type;
+		return context.scopedAllocator->make<StdArrayContainer<element_type, N>>(typeName, typeID, elementType, *context.allocator);
 	}
 };
 

@@ -4,6 +4,7 @@
 
 #include "arrayType.h"
 #include "bitMaskType.h"
+#include "commonAttributes.h"
 #include "containerType.h"
 #include "enumType.h"
 #include "flags.h"
@@ -28,16 +29,6 @@ namespace Typhoon::Reflection {
 
 namespace detail {
 
-template <class T>
-inline const Type* autoRegisterType(Context& context) {
-	const Type* type = context.typeDB->tryGetType<T>();
-	if (! type) {
-		type = autoRegisterHelper<T>::autoRegister(context);
-	}
-	assert(type);
-	return type;
-}
-
 Context& getContext();
 
 } // namespace detail
@@ -59,14 +50,14 @@ Context& getContext();
 	}                    \
 	while (false)
 
-#define BEGIN_NAMESPACE(name)                                                             \
-	do {                                                                                  \
-		const auto parentNamespace = currNamespace;                                       \
-		Namespace* newNamespace = parentNamespace->getNestedNamespace(#name);             \
-		if (! newNamespace) {                                                             \
-			newNamespace = scopedAllocator_.make<Namespace>(#name, std::ref(allocator_)); \
-			parentNamespace->addNestedNamespace(newNamespace);                            \
-		}                                                                                 \
+#define BEGIN_NAMESPACE(name)                                                   \
+	do {                                                                        \
+		const auto parentNamespace = currNamespace;                             \
+		Namespace* newNamespace = parentNamespace->getNestedNamespace(#name);   \
+		if (! newNamespace) {                                                   \
+			newNamespace = scopedAllocator_.make<Namespace>(#name, allocator_); \
+			parentNamespace->addNestedNamespace(newNamespace);                  \
+		}                                                                       \
 		currNamespace = newNamespace;
 
 #define END_NAMESPACE()              \
@@ -74,100 +65,58 @@ Context& getContext();
 	}                                \
 	while (0)
 
-#define BEGIN_BASE_CLASS(class)                                                                                                                       \
-	do {                                                                                                                                              \
-		using class_ = class;                                                                                                                         \
-		constexpr bool isClass = true;                                                                                                                \
-		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-                                                                  MethodTable {}, std::ref(allocator_));
+#define BEGIN_BASE_CLASS(class)                                                                                                                   \
+	do {                                                                                                                                          \
+		using class_ = class;                                                                                                                     \
+		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+		                                                          MethodTable {}, allocator_);
 
-#define BEGIN_STRUCT(class)                                                                                                                           \
-	do {                                                                                                                                              \
-		using class_ = class;                                                                                                                         \
-		constexpr bool isClass = false;                                                                                                               \
-		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-                                                                  detail::buildMethodTable<class_>(), std::ref(allocator_));                      \
-		do {                                                                                                                                          \
+#define BEGIN_STRUCT(class)                                                                                                                       \
+	do {                                                                                                                                          \
+		using class_ = class;                                                                                                                     \
+		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+		                                                          detail::buildMethodTable<class_>(), allocator_);                                \
+		do {                                                                                                                                      \
 	} while (0)
 
-#define BEGIN_CLASS(class)                                                                                                                            \
-	do {                                                                                                                                              \
-		using class_ = class;                                                                                                                         \
-		constexpr bool isClass = true;                                                                                                                \
-		const auto     structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-                                                                  detail::buildMethodTable<class_>(), std::ref(allocator_));                      \
-		do {                                                                                                                                          \
+#define BEGIN_CLASS(class)                                                                                                                        \
+	do {                                                                                                                                          \
+		using class_ = class;                                                                                                                     \
+		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+		                                                          detail::buildMethodTable<class_>(), allocator_);                                \
+		do {                                                                                                                                      \
 	} while (0)
 
-#define BEGIN_SUB_CLASS(class, parentClass)                                                                                               \
-	do {                                                                                                                                  \
-		using class_ = class;                                                                                                             \
-		constexpr bool isClass = true;                                                                                                    \
-		static_assert(! std::is_same_v<parentClass, class>, #parentClass " and " #class " are the same class");                           \
-		static_assert(std::is_base_of_v<parentClass, class>, #parentClass " is not a base class of " #class);                             \
-		const StructType& parentType = static_cast<const StructType&>(typeDB_.getType<parentClass>());                                    \
-		assert(parentType.getSubClass() == Type::Subclass::Struct);                                                                       \
-		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_),  \
-		                                                          &parentType, detail::buildMethodTable<class_>(), std::ref(allocator_)); \
-		do {                                                                                                                              \
+#define BEGIN_SUB_CLASS(class, parentClass)                                                                                              \
+	do {                                                                                                                                 \
+		using class_ = class;                                                                                                            \
+		static_assert(! std::is_same_v<parentClass, class>, #parentClass " and " #class " are the same class");                          \
+		static_assert(std::is_base_of_v<parentClass, class>, #parentClass " is not a base class of " #class);                            \
+		const StructType& parentType = static_cast<const StructType&>(typeDB_.getType<parentClass>());                                   \
+		assert(parentType.getSubClass() == Type::Subclass::Struct);                                                                      \
+		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), \
+		                                                          &parentType, detail::buildMethodTable<class_>(), allocator_);          \
+		do {                                                                                                                             \
 	} while (0)
 
-#define FIELD_RENAMED_EXT(field, name, flags, semantic)                                                       \
-	do {                                                                                                      \
-		structType->addProperty(detail::createFieldProperty(name, flags, semantic, &class_::field, context)); \
-	} while (false)
-
-#define FIELD_RENAMED(field, name) FIELD_RENAMED_EXT(field, name, Flags::all, Semantic::none)
+#define FIELD_RENAMED(field, name) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::field, context))
 
 #define FIELD(field) FIELD_RENAMED(field, #field)
 
-#define FIELD_EXT(field, flags, semantic) FIELD_RENAMED_EXT(field, #field, flags, semantic)
+#define PROPERTY(name, getter, setter) \
+	structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::setter, &class_::getter, context))
 
-#define PROPERTY(name, getter, setter)                                                                                                       \
-	do {                                                                                                                                     \
-		static_assert(isClass);                                                                                                              \
-		structType->addProperty(                                                                                                             \
-		    detail::PropertyHelpers<class_>::createRWProperty(name, Flags::all, Semantic::none, &class_::setter, &class_::getter, context)); \
-	} while (false)
+#define GETTER(name, getter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::getter, context))
 
-#define GETTER(name, getter)                                                                                                                    \
-	do {                                                                                                                                        \
-		structType->addProperty(detail::PropertyHelpers<class_>::createROProperty(name, Flags::all, Semantic::none, &class_::getter, context)); \
-	} while (false)
+#define SETTER(name, setter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::setter, context))
 
-#define SETTER(name, setter)                                                                                                         \
-	do {                                                                                                                             \
-		structType->addProperty(detail::PropertyHelpers<class_>::createProperty(name, Flags::all, Semantic::none, setter, context)); \
-	} while (false)
+#define C_PROPERTY(name, getter, setter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, setter, getter, context))
 
-#define PROPERTY_EX(name, getter, setter, flags, semantic)                                                                        \
-	do {                                                                                                                          \
-		structType->addProperty(                                                                                                  \
-		    detail::PropertyHelpers<class_>::createRWProperty(name, flags, semantic, &class_::setter, &class_::getter, context)); \
-	} while (false)
+#define C_SETTER(name, setter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, setter, context))
 
-#define C_PROPERTY(name, setter, getter)                                                                                                       \
-	do {                                                                                                                                       \
-		structType->addProperty(detail::PropertyHelpers<class_>::createRWProperty(name, Flags::all, Semantic::none, setter, getter, context)); \
-	} while (0)
+#define C_GETTER(name, getter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, getter, context))
 
-#define C_PROPERTY_EXT(name, setter, getter, flags, semantic)                                                                       \
-	do {                                                                                                                            \
-		structType->addProperty(detail::PropertyHelpers<class_>::createRWProperty(name, flags, semantic, setter, getter, context)); \
-	} while (0)
-
-#define C_SETTER_EX(member, setter, flags, semantic)                                                                                          \
-	do {                                                                                                                                      \
-		structType->addProperty(detail::PropertyHelpers<class_>::createProperty(#member, flags, semantic, setter, &class_::member, context)); \
-	} while (0)
-
-#define C_SETTER(member, setter) C_SETTER_EX(member, setter, Flags::all, Semantic::none)
-
-#define C_GETTER(name, getter)                                                                                                         \
-	do {                                                                                                                               \
-		structType->addProperty(                                                                                                       \
-		    detail::PropertyHelpers<class_>::createROProperty(name, Flags::view | Flags::writeable, Semantic::none, getter, context)); \
-	} while (0)
+#define FIELD_WITH_SETTER(field, setter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(#field, setter, &class_::field, context))
 
 #define READER(reader)                       \
 	do {                                     \
@@ -185,14 +134,12 @@ Context& getContext();
 	} while (0)
 
 #define END_STRUCT()                    \
-	static_assert(! isClass);           \
 	typeDB_.registerType(structType);   \
 	currNamespace->addType(structType); \
 	}                                   \
 	while (0)
 
 #define END_CLASS()                     \
-	static_assert(isClass);             \
 	typeDB_.registerType(structType);   \
 	currNamespace->addType(structType); \
 	}                                   \
@@ -201,8 +148,8 @@ Context& getContext();
 #define BEGIN_ENUM(enumClass)                                    \
 	do {                                                         \
 		using enumClass_ = enumClass;                            \
-		static const char* enumName = #enumClass;                \
 		static_assert(std::is_enum_v<enumClass>, "Not an enum"); \
+		constexpr const char* enumName = #enumClass;             \
 	static const Enumerator enumerators[] = {
 
 #define ENUMERATOR_NAMED(name, value) makeEnumerator(name, enumClass_::value),
@@ -212,9 +159,10 @@ Context& getContext();
 #define END_ENUM()                                                                                                                              \
 	}                                                                                                                                           \
 	;                                                                                                                                           \
+                                                                                                                                                \
 	const Type& underlyingType = typeDB_.getType<std::underlying_type_t<enumClass_>>();                                                         \
 	const auto  enumType = scopedAllocator_.make<EnumType>(enumName, Typhoon::getTypeId<enumClass_>(), sizeof(enumClass_), alignof(enumClass_), \
-                                                          enumerators, std::size(enumerators), &underlyingType);                               \
+                                                          enumerators, std::size(enumerators), &underlyingType, allocator_);                   \
 	typeDB_.registerType(enumType);                                                                                                             \
 	currNamespace->addType(enumType);                                                                                                           \
 	}                                                                                                                                           \
@@ -229,15 +177,20 @@ Context& getContext();
 
 #define BITMASK_VALUE(name) { #name, static_cast<BitMaskStorageType>(bitMaskStruct_::name) },
 
-#define END_BITMASK()                                                                                                                             \
-	}                                                                                                                                             \
-	;                                                                                                                                             \
-	const Type& underlyingType = typeDB_.getType<bitMaskStruct_::StorageType>();                                                                  \
-	const auto  bitmaskType =                                                                                                                     \
-	    scopedAllocator_.make<BitMaskType>(typeName, Typhoon::getTypeId<bitMaskStruct_>(), &underlyingType, enumerators, std::size(enumerators)); \
-	typeDB_.registerType(bitmaskType);                                                                                                            \
-	currNamespace->addType(bitmaskType);                                                                                                          \
-	}                                                                                                                                             \
+#define END_BITMASK()                                                                                                                                \
+	}                                                                                                                                                \
+	;                                                                                                                                                \
+	const Type& underlyingType = typeDB_.getType<bitMaskStruct_::StorageType>();                                                                     \
+	const auto  bitmaskType =                                                                                                                        \
+	    scopedAllocator_.make<BitMaskType>(typeName, getTypeId<bitMaskStruct_>(), &underlyingType, enumerators, std::size(enumerators), allocator_); \
+	typeDB_.registerType(bitmaskType);                                                                                                               \
+	currNamespace->addType(bitmaskType);                                                                                                             \
+	}                                                                                                                                                \
 	while (false)
+
+#define PRETTYNAME(name)     setPrettyName((name))
+#define FLAGS(flags)         setFlags((flags))
+#define SEMANTIC(semantic)   setSemantic((semantic))
+#define ATTRIBUTE(type, ...) addAttribute(scopedAllocator_.make<type>(__VA_ARGS__))
 
 } // namespace Typhoon::Reflection

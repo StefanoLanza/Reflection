@@ -5,7 +5,7 @@
 
 namespace Typhoon {
 
-class ScopedAllocator {
+class ScopedAllocator : Uncopyable {
 public:
 	explicit ScopedAllocator(LinearAllocator& allocator);
 	~ScopedAllocator();

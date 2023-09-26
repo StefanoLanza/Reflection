@@ -74,12 +74,8 @@ private:
 template <typename MAP_TYPE>
 class StdMapContainer final : public ContainerType {
 public:
-	StdMapContainer(const char* typeName, TypeId typeID, const Type* keyType, const Type* valueType)
-	    : ContainerType(typeName, typeID, sizeof(MAP_TYPE), keyType, valueType, buildMethodTable<MAP_TYPE>()) {
-	}
-
-	bool isEmpty(ConstDataPtr container) const override {
-		return cast<MAP_TYPE>(container)->empty();
+	StdMapContainer(const char* typeName, TypeId typeID, const Type* keyType, const Type* valueType, Allocator& allocator)
+	    : ContainerType(typeName, typeID, sizeof(MAP_TYPE), keyType, valueType, buildMethodTable<MAP_TYPE>(), allocator) {
 	}
 
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
@@ -88,9 +84,6 @@ public:
 
 	WriteIterator* newWriteIterator(DataPtr container, ScopedAllocator& allocator) const override {
 		return allocator.make<WriteIteratorType>(cast<MAP_TYPE>(container));
-	}
-	void clear(DataPtr container) const override {
-		cast<MAP_TYPE>(container)->clear();
 	}
 
 private:
@@ -112,9 +105,7 @@ struct autoRegisterHelper<std::map<_Kty, T>> {
 		constexpr TypeId typeID = getTypeId<ContainerType>();
 		const char*      innerTypeNames[] = { keyType->getName(), mappedType->getName(), nullptr };
 		const char*      typeName = buildTemplateTypeName(innerTypeNames, "std::map<", ">", *context.scopedAllocator);
-		auto             type = context.scopedAllocator->make<StdMapContainer<ContainerType>>(typeName, typeID, keyType, mappedType);
-		context.typeDB->registerType(type);
-		return type;
+		return context.scopedAllocator->make<StdMapContainer<ContainerType>>(typeName, typeID, keyType, mappedType, *context.allocator);
 	}
 };
 

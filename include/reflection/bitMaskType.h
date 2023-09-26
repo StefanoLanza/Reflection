@@ -16,7 +16,7 @@ struct BitMaskConstant {
 
 class BitMaskType : public Type {
 public:
-	BitMaskType(const char* typeName, TypeId typeID, const Type* underlyingType, const BitMaskConstant enumerators[], size_t numEnumerators);
+	BitMaskType(const char* typeName, TypeId typeID, const Type* underlyingType, const BitMaskConstant enumerators[], size_t numEnumerators, Allocator& allocator);
 
 	span<const BitMaskConstant> getEnumerators() const;
 	const char*                 findConstantByValue(BitMaskStorageType value) const;

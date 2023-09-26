@@ -8,13 +8,30 @@
 
 namespace Typhoon::Reflection {
 
-TypeDB::TypeDB(Allocator& allocator, ScopedAllocator& scopedAllocator)
-    : types(stdAllocator<const Type*>(allocator)) {
-	types.reserve(64);
-	globalNamespace = scopedAllocator.make<Namespace>(nullptr, std::ref(allocator));
+namespace detail {
+
+const char* decorateTypeName(std::string_view typeName, std::string_view prefix, std::string_view suffix, ScopedAllocator& allocator) {
+	size_t tl = typeName.size();
+	size_t pl = prefix.size();
+	size_t sl = suffix.size();
+	char*  str = allocator.allocArray<char>(pl + sl + tl + 1);
+	size_t offs = 0;
+	memcpy(str + offs, prefix.data(), pl);
+	offs += pl;
+	memcpy(str + offs, typeName.data(), tl);
+	offs += tl;
+	memcpy(str + offs, suffix.data(), sl);
+	offs += sl;
+	str[offs] = 0; // null terminate
+	return str;
 }
 
-TypeDB::~TypeDB() = default;
+} // namespace detail
+
+TypeDB::TypeDB(Allocator& allocator, ScopedAllocator& scopedAllocator)
+    : types { stdAllocator<const Type*>(allocator) }
+    , globalNamespace { scopedAllocator.make<Namespace>(nullptr, allocator) } {
+}
 
 void TypeDB::registerType(const Type* newType) {
 	assert(newType);

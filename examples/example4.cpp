@@ -33,7 +33,7 @@ struct Texture {
 
 TextureDataPtr loadTextureFromFile(const std::string& fileName);
 bool           writeTexture(const void* data, refl::OutputArchive& archive);
-void           readTexture(void* data, refl::InputArchive& archive);
+void           readTexture(void* data, const refl::InputArchive& archive);
 void           registerUserTypes();
 std::string    writeTextureToArchive(const Texture& obj, const char* name);
 void           readTextureFromArchive(Texture& obj, const std::string& xmlString, const char* name);
@@ -68,15 +68,13 @@ void registerUserTypes() {
 }
 
 std::string writeTextureToArchive(const Texture& obj, const char* name) {
-	std::string archiveContent;
 #if ARCHIVE_TYPE == XML
 	refl::XMLOutputArchive archive;
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
 	archive.write(name, obj);
-	archive.saveToString(archiveContent);
-	return archiveContent;
+	return archive.saveToString();
 }
 
 void readTextureFromArchive(Texture& obj, const std::string& archiveContent, const char* name) {
@@ -107,7 +105,7 @@ bool writeTexture(const void* data, refl::OutputArchive& archive) {
 	return false;
 }
 
-void readTexture(void* data, refl::InputArchive& archive) {
+void readTexture(void* data, const refl::InputArchive& archive) {
 	Texture* texture = static_cast<Texture*>(data);
 	if (archive.read("fileName", texture->fileName)) {
 		texture->data = loadTextureFromFile(texture->fileName);

@@ -1,12 +1,12 @@
 // Example showing reflection and serialization of a C++ object
 
+#include <iostream>
 #include <reflection/reflection.h>
 #include <reflection/version.h>
-#include <iostream>
 #include <string>
 
-#define XML          0
-#define JSON         1
+#define XML  0
+#define JSON 1
 #if TY_REFLECTION_JSON
 #define ARCHIVE_TYPE JSON
 #elif TY_REFLECTION_XML
@@ -34,7 +34,7 @@ public:
 	void setLives(int value) {
 		lives = value;
 	}
-	int getLife() const {
+	int getLives() const {
 		return lives;
 	}
 	void setName(const std::string& name_) {
@@ -55,12 +55,19 @@ public:
 	const Coords& getPosition() const {
 		return position;
 	}
+	void setStamina(float value) {
+		stamina = value;
+	}
+	float getStamina() const {
+		return stamina;
+	}
 
 private:
 	int         lives = 0;
 	std::string name;
 	ActionFlags actionFlags = {};
 	Coords      position { 0.f, 0.f, 0.f };
+	float       stamina = 1.f;
 };
 
 void        registerUserTypes();
@@ -79,6 +86,18 @@ int main(int /*argc*/, char* /*argv*/[]) {
 	std::string archiveContent = writeGameObject(obj, element);
 	GameObject  otherObj;
 	readGameObject(otherObj, archiveContent, element);
+
+	std::cout << "GameObject.stamina attributes:" << std::endl;
+	const auto& type = static_cast<const refl::StructType&>(refl::getType<GameObject>());
+	for (auto a : type.getProperty("stamina")->getAttributes()) {
+		if (auto floatMin = a->tryCast<refl::FloatMin>(); floatMin) {
+			std::cout << "FloatMin. minValue:" << floatMin->getMin() << std::endl;
+		}
+		else if (auto floatMax = a->tryCast<refl::FloatMax>(); floatMax) {
+			std::cout << "FloatMax. maxValue:" << floatMax->getMax() << std::endl;
+		}
+	}
+
 	refl::deinitReflection();
 	return 0;
 }
@@ -99,10 +118,11 @@ void registerUserTypes() {
 	END_STRUCT();
 
 	BEGIN_CLASS(GameObject);
-	PROPERTY("life", getLife, setLives);
+	PROPERTY("lives", getLives, setLives);
 	PROPERTY("name", getName, setName);
 	PROPERTY("position", getPosition, setPosition);
-	PROPERTY_EX("action", getActionFlags, setActionFlags, Flags::all, Semantic::none);
+	PROPERTY("action", getActionFlags, setActionFlags);
+	PROPERTY("stamina", getStamina, setStamina).ATTRIBUTE(FloatMin, 0.f).ATTRIBUTE(FloatMax, 10.f);
 	END_CLASS();
 
 	END_REFLECTION();
@@ -121,22 +141,20 @@ GameObject makeGameObject() {
 }
 
 std::string writeGameObject(const GameObject& obj, const char* element) {
-	std::string            archiveContent;
 #if ARCHIVE_TYPE == XML
 	refl::XMLOutputArchive archive;
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
 	archive.write(element, obj);
-	archive.saveToString(archiveContent);
-	return archiveContent;
+	return archive.saveToString();
 }
 
 void readGameObject(GameObject& obj, const std::string& archiveContent, const char* element) {
 #if ARCHIVE_TYPE == XML
 	refl::XMLInputArchive archive;
 #elif ARCHIVE_TYPE == JSON
-	refl::JSONInputArchive archive;
+	refl::JSONInputArchive  archive;
 #endif
 	if (archive.initialize(archiveContent.data())) {
 		archive.read(element, &obj);

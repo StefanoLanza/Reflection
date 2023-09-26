@@ -124,7 +124,6 @@ NumberVector buildPrimeNumbers() {
 
 std::string writeToArchive(const PersonMap& persons, const CityVector& cities, const NumberVector& numbers, const char* personsKey,
                            const char* citiesKey, const char* numbersKey) {
-	std::string archiveContent;
 #if ARCHIVE_TYPE == XML
 	refl::XMLOutputArchive archive;
 #elif ARCHIVE_TYPE == JSON
@@ -137,8 +136,7 @@ std::string writeToArchive(const PersonMap& persons, const CityVector& cities, c
 	archive.writeAttribute("int", 13);
 	archive.writeAttribute("float", 3.141);
 	archive.writeAttribute("double", 31.1312312312312312);
-	archive.saveToString(archiveContent);
-	return archiveContent;
+	return archive.saveToString();
 }
 
 void readFromArchive(PersonMap& persons, CityVector& cities, NumberVector& numbers, const std::string& archiveContent, const char* personsKey,

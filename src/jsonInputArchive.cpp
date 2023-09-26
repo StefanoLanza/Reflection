@@ -17,81 +17,89 @@ JSONInputArchive::~JSONInputArchive() = default;
 ParseResult JSONInputArchive::initialize(const char* buffer) {
 	const rapidjson::ParseResult result = document->Parse<rapidjson::kParseCommentsFlag | rapidjson::kParseTrailingCommasFlag>(buffer);
 	if (! result.IsError()) {
-		stack.push({ nullptr, document.get() });
+		stack.push(document.get());
 	}
 	return { ! result.IsError(), GetParseError_En(result.Code()), static_cast<int>(result.Offset()) };
 }
 
-bool JSONInputArchive::read(bool& b) {
-	if (auto value = stack.top().value; value->IsBool()) {
+bool JSONInputArchive::read(bool& b) const {
+	if (auto value = stack.top(); value->IsBool()) {
 		b = value->GetBool();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::read(int& i) {
-	if (auto value = stack.top().value; value->IsInt()) {
+bool JSONInputArchive::read(int& i) const {
+	if (auto value = stack.top(); value->IsInt()) {
 		i = value->GetInt();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::read(unsigned int& ui) {
-	if (auto value = stack.top().value; value->IsUint()) {
+bool JSONInputArchive::read(unsigned int& ui) const {
+	if (auto value = stack.top(); value->IsUint()) {
 		ui = value->GetUint();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::read(int64_t& i64) {
-	if (auto value = stack.top().value; value->IsInt64()) {
+bool JSONInputArchive::read(int64_t& i64) const {
+	if (auto value = stack.top(); value->IsInt64()) {
 		i64 = value->GetInt64();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::read(uint64_t& ui64) {
-	if (auto value = stack.top().value; value->IsUint64()) {
+bool JSONInputArchive::read(uint64_t& ui64) const {
+	if (auto value = stack.top(); value->IsUint64()) {
 		ui64 = value->GetUint64();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::read(float& f) {
-	if (auto value = stack.top().value; value->IsFloat()) {
+bool JSONInputArchive::read(float& f) const {
+	if (auto value = stack.top(); value->IsFloat()) {
 		f = value->GetFloat();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::read(double& d) {
-	if (auto value = stack.top().value; value->IsDouble()) {
+bool JSONInputArchive::read(double& d) const {
+	if (auto value = stack.top(); value->IsDouble()) {
 		d = value->GetDouble();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::read(const char*& str) {
-	if (auto value = stack.top().value; value->IsString()) {
+bool JSONInputArchive::read(const char*& str) const {
+	if (auto value = stack.top(); value->IsString()) {
 		str = value->GetString();
 		return true;
 	}
 	return false;
 }
 
-bool JSONInputArchive::beginElement(const char* name) {
+bool JSONInputArchive::read(std::string_view& sv) const {
+	if (auto value = stack.top(); value->IsString()) {
+		sv = { value->GetString(), value->GetStringLength() };
+		return true;
+	}
+	return false;
+}
+
+bool JSONInputArchive::beginElement(const char* name) const {
 	assert(! stack.empty());
 	const StackItem& top = stack.top();
-	if (top.value->IsObject()) {
-		if (auto memberItr = name ? top.value->FindMember(name) : top.value->MemberBegin(); memberItr != top.value->MemberEnd()) {
-			stack.push({ memberItr->name.GetString(), &memberItr->value });
+	if (top->IsObject()) {
+		if (auto memberItr = name ? top->FindMember(name) : top->MemberBegin(); memberItr != top->MemberEnd()) {
+			stack.push(&memberItr->value);
 			return true;
 		}
 		else {
@@ -101,84 +109,65 @@ bool JSONInputArchive::beginElement(const char* name) {
 	return false;
 }
 
-void JSONInputArchive::endElement() {
+void JSONInputArchive::endElement() const {
 	stack.pop();
 }
 
-// TODO beginObject(name). This operates on the stack. value(name) returns a string to be parsed
-bool JSONInputArchive::beginObject() {
-	StackItem& top = stack.top();
-	if (top.value->IsObject()) {
-		return true;
+bool JSONInputArchive::isObject() const {
+	return stack.top()->IsObject();
+}
+
+bool JSONInputArchive::isArray() const {
+	return stack.top()->IsArray();
+}
+
+ValueType JSONInputArchive::getValueType() const {
+	auto jsonType = stack.top()->GetType();
+	switch (jsonType) {
+	case rapidjson::Type::kNullType:
+		return ValueType::Null;
+	case rapidjson::Type::kFalseType:
+		return ValueType::False;
+	case rapidjson::Type::kTrueType:
+		return ValueType::True;
+	case rapidjson::Type::kObjectType:
+		return ValueType::Object;
+	case rapidjson::Type::kArrayType:
+		return ValueType::Array;
+	case rapidjson::Type::kStringType:
+		return ValueType::String;
+	case rapidjson::Type::kNumberType:
+		return ValueType::Number;
+	default:
+		return ValueType::Undefined;
 	}
-	else {
-		return false;
-	}
 }
 
-void JSONInputArchive::endObject() {
-	[[maybe_unused]] const StackItem& top = stack.top();
-	assert(top.value->IsObject());
-}
-
-bool JSONInputArchive::beginArray() {
-	const StackItem& top = stack.top();
-	return top.value->IsArray();
-}
-
-void JSONInputArchive::endArray() {
-	[[maybe_unused]] const StackItem& top = stack.top();
-	assert(top.value->IsArray());
-	stack.pop();
-}
-
-bool JSONInputArchive::beginObject(const char* key) {
-	bool res = false;
-	if (beginElement(key)) {
-		res = beginObject();
-		if (! res) {
-			endElement();
-		}
-	}
-	return res;
-}
-
-bool JSONInputArchive::beginArray(const char* key) {
-	bool res = false;
-	if (beginElement(key)) {
-		res = beginArray();
-		if (! res) {
-			endElement();
-		}
-	}
-	return res;
-}
-
-bool JSONInputArchive::iterateChild(ArchiveIterator& it) {
+bool JSONInputArchive::iterateChild(ArchiveIterator& it) const {
 	if (it.hasValidIndex()) {
 		stack.pop();
 
 		const StackItem& top = stack.top();
-		const size_t index = it.getIndex() + 1;
-		if (top.value->IsArray()) {
-			auto array = top.value->GetArray();
+		const size_t     index = it.getIndex() + 1;
+		if (top->IsArray()) {
+			auto array = top->GetArray();
 			if (index >= array.Size()) {
 				it.reset();
 				return false;
 			}
 			it.setIndex(index);
 			auto sindex = static_cast<rapidjson::SizeType>(index);
-			stack.push({ nullptr, &array[sindex] });
+			stack.push(&array[sindex]);
 		}
-		else if (top.value->IsObject()) {
-			auto object = top.value->GetObject();
+		else if (top->IsObject()) {
+			auto object = top->GetObject();
 			if (index >= object.MemberCount()) {
 				it.reset();
 				return false;
 			}
 			it.setIndex(index);
 			rapidjson::GenericMemberIterator memberIt = object.MemberBegin() + index;
-			stack.push({ memberIt->name.GetString(), &memberIt->value });
+			stack.push(&memberIt->value);
 			it.setKey(memberIt->name.GetString());
 		}
 		else {
@@ -187,22 +176,22 @@ bool JSONInputArchive::iterateChild(ArchiveIterator& it) {
 	}
 	else {
 		const StackItem& top = stack.top();
-		if (top.value->IsArray()) {
-			auto array = top.value->GetArray();
+		if (top->IsArray()) {
+			auto array = top->GetArray();
 			if (array.Empty()) {
 				return false;
 			}
 			it.setIndex(0);
-			stack.push({ nullptr, &array[0] });
+			stack.push(&array[0]);
 		}
-		else if (top.value->IsObject()) {
-			auto object = top.value->GetObject();
+		else if (top->IsObject()) {
+			auto object = top->GetObject();
 			if (object.MemberCount() == 0) {
 				return false;
 			}
 			it.setIndex(0);
 			rapidjson::GenericMemberIterator memberIt = object.MemberBegin();
-			stack.push({ memberIt->name.GetString(), &memberIt->value });
+			stack.push(&memberIt->value);
 			it.setKey(memberIt->name.GetString());
 		}
 		else {
@@ -213,21 +202,18 @@ bool JSONInputArchive::iterateChild(ArchiveIterator& it) {
 	return true;
 }
 
-#if TY_REFLECTION_DEPRECATED
-
-bool JSONInputArchive::iterateChild(ArchiveIterator& /*it*/, const char* /*name*/) {
-	assert(false && "Not supported");
+// Legacy
+bool JSONInputArchive::iterateChild(ArchiveIterator&, const char*) const {
+	assert(false);
 	return false;
 }
 
-#endif
-
-bool JSONInputArchive::readAttribute(const char* name, bool& value) {
+bool JSONInputArchive::readAttribute(const char* name, bool& value) const {
 	bool res = false;
 	if (beginAttribute(name)) {
 		const StackItem& top = stack.top();
-		if (top.value->IsBool()) {
-			value = top.value->GetBool();
+		if (top->IsBool()) {
+			value = top->GetBool();
 			res = true;
 		}
 		endElement();
@@ -235,12 +221,12 @@ bool JSONInputArchive::readAttribute(const char* name, bool& value) {
 	return res;
 }
 
-bool JSONInputArchive::readAttribute(const char* name, int& value) {
+bool JSONInputArchive::readAttribute(const char* name, int& value) const {
 	bool res = false;
 	if (beginAttribute(name)) {
 		const StackItem& top = stack.top();
-		if (top.value->IsInt()) {
-			value = top.value->GetInt();
+		if (top->IsInt()) {
+			value = top->GetInt();
 			res = true;
 		}
 		endElement();
@@ -248,12 +234,12 @@ bool JSONInputArchive::readAttribute(const char* name, int& value) {
 	return res;
 }
 
-bool JSONInputArchive::readAttribute(const char* name, unsigned int& value) {
+bool JSONInputArchive::readAttribute(const char* name, unsigned int& value) const {
 	bool res = false;
 	if (beginAttribute(name)) {
 		const StackItem& top = stack.top();
-		if (top.value->IsUint()) {
-			value = top.value->GetUint();
+		if (top->IsUint()) {
+			value = top->GetUint();
 			res = true;
 		}
 		endElement();
@@ -261,12 +247,12 @@ bool JSONInputArchive::readAttribute(const char* name, unsigned int& value) {
 	return res;
 }
 
-bool JSONInputArchive::readAttribute(const char* name, float& value) {
+bool JSONInputArchive::readAttribute(const char* name, float& value) const {
 	bool res = false;
 	if (beginAttribute(name)) {
 		const StackItem& top = stack.top();
-		if (top.value->IsFloat()) {
-			value = top.value->GetFloat();
+		if (top->IsFloat()) {
+			value = top->GetFloat();
 			res = true;
 		}
 		endElement();
@@ -274,12 +260,12 @@ bool JSONInputArchive::readAttribute(const char* name, float& value) {
 	return res;
 }
 
-bool JSONInputArchive::readAttribute(const char* name, double& value) {
+bool JSONInputArchive::readAttribute(const char* name, double& value) const {
 	bool res = false;
 	if (beginAttribute(name)) {
 		const StackItem& top = stack.top();
-		if (top.value->IsDouble()) {
-			value = top.value->GetDouble();
+		if (top->IsDouble()) {
+			value = top->GetDouble();
 			res = true;
 		}
 		endElement();
@@ -287,12 +273,12 @@ bool JSONInputArchive::readAttribute(const char* name, double& value) {
 	return res;
 }
 
-bool JSONInputArchive::readAttribute(const char* name, const char*& str) {
+bool JSONInputArchive::readAttribute(const char* name, const char*& str) const {
 	bool res = false;
 	if (beginAttribute(name)) {
 		const StackItem& top = stack.top();
-		if (top.value->IsString()) {
-			str = top.value->GetString();
+		if (top->IsString()) {
+			str = top->GetString();
 			res = true;
 		}
 		endElement();
@@ -300,7 +286,20 @@ bool JSONInputArchive::readAttribute(const char* name, const char*& str) {
 	return res;
 }
 
-bool JSONInputArchive::beginAttribute(const char* name) {
+bool JSONInputArchive::readAttribute(const char* name, std::string_view& sv) const {
+	bool res = false;
+	if (beginAttribute(name)) {
+		const StackItem& top = stack.top();
+		if (top->IsString()) {
+			sv = { top->GetString(), top->GetStringLength() };
+			res = true;
+		}
+		endElement();
+	}
+	return res;
+}
+
+bool JSONInputArchive::beginAttribute(const char* name) const {
 	char tmp[256];
 	tmp[0] = '@';
 #ifdef _MSC_VER
@@ -315,8 +314,8 @@ bool JSONInputArchive::beginAttribute(const char* name) {
 
 const rapidjson::Value& JSONInputArchive::getValue(const char* key) const {
 	const StackItem& top = stack.top();
-	if (top.value->IsObject()) {
-		if (auto memberItr = top.value->FindMember(key); memberItr != top.value->MemberEnd()) {
+	if (top->IsObject()) {
+		if (auto memberItr = top->FindMember(key); memberItr != top->MemberEnd()) {
 			return memberItr->value;
 		}
 	}

@@ -3,8 +3,9 @@
 #include "containerType.h"
 #include "context.h"
 #include "typeDB.h"
-#include <cassert>
 #include <core/scopedAllocator.h>
+
+#include <cassert>
 #include <vector>
 
 namespace Typhoon::Reflection::detail {
@@ -69,12 +70,8 @@ private:
 template <typename VECTOR_TYPE>
 class StdVectorContainer final : public ContainerType {
 public:
-	StdVectorContainer(const char* typeName, TypeId typeID, const Type* valueType)
-	    : ContainerType(typeName, typeID, sizeof(VECTOR_TYPE), nullptr, valueType, buildMethodTable<VECTOR_TYPE>()) {
-	}
-
-	bool isEmpty(ConstDataPtr container) const override {
-		return cast<VECTOR_TYPE>(container)->empty();
+	StdVectorContainer(const char* typeName, TypeId typeID, const Type* valueType, Allocator& allocator)
+	    : ContainerType(typeName, typeID, sizeof(VECTOR_TYPE), nullptr, valueType, buildMethodTable<VECTOR_TYPE>(), allocator) {
 	}
 
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
@@ -85,16 +82,10 @@ public:
 		return allocator.make<WriteIteratorType>(cast<VECTOR_TYPE>(container));
 	}
 
-	void clear(DataPtr container) const override {
-		cast<VECTOR_TYPE>(container)->clear();
-	}
-
 private:
 	using ReadIteratorType = StdVectorReadIterator<VECTOR_TYPE>;
 	using WriteIteratorType = StdVectorWriteIterator<VECTOR_TYPE>;
 };
-
-const char* decorateTypeName(const char* typeName, const char* prefix, const char* suffix, ScopedAllocator& alloc);
 
 // std::vector specialization
 template <class T>
@@ -106,9 +97,7 @@ struct autoRegisterHelper<std::vector<T>> {
 		const Type*      valueType = autoRegisterType<ValueType>(context);
 		constexpr TypeId typeID = getTypeId<ContainerType>();
 		const char*      typeName = decorateTypeName(valueType->getName(), "std::vector<", ">", *context.scopedAllocator);
-		auto             type = context.scopedAllocator->make<StdVectorContainer<ContainerType>>(typeName, typeID, valueType);
-		context.typeDB->registerType(type);
-		return type;
+		return context.scopedAllocator->make<StdVectorContainer<ContainerType>>(typeName, typeID, valueType, *context.allocator);
 	}
 };
 

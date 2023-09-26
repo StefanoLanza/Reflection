@@ -86,8 +86,8 @@ const Type& Variant::getType() const {
 	return detail::getTypeDB().getType(typeId);
 }
 
-const char* Variant::getName() const {
-	return name.c_str();
+const std::string& Variant::getName() const {
+	return name;
 }
 
 void Variant::destruct() {

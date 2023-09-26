@@ -26,10 +26,9 @@ struct autoRegisterHelper<std::pair<first_type, second_type>> {
 		const char*      typeName = buildTemplateTypeName(innerTypeNames, "std::pair<", ">", *context.scopedAllocator);
 
 		auto type = context.scopedAllocator->make<StructType>(typeName, typeId, sizeof(PairType), alignof(PairType), nullptr,
-		                                                      buildMethodTable<PairType>(), std::ref(*context.allocator));
-		type->addProperty(createFieldProperty("first", Flags::all, Semantic::none, &PairType::first, context));
-		type->addProperty(createFieldProperty("second", Flags::all, Semantic::none, &PairType::second, context));
-		context.typeDB->registerType(type);
+		                                                      buildMethodTable<PairType>(), *context.allocator);
+		type->addProperty(ClassUtil<PairType>::makeProperty("first", &PairType::first, context));
+		type->addProperty(ClassUtil<PairType>::makeProperty("second", &PairType::second, context));
 		return type;
 	}
 };

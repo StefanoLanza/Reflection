@@ -25,7 +25,7 @@ inline Enumerator makeEnumerator(const char* name, T value) {
 class EnumType final : public Type {
 public:
 	EnumType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Enumerator enumConstants[], size_t count,
-	         const Type* underlyingType);
+	         const Type* underlyingType, Allocator& allocator);
 
 	span<const Enumerator> getEnumerators() const;
 	const Enumerator*      findEnumeratorByValue(ConstDataPtr value, size_t valueSize) const;

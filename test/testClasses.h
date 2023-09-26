@@ -2,6 +2,8 @@
 
 #include <core/bitMask.h>
 #include <reflection/fwdDecl.h>
+
+#include <array>
 #include <string>
 
 struct ActionFlags : Typhoon::BitMask<uint16_t> {
@@ -39,8 +41,8 @@ struct Material {
 	Color       color { 1.f, 1.f, 1.f };
 };
 
-bool customSaveMaterial(const void* data, refl::OutputArchive& archive);
-void customReadMaterial(void* data, refl::InputArchive& archive);
+void customSaveMaterial(const void* data, refl::OutputArchive& archive);
+void customReadMaterial(void* data, const refl::InputArchive& archive);
 bool operator==(const Material& a, const Material& b);
 
 class GameObject {
@@ -78,6 +80,12 @@ public:
 	const Material& getMaterial() const {
 		return material;
 	}
+	int getReadOnly() const {
+		return readOnly;
+	}
+	void setWriteOnly(float value) {
+		writeOnly = value;
+	}
 
 private:
 	int         lives = 0;
@@ -85,6 +93,8 @@ private:
 	ActionFlags actionFlags = {};
 	Coords      position { 0.f, 0.f, 0.f };
 	Material    material;
+	int         readOnly = 0xFF;
+	float       writeOnly = -1.f;
 };
 
 class DerivedGameObject : public GameObject {
@@ -102,11 +112,18 @@ private:
 
 // C style structure and API
 struct Fog {
-	Color color = { 0.5f, 0.5f, 0.5f };
-	float density = 0.1f;
+	using ElvProfile = std::array<float, 8>;
+	Color      color = { 0.5f, 0.5f, 0.5f };
+	float      density = 0.1f;
+	ElvProfile elevationProfile {};
+	char       tag[4] {};
 };
 
-void  setDensity(Fog& fog, float value);
-float getDensity(const Fog& fog);
-void  setColor(Fog& fog, Color c);
-bool  operator==(const Fog& a, const Fog& b);
+void                   setDensity(Fog& fog, float value);
+float                  getDensity(const Fog& fog);
+void                   setColor(Fog& fog, Color c);
+Color                  getColor(const Fog& fog);
+void                   setElevationProfile(Fog& fog, Fog::ElvProfile profile);
+const Fog::ElvProfile& getElevationProfile(const Fog& fog);
+
+bool operator==(const Fog& a, const Fog& b);
