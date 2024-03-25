@@ -48,6 +48,11 @@ void initReflection();
 void initReflection(Allocator& allocator);
 
 /**
+ * @brief Return true if the library has been initialized, false otherwise
+ */
+bool isInitialized();
+
+/**
  * @brief Terminate the reflection library
  */
 void deinitReflection();

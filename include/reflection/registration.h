@@ -39,7 +39,7 @@ Context& getContext();
 	do {                                                                \
 		using namespace refl;                                           \
 		using namespace Typhoon;                                        \
-		Context&         context = detail::getContext();                \
+		Context&         context = refl::detail::getContext();          \
 		TypeDB&          typeDB_ = *context.typeDB;                     \
 		ScopedAllocator& scopedAllocator_ = *context.scopedAllocator;   \
 		Allocator&       allocator_ = *context.allocator;               \
@@ -75,7 +75,7 @@ Context& getContext();
 	do {                                                                                                                                          \
 		using class_ = class;                                                                                                                     \
 		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-		                                                          detail::buildMethodTable<class_>(), allocator_);                                \
+		                                                          refl::detail::buildMethodTable<class_>(), allocator_);                          \
 		do {                                                                                                                                      \
 	} while (0)
 
@@ -83,7 +83,7 @@ Context& getContext();
 	do {                                                                                                                                          \
 		using class_ = class;                                                                                                                     \
 		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
-		                                                          detail::buildMethodTable<class_>(), allocator_);                                \
+		                                                          refl::detail::buildMethodTable<class_>(), allocator_);                          \
 		do {                                                                                                                                      \
 	} while (0)
 
@@ -95,28 +95,29 @@ Context& getContext();
 		const StructType& parentType = static_cast<const StructType&>(typeDB_.getType<parentClass>());                                   \
 		assert(parentType.getSubClass() == Type::Subclass::Struct);                                                                      \
 		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), \
-		                                                          &parentType, detail::buildMethodTable<class_>(), allocator_);          \
+		                                                          &parentType, refl::detail::buildMethodTable<class_>(), allocator_);    \
 		do {                                                                                                                             \
 	} while (0)
 
-#define FIELD_RENAMED(field, name) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::field, context))
+#define FIELD_RENAMED(field, name) structType->addProperty(refl::detail::ClassUtil<class_>::makeProperty(name, &class_::field, context))
 
 #define FIELD(field) FIELD_RENAMED(field, #field)
 
 #define PROPERTY(name, getter, setter) \
 	structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::setter, &class_::getter, context))
 
-#define GETTER(name, getter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::getter, context))
+#define GETTER(name, getter) structType->addProperty(refl::detail::ClassUtil<class_>::makeProperty(name, &class_::getter, context))
 
-#define SETTER(name, setter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::setter, context))
+#define SETTER(name, setter) structType->addProperty(refl::detail::ClassUtil<class_>::makeProperty(name, &class_::setter, context))
 
-#define C_PROPERTY(name, getter, setter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, setter, getter, context))
+#define C_PROPERTY(name, getter, setter) structType->addProperty(refl::detail::ClassUtil<class_>::makeProperty(name, setter, getter, context))
 
-#define C_SETTER(name, setter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, setter, context))
+#define C_SETTER(name, setter) structType->addProperty(refl::detail::ClassUtil<class_>::makeProperty(name, setter, context))
 
-#define C_GETTER(name, getter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, getter, context))
+#define C_GETTER(name, getter) structType->addProperty(refl::detail::ClassUtil<class_>::makeProperty(name, getter, context))
 
-#define FIELD_WITH_SETTER(field, setter) structType->addProperty(detail::ClassUtil<class_>::makeProperty(#field, setter, &class_::field, context))
+#define FIELD_WITH_SETTER(field, setter) \
+	structType->addProperty(refl::detail::ClassUtil<class_>::makeProperty(#field, setter, &class_::field, context))
 
 #define READER(reader)                       \
 	do {                                     \

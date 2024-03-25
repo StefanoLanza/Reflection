@@ -34,7 +34,7 @@ bool readBuiltin<std::string>(DataPtr data, const InputArchive& archive) {
 
 template <>
 void writeBuiltin<std::string>(ConstDataPtr data, OutputArchive& archive) {
-	archive.write(std::string_view{*cast<std::string>(data)});
+	archive.write(std::string_view { *cast<std::string>(data) });
 }
 
 template <>
@@ -49,7 +49,8 @@ void writeBuiltin<std::string_view>(ConstDataPtr data, OutputArchive& archive) {
 
 template <class T>
 void createBuiltin(Context& context, const char* typeName) {
-	auto type = context.scopedAllocator->make<BuiltinType>(typeName, getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>(), *context.allocator);
+	auto type = context.scopedAllocator->make<BuiltinType>(typeName, getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>(),
+	                                                       *context.allocator);
 	type->setCustomReader(&readBuiltin<T>);
 	type->setCustomWriter(&writeBuiltin<T>);
 	context.typeDB->registerType(type);
@@ -81,8 +82,8 @@ void registerBuiltinTypes(Context& context) {
 	context.typeDB->getGlobalNamespace().addType(variantType);
 }
 
-HeapAllocator  defaultAllocator;
-Context        defaultContext {};
+HeapAllocator defaultAllocator;
+Context       defaultContext {};
 
 } // namespace
 
@@ -109,6 +110,10 @@ void deinitReflection() {
 	context.scopedAllocator = nullptr;
 	context.typeDB = nullptr;
 	context.allocator = nullptr;
+}
+
+bool isInitialized() {
+	return defaultContext.allocator != nullptr;
 }
 
 const Type& getType(TypeId typeID) {
