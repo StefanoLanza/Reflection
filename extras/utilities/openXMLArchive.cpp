@@ -10,22 +10,21 @@ namespace Typhoon {
 
 #if TY_REFLECTION_XML
 
-bool openXMLArchive(Reflection::XMLInputArchive& archive, const char* fileName, IO::FileServer& fileServer) {
-	assert(fileName);
+refl::ParseResult openXMLArchive(Reflection::XMLInputArchive& archive, std::string_view fileName, IO::FileServer& fileServer) {
 	// Open stream
-	auto stream { fileServer.OpenFile(fileName) };
+	auto stream { fileServer.openFile(fileName) };
 	if (! stream) {
-		return false;
+		return refl::ParseResult{false, "cannot open file", 0};
 	}
 
-	const size_t streamSize = stream->GetSize();
+	const size_t streamSize = stream->getSize();
 	if (! streamSize) {
-		return false;
+		return refl::ParseResult{false, "empty file", 0};
 	}
 
 	std::vector<char> buffer(streamSize + 2);
-	if (! stream->Read(buffer.data(), streamSize)) {
-		return false;
+	if (! stream->read(buffer.data(), streamSize)) {
+		return refl::ParseResult{false, "cannot read file", 0};
 	}
 
 	// Add a newline and null terminator (bug in TinyXML)
@@ -33,41 +32,32 @@ bool openXMLArchive(Reflection::XMLInputArchive& archive, const char* fileName, 
 	buffer[streamSize + 1] = '\0';
 
 	// Initialize XML archive
-	if (! archive.initialize(buffer.data())) {
-		return false;
-	}
-
-	return true;
+	return archive.initialize(buffer.data());
 }
 
 #endif
 
 #if TY_REFLECTION_JSON
 
-bool openJSONArchive(Reflection::JSONInputArchive& archive, const char* fileName, IO::FileServer& fileServer) {
-	assert(fileName);
+refl::ParseResult openJSONArchive(Reflection::JSONInputArchive& archive, std::string_view fileName, IO::FileServer& fileServer) {
 	// Open stream
-	auto stream = fileServer.OpenFile(fileName);
+	auto stream = fileServer.openFile(fileName);
 	if (! stream) {
-		return false;
+		return refl::ParseResult{false, "cannot open file", 0};
 	}
 
-	const size_t streamSize = stream->GetSize();
+	const size_t streamSize = stream->getSize();
 	if (! streamSize) {
-		return false;
+		return refl::ParseResult{false, "empty file", 0};
 	}
 
 	std::vector<char> buffer(streamSize + 2);
-	if (! stream->Read(buffer.data(), streamSize)) {
-		return false;
+	if (! stream->read(buffer.data(), streamSize)) {
+		return refl::ParseResult{false, "cannot read file", 0};
 	}
 
 	// Initialize XML archive
-	if (! archive.initialize(buffer.data())) {
-		return false;
-	}
-
-	return true;
+	return archive.initialize(buffer.data());
 }
 
 #endif

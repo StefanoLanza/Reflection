@@ -57,9 +57,9 @@ private:
 	void destruct();
 
 private:
-	TypeId                     typeId;
-	std::string                name;
-	std::aligned_storage_t<64> storage;
+	TypeId                         typeId;
+	std::string                    name;
+	alignas(max_align_t) std::byte storage[64];	
 };
 
 template <class T>

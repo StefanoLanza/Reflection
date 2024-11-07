@@ -35,8 +35,9 @@ void registerTupleElement(StructType& tupleType, Context& context) {
 	static const char* elementName[] = { "element0", "element1", "element2", "element3", "element4", "element5", "element6", "element7" };
 	static_assert(std::tuple_size_v<Tuple> <= std::size(elementName));
 
-	if constexpr (ElementIndex < std::tuple_size_v<Tuple>) {
-		tupleType.addProperty(tupleElementProperty<Tuple, ElementIndex>(elementName[ElementIndex], context));
+	tupleType.addProperty(tupleElementProperty<Tuple, ElementIndex>(elementName[ElementIndex], context));
+
+	if constexpr (ElementIndex + 1 < std::tuple_size_v<Tuple>) {
 		registerTupleElement<Tuple, ElementIndex + 1>(tupleType, context); // recurse
 	}
 }

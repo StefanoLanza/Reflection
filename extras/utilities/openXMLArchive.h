@@ -3,11 +3,14 @@
 #include <file/fwdDecl.h>
 #include <reflection/config.h>
 
+#include <string_view>
+
 namespace Typhoon {
 
 namespace Reflection {
 class XMLInputArchive;
 class JSONInputArchive;
+struct ParseResult;
 
 }
 
@@ -17,7 +20,7 @@ class JSONInputArchive;
 /*! \param file source file
  * \return true on success
  */
-bool openXMLArchive(Reflection::XMLInputArchive& archive, const char* fileName, IO::FileServer& fileServer);
+refl::ParseResult openXMLArchive(Reflection::XMLInputArchive& archive, std::string_view fileName, IO::FileServer& fileServer);
 
 #endif
 
@@ -27,7 +30,7 @@ bool openXMLArchive(Reflection::XMLInputArchive& archive, const char* fileName, 
 /*! \param file source file
  * \return true on success
  */
-bool openJSONArchive(Reflection::JSONInputArchive& archive, const char* fileName, IO::FileServer& fileServer);
+refl::ParseResult openJSONArchive(Reflection::JSONInputArchive& archive, std::string_view fileName, IO::FileServer& fileServer);
 
 #endif
 

@@ -131,6 +131,7 @@ const Namespace& getGlobalNamespace() {
 namespace detail {
 
 Context& getContext() {
+	assert(defaultContext.typeDB);
 	return defaultContext;
 }
 
