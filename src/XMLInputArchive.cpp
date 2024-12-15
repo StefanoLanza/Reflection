@@ -150,6 +150,21 @@ bool XMLInputArchive::beginElement(const char* name) const {
 	}
 }
 
+size_t XMLInputArchive::getElementCount() const {
+	if (! currentNode) {
+		return 0;
+	}
+	size_t childCount = 0;
+	auto   child = currentNode->FirstChildElement();
+	while (child) {
+		if (! child->ToComment()) {
+			++childCount;
+		}
+		child = child->NextSiblingElement();
+	}
+	return childCount;
+}
+
 bool XMLInputArchive::iterateChild(ArchiveIterator& it) const {
 	tinyxml2::XMLNode* childIt = nullptr;
 	if (it.getNode()) {

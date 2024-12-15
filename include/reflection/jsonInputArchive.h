@@ -22,6 +22,7 @@ public:
 	bool        isObject() const override;
 	bool        isArray() const override;
 	ValueType   getValueType() const override;
+	size_t      getElementCount() const override;
 	bool        iterateChild(ArchiveIterator& it) const override;
 	bool        iterateChild(ArchiveIterator& it, const char* name) const override;
 	bool        read(bool& value) const override;

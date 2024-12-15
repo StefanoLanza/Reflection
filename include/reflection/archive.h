@@ -74,6 +74,7 @@ public:
 	virtual void      endElement() const = 0;
 	virtual bool      isObject() const = 0;
 	virtual bool      isArray() const = 0;
+	virtual size_t    getElementCount() const = 0;
 	virtual ValueType getValueType() const = 0;
 	virtual bool      iterateChild(ArchiveIterator& it) const = 0;
 	virtual bool      iterateChild(ArchiveIterator& it, const char* name) const = 0;

@@ -143,6 +143,19 @@ ValueType JSONInputArchive::getValueType() const {
 	}
 }
 
+size_t JSONInputArchive::getElementCount() const {
+	const StackItem& top = stack.top();
+	if (top->IsArray()) {
+		return top->GetArray().Size();
+	}
+	else if (top->IsObject()) {
+		return top->GetObject().MemberCount();
+	}
+	else {
+		return 0;
+	}
+}
+
 bool JSONInputArchive::iterateChild(ArchiveIterator& it) const {
 	if (it.hasValidIndex()) {
 		stack.pop();
@@ -171,7 +184,7 @@ bool JSONInputArchive::iterateChild(ArchiveIterator& it) const {
 			it.setKey(memberIt->name.GetString());
 		}
 		else {
-			assert(false);
+			return false;
 		}
 	}
 	else {
@@ -195,7 +208,7 @@ bool JSONInputArchive::iterateChild(ArchiveIterator& it) const {
 			it.setKey(memberIt->name.GetString());
 		}
 		else {
-			assert(false); // unsupported
+			return false; // unsupported
 		}
 	}
 
