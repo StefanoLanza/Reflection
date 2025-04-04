@@ -172,16 +172,15 @@ Context& getContext();
 #define BEGIN_BITMASK(bitMaskStruct)                                                                                  \
 	do {                                                                                                              \
 		using bitMaskStruct_ = bitMaskStruct;                                                                         \
-		static_assert(std::is_convertible_v<bitMaskStruct_::StorageType, BitMaskStorageType>, "Not of type BitMask"); \
 		const char* typeName = #bitMaskStruct;                                                                        \
 	static const BitMaskConstant enumerators[] = {
 
-#define BITMASK_VALUE(name) { #name, static_cast<BitMaskStorageType>(bitMaskStruct_::name) },
+#define BITMASK_VALUE(name) { #name, static_cast<BitMaskStorageType>(bitMaskStruct_::Enum::name) },
 
 #define END_BITMASK()                                                                                                                                \
 	}                                                                                                                                                \
 	;                                                                                                                                                \
-	const Type& underlyingType = typeDB_.getType<bitMaskStruct_::StorageType>();                                                                     \
+	const Type& underlyingType = typeDB_.getType<bitMaskStruct_::ValueType>();                                                                     \
 	const auto  bitmaskType =                                                                                                                        \
 	    scopedAllocator_.make<BitMaskType>(typeName, getTypeId<bitMaskStruct_>(), &underlyingType, enumerators, std::size(enumerators), allocator_); \
 	typeDB_.registerType(bitmaskType);                                                                                                               \

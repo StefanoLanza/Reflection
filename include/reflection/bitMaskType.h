@@ -1,9 +1,8 @@
 #pragma once
 
 #include "type.h"
-#include <core/bitMask.h>
-#include <core/span.h>
 #include <cstdint>
+#include <span>
 
 namespace Typhoon::Reflection {
 
@@ -16,12 +15,13 @@ struct BitMaskConstant {
 
 class BitMaskType : public Type {
 public:
-	BitMaskType(const char* typeName, TypeId typeID, const Type* underlyingType, const BitMaskConstant enumerators[], size_t numEnumerators, Allocator& allocator);
+	BitMaskType(const char* typeName, TypeId typeID, const Type* underlyingType, const BitMaskConstant enumerators[], size_t numEnumerators,
+	            Allocator& allocator);
 
-	span<const BitMaskConstant> getEnumerators() const;
-	const char*                 findConstantByValue(BitMaskStorageType value) const;
-	BitMaskStorageType          findConstantByName(const char* enumeratorName) const;
-	const Type&                 getUnderlyingType() const;
+	std::span<const BitMaskConstant> getEnumerators() const;
+	const char*                      findConstantByValue(BitMaskStorageType value) const;
+	BitMaskStorageType               findConstantByName(const char* enumeratorName) const;
+	const Type&                      getUnderlyingType() const;
 
 private:
 	const Type*            underlyingType;
