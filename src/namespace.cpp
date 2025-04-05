@@ -16,12 +16,12 @@ const char* Namespace::getName() const {
 	return name;
 }
 
-span<const Type* const> Namespace::getTypes() const {
-	return { types.data(), types.size() };
+std::span<const Type* const> Namespace::getTypes() const {
+	return types;
 }
 
-span<Namespace* const> Namespace::getNestedNamespaces() const {
-	return { nestedNamespaces.data(), nestedNamespaces.size() };
+std::span<Namespace* const> Namespace::getNestedNamespaces() const {
+	return nestedNamespaces;
 }
 
 Namespace* Namespace::getNestedNamespace(const char* nestedName) const {

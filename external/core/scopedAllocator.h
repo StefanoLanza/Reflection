@@ -23,7 +23,13 @@ public:
 
 	template <class T>
 	T* allocArray(size_t elementCount) {
-		T* ptr = allocator.allocArray<T>(elementCount);
+		T* ptr = nullptr;
+		if constexpr (std::is_trivially_default_constructible_v<T>) {
+			ptr = allocator.allocArray<T>(elementCount);
+		}
+		else {
+			ptr = allocator.constructArray<T>(elementCount);
+		}
 		if constexpr (std::is_trivially_destructible_v<T>) {
 			// Register first element only, to rewind the allocator
 			registerObject(ptr, sizeof(T), nullptr);

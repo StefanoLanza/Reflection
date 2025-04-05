@@ -1,11 +1,12 @@
 #pragma once
 
 #include "dataPtr.h"
-#include <core/span.h>
 #include <core/stdAllocator.h>
 #include <core/typeId.h>
 #include <core/uncopyable.h>
+
 #include <functional>
+#include <span>
 #include <type_traits>
 
 namespace Typhoon::Reflection {
@@ -128,26 +129,26 @@ public:
 
 	Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods, Allocator& allocator);
 
-	const char*                  getName() const;
-	TypeId                       getTypeId() const;
-	size_t                       getSize() const;
-	size_t                       getAlignment() const;
-	Subclass                     getSubClass() const;
-	void                         constructObject(DataPtr object) const;
-	void                         destructObject(DataPtr object) const;
-	void                         copyConstructObject(DataPtr object, ConstDataPtr src) const;
-	void                         copyObject(DataPtr a, ConstDataPtr b) const;
-	void                         moveConstructObject(DataPtr object, DataPtr src) const;
-	void                         moveObject(DataPtr a, DataPtr b) const;
-	bool                         compareObjects(ConstDataPtr a, ConstDataPtr b) const;
-	void                         setCustomWriter(CustomWriter saver);
-	const CustomWriter&          getCustomWriter() const;
-	void                         setCustomReader(CustomReader loader);
-	const CustomReader&          getCustomReader() const;
-	void                         setCustomCloner(CustomCloner loader);
-	const CustomCloner&          getCustomCloner() const;
-	void                         addAttribute(const Attribute* attribute);
-	span<const Attribute* const> getAttributes() const;
+	const char*                       getName() const;
+	TypeId                            getTypeId() const;
+	size_t                            getSize() const;
+	size_t                            getAlignment() const;
+	Subclass                          getSubClass() const;
+	void                              constructObject(DataPtr object) const;
+	void                              destructObject(DataPtr object) const;
+	void                              copyConstructObject(DataPtr object, ConstDataPtr src) const;
+	void                              copyObject(DataPtr a, ConstDataPtr b) const;
+	void                              moveConstructObject(DataPtr object, DataPtr src) const;
+	void                              moveObject(DataPtr a, DataPtr b) const;
+	bool                              compareObjects(ConstDataPtr a, ConstDataPtr b) const;
+	void                              setCustomWriter(CustomWriter saver);
+	const CustomWriter&               getCustomWriter() const;
+	void                              setCustomReader(CustomReader loader);
+	const CustomReader&               getCustomReader() const;
+	void                              setCustomCloner(CustomCloner loader);
+	const CustomCloner&               getCustomCloner() const;
+	void                              addAttribute(const Attribute* attribute);
+	std::span<const Attribute* const> getAttributes() const;
 
 private:
 	using AttributeVec = std::vector<const Attribute*, stdAllocator<const Attribute*>>;

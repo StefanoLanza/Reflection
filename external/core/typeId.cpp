@@ -12,7 +12,7 @@ namespace Typhoon {
 namespace {
 
 struct TypeNameStorage {
-	char string[64];
+	char string[32];
 };
 
 std::unordered_map<const void*, TypeNameStorage> idToName;
@@ -30,7 +30,7 @@ TypeName typeIdToName(TypeId typeId) {
 
 TypeId typeNameToId(const char* typeName) {
 	assert(typeName);
-	auto it = std::find_if(nameToId.begin(), nameToId.end(), [typeName](auto&& pair) { return ! strncmp(pair.first.string, typeName, std::size(pair.first.string) - 1); });
+	auto it = std::find_if(nameToId.begin(), nameToId.end(), [typeName](auto&& pair) { return ! strcmp(pair.first.string, typeName); });
 	if (it != nameToId.end()) {
 		return it->second;
 	}

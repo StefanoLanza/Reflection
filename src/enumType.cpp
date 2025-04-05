@@ -12,8 +12,8 @@ EnumType::EnumType(const char* typeName, TypeId typeID, size_t size, size_t alig
 	assert(underlyingType);
 }
 
-span<const Enumerator> EnumType::getEnumerators() const {
-	return { enumerators, numEnumerators };
+std::span<const Enumerator> EnumType::getEnumerators() const {
+	return {enumerators, numEnumerators};
 }
 
 const Enumerator* EnumType::findEnumeratorByValue(ConstDataPtr value, size_t valueSize) const {

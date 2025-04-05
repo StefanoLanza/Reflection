@@ -5,6 +5,8 @@
 #include <reflection/version.h>
 #include <string>
 
+#include <core/bitMask.h>
+
 #define XML  0
 #define JSON 1
 #if TY_REFLECTION_JSON
@@ -15,13 +17,13 @@
 #error "No supported archive types"
 #endif
 
-struct ActionFlags : Typhoon::BitMask<uint16_t> {
-	enum : StorageType {
-		running = 1,
-		shooting = 2,
-		smiling = 4,
-	};
+enum class ActionFlags : uint16_t {
+	running = 1,
+	shooting = 2,
+	smiling = 4,
 };
+
+using ActionBitmask = Typhoon::Bitmask<ActionFlags>;
 
 struct Coords {
 	float x;
@@ -43,10 +45,10 @@ public:
 	const std::string& getName() const {
 		return name;
 	}
-	void setActionFlags(ActionFlags flags) {
+	void setActionFlags(ActionBitmask flags) {
 		actionFlags = flags;
 	}
-	ActionFlags getActionFlags() const {
+	ActionBitmask getActionFlags() const {
 		return actionFlags;
 	}
 	void setPosition(const Coords& p) {
@@ -63,11 +65,11 @@ public:
 	}
 
 private:
-	int         lives = 0;
-	std::string name;
-	ActionFlags actionFlags = {};
-	Coords      position { 0.f, 0.f, 0.f };
-	float       stamina = 1.f;
+	int           lives = 0;
+	std::string   name;
+	ActionBitmask actionFlags {};
+	Coords        position { 0.f, 0.f, 0.f };
+	float         stamina = 1.f;
 };
 
 void        registerUserTypes();
@@ -105,7 +107,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
 void registerUserTypes() {
 	BEGIN_REFLECTION()
 
-	BEGIN_BITMASK(ActionFlags)
+	BEGIN_BITMASK(ActionBitmask)
 	BITMASK_VALUE(running)
 	BITMASK_VALUE(shooting)
 	BITMASK_VALUE(smiling)
@@ -129,13 +131,10 @@ void registerUserTypes() {
 }
 
 GameObject makeGameObject() {
-	ActionFlags actionFlags;
-	actionFlags.value = ActionFlags::running | ActionFlags::smiling;
-
 	GameObject obj;
 	obj.setLives(1000);
 	obj.setName("Stefano");
-	obj.setActionFlags(actionFlags);
+	obj.setActionFlags(ActionBitmask { ActionFlags::running, ActionFlags::smiling });
 	obj.setPosition({ 0.f, 1.f, 2.f });
 	return obj;
 }
@@ -154,7 +153,7 @@ void readGameObject(GameObject& obj, const std::string& archiveContent, const ch
 #if ARCHIVE_TYPE == XML
 	refl::XMLInputArchive archive;
 #elif ARCHIVE_TYPE == JSON
-	refl::JSONInputArchive  archive;
+	refl::JSONInputArchive archive;
 #endif
 	if (archive.initialize(archiveContent.data())) {
 		archive.read(element, &obj);

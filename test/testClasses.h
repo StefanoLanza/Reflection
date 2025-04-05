@@ -6,13 +6,13 @@
 #include <array>
 #include <string>
 
-struct ActionFlags : Typhoon::BitMask<uint16_t> {
-	enum : StorageType {
-		running = 1,
-		shooting = 2,
-		smiling = 4,
-	};
+enum class ActionFlags : uint16_t {
+	running = 0x1,
+	shooting = 0x2,
+	smiling = 0x4,
 };
+
+using ActionBitmask = Typhoon::Bitmask<ActionFlags>;
 
 enum class SeasonType {
 	spring,
@@ -62,10 +62,10 @@ public:
 	void setNameMove(std::string&& name_) {
 		name = std::move(name_);
 	}
-	void setActionFlags(ActionFlags flags) {
+	void setActionFlags(ActionBitmask flags) {
 		actionFlags = flags;
 	}
-	ActionFlags getActionFlags() const {
+	ActionBitmask getActionFlags() const {
 		return actionFlags;
 	}
 	void setPosition(const Coords& p) {
@@ -88,13 +88,13 @@ public:
 	}
 
 private:
-	int         lives = 0;
-	std::string name;
-	ActionFlags actionFlags = {};
-	Coords      position { 0.f, 0.f, 0.f };
-	Material    material;
-	int         readOnly = 0xFF;
-	float       writeOnly = -1.f;
+	int           lives = 0;
+	std::string   name;
+	ActionBitmask actionFlags {};
+	Coords        position { 0.f, 0.f, 0.f };
+	Material      material;
+	int           readOnly = 0xFF;
+	float         writeOnly = -1.f;
 };
 
 class DerivedGameObject : public GameObject {

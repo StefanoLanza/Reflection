@@ -168,8 +168,7 @@ TEST_CASE("Enum") {
 
 TEST_CASE("BitMask") {
 	using namespace refl;
-	ActionFlags flags;
-	flags.value = ActionFlags::running | ActionFlags::smiling;
+	ActionBitmask flags { ActionFlags::running, ActionFlags::smiling };
 	const char* elementName = "flags";
 
 	auto write = [&](OutputArchive& archive) {
@@ -178,7 +177,7 @@ TEST_CASE("BitMask") {
 	};
 
 	auto read = [&](InputArchive& archive) {
-		ActionFlags readFlags;
+		ActionBitmask readFlags;
 		REQUIRE(archive.read(elementName, readFlags));
 		CHECK(readFlags == flags);
 	};
@@ -204,9 +203,9 @@ TEST_CASE("BitMask") {
 #endif
 
 	SECTION("Clone") {
-		ActionFlags cloned;
+		ActionBitmask cloned;
 		cloneObject(&cloned, flags);
-		REQUIRE(cloned.value == flags.value);
+		REQUIRE(cloned == flags);
 	}
 }
 
@@ -623,8 +622,7 @@ TEST_CASE("std::string_view") {
 TEST_CASE("Class") {
 	using namespace refl;
 
-	ActionFlags actionFlags;
-	actionFlags.value = ActionFlags::running | ActionFlags::smiling;
+	ActionBitmask actionFlags { ActionFlags::running, ActionFlags::smiling };
 	GameObject gameObject;
 	gameObject.setLives(1000);
 	gameObject.setName("William");
@@ -769,7 +767,7 @@ TEST_CASE("Variant") {
 void registerUserTypes() {
 	BEGIN_REFLECTION()
 
-	BEGIN_BITMASK(ActionFlags)
+	BEGIN_BITMASK(ActionBitmask)
 	BITMASK_VALUE(running)
 	BITMASK_VALUE(shooting)
 	BITMASK_VALUE(smiling)

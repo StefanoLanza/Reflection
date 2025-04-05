@@ -92,8 +92,8 @@ Property& Property::addAttribute(const Attribute* attribute) {
 	return *this;
 }
 
-span<const Attribute* const> Property::getAttributes() const {
-	return { attributes.data(), attributes.size() };
+std::span<const Attribute* const> Property::getAttributes() const {
+	return attributes;
 }
 
 } // namespace Typhoon::Reflection

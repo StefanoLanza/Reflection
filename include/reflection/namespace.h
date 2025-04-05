@@ -2,9 +2,10 @@
 
 #include "config.h"
 
-#include <core/span.h>
 #include <core/stdAllocator.h>
+
 #include <cstddef> // size_t
+#include <span>
 #include <vector>
 
 namespace Typhoon::Reflection {
@@ -19,12 +20,12 @@ public:
 	static constexpr char* global = nullptr;
 	static constexpr char  unnamed[] = "";
 
-	const char*             getName() const;
-	span<const Type* const> getTypes() const;
-	span<Namespace* const>  getNestedNamespaces() const;
-	Namespace*              getNestedNamespace(const char* name) const;
-	void                    addNestedNamespace(Namespace* nestedNamespace);
-	void                    addType(const Type* type);
+	const char*                  getName() const;
+	std::span<const Type* const> getTypes() const;
+	std::span<Namespace* const>  getNestedNamespaces() const;
+	Namespace*                   getNestedNamespace(const char* name) const;
+	void                         addNestedNamespace(Namespace* nestedNamespace);
+	void                         addType(const Type* type);
 
 private:
 	using TypeVector = std::vector<const Type*, stdAllocator<const Type*>>;

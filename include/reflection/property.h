@@ -4,10 +4,11 @@
 #include "config.h"
 #include "dataPtr.h"
 #include "semantics.h"
-#include <core/span.h>
 #include <core/stdAllocator.h>
+
 #include <cstdint>
 #include <functional>
+#include <span>
 #include <vector>
 
 namespace Typhoon::Reflection {
@@ -20,19 +21,19 @@ using Setter = std::function<void(DataPtr self, ConstDataPtr value)>; // TODO Da
 class Property {
 public:
 	Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, Allocator& allocator);
-	const char*                  getName() const;
-	const char*                  getPrettyName() const;
-	const Type&                  getValueType() const;
-	uint32_t                     getFlags() const;
-	Semantic                     getSemantic() const;
-	Property&                    setPrettyName(const char* str);
-	Property&                    setFlags(uint32_t flags);
-	Property&                    setSemantic(Semantic semantic);
-	void                         setValue(DataPtr self, ConstDataPtr value) const;
-	void                         getValue(ConstDataPtr self, DataPtr value) const;
-	void                         copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator& alloc) const;
-	Property&                    addAttribute(const Attribute* attribute);
-	span<const Attribute* const> getAttributes() const;
+	const char*                       getName() const;
+	const char*                       getPrettyName() const;
+	const Type&                       getValueType() const;
+	uint32_t                          getFlags() const;
+	Semantic                          getSemantic() const;
+	Property&                         setPrettyName(const char* str);
+	Property&                         setFlags(uint32_t flags);
+	Property&                         setSemantic(Semantic semantic);
+	void                              setValue(DataPtr self, ConstDataPtr value) const;
+	void                              getValue(ConstDataPtr self, DataPtr value) const;
+	void                              copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator& alloc) const;
+	Property&                         addAttribute(const Attribute* attribute);
+	std::span<const Attribute* const> getAttributes() const;
 
 	template <class T>
 	const Attribute* queryAttribute() const;

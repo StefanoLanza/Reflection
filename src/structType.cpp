@@ -34,8 +34,8 @@ Property& StructType::addProperty(Property&& property) {
 	return properties.back();
 }
 
-span<const Property> StructType::getProperties() const {
-	return { properties.data(), properties.size() };
+std::span<const Property> StructType::getProperties() const {
+	return properties;
 }
 
 const Property* StructType::getProperty(const char* propertyName) const {

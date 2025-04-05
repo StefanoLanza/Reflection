@@ -100,8 +100,8 @@ void Type::addAttribute(const Attribute* attribute) {
 	attributes.push_back(attribute);
 }
 
-span<const Attribute* const> Type::getAttributes() const {
-	return { attributes.data(), attributes.size() };
+std::span<const Attribute* const> Type::getAttributes() const {
+	return attributes;
 }
 
 } // namespace Typhoon::Reflection

@@ -32,7 +32,7 @@ characterset "MBCS"
 flags   { "MultiProcessorCompile", } --"ConformanceMode", }
 startproject "UnitTest"
 exceptionhandling "Off"
-cppdialect "c++17"
+cppdialect "c++20"
 rtti "Off"
 
 filter { filter_vs }

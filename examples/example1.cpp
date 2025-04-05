@@ -1,9 +1,11 @@
 // Example showing reflection and serialization of a builtin types, enums and bitmasks
 
+#include <iostream>
 #include <reflection/reflection.h>
 #include <reflection/version.h>
-#include <iostream>
 #include <string>
+
+#include <core/bitMask.h>
 
 #define XML  0
 #define JSON 1
@@ -15,13 +17,13 @@
 #error "No supported archive types"
 #endif
 
-struct TestFlags : Typhoon::BitMask<uint16_t> {
-	enum : StorageType {
-		visible = 1,
-		resizeable = 2,
-		moveable = 4,
-	};
+enum class TestFlags : uint32_t {
+	visible = 1,
+	resizeable = 2,
+	moveable = 4,
 };
+
+using TestBitmask = Typhoon::Bitmask<TestFlags>;
 
 enum class TestEnum {
 	left,
@@ -39,7 +41,7 @@ struct Builtins {
 	uint64_t    ui64;
 	std::string str;
 	TestEnum    e;
-	TestFlags   flags;
+	TestBitmask flags;
 };
 
 void        registerUserTypes();
@@ -66,7 +68,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
 void registerUserTypes() {
 	BEGIN_REFLECTION()
 
-	BEGIN_BITMASK(TestFlags)
+	BEGIN_BITMASK(TestBitmask)
 	BITMASK_VALUE(visible)
 	BITMASK_VALUE(resizeable)
 	BITMASK_VALUE(moveable)
@@ -92,7 +94,7 @@ Builtins makeBuiltins() {
 	b.ui64 = 123456789;
 	b.str = "Stefano";
 	b.e = TestEnum::left;
-	b.flags.value = TestFlags::visible | TestFlags::resizeable;
+	b.flags = TestBitmask { TestFlags::visible, TestFlags::resizeable };
 	return b;
 }
 
@@ -121,7 +123,7 @@ void readBuiltins(Builtins& obj, const std::string& content, const char* element
 #if ARCHIVE_TYPE == XML
 	refl::XMLInputArchive archive;
 #elif ARCHIVE_TYPE == JSON
-	refl::JSONInputArchive  archive;
+	refl::JSONInputArchive archive;
 #endif
 	if (refl::ParseResult res = archive.initialize(content.data()); res) {
 		if (archive.beginElement(element)) {

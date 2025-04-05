@@ -1,9 +1,10 @@
 #pragma once
 
 #include "type.h"
+
 #include <cassert>
-#include <core/span.h>
 #include <cstring>
+#include <span>
 
 namespace Typhoon::Reflection {
 
@@ -27,10 +28,10 @@ public:
 	EnumType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Enumerator enumConstants[], size_t count,
 	         const Type* underlyingType, Allocator& allocator);
 
-	span<const Enumerator> getEnumerators() const;
-	const Enumerator*      findEnumeratorByValue(ConstDataPtr value, size_t valueSize) const;
-	const Enumerator*      findEnumeratorByName(const char* constantName) const;
-	const Type&            getUnderlyingType() const;
+	std::span<const Enumerator> getEnumerators() const;
+	const Enumerator*           findEnumeratorByValue(ConstDataPtr value, size_t valueSize) const;
+	const Enumerator*           findEnumeratorByName(const char* constantName) const;
+	const Type&                 getUnderlyingType() const;
 
 private:
 	const Enumerator* enumerators;
