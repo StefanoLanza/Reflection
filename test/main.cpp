@@ -1,13 +1,27 @@
-#define CATCH_CONFIG_RUNNER
-#include <Catch-master/single_include/catch2/catch.hpp>
+#include <catch/catch_amalgamated.hpp>
 
 #include "testClasses.h"
 #include <reflection/reflection.h>
 #include <string>
 
-// #include <vld.h>
-
 void registerUserTypes();
+
+class GlobalSetupTeardown : public Catch::EventListenerBase {
+public:
+	using Catch::EventListenerBase::EventListenerBase;
+
+	// Runs once before ANY test case starts
+	void testRunStarting([[maybe_unused]] Catch::TestRunInfo const& testRunInfo) override {
+		refl::initReflection();
+		registerUserTypes();
+	}
+
+	void testRunEnded([[maybe_unused]] Catch::TestRunStats const& testRunStats) override {
+		refl::deinitReflection();
+	}
+};
+
+CATCH_REGISTER_LISTENER(GlobalSetupTeardown)
 
 void compare(const GameObject& o0, const GameObject& o1) {
 	CHECK(o0.getLives() == o1.getLives());
@@ -25,14 +39,6 @@ bool compareArrays(const T a[], const T b[], size_t n) {
 		}
 	}
 	return true;
-}
-
-int main(int argc, char* argv[]) {
-	refl::initReflection();
-	registerUserTypes();
-	const int res = Catch::Session().run(argc, argv);
-	refl::deinitReflection();
-	return res;
 }
 
 TEST_CASE("Primitives") {
@@ -169,7 +175,7 @@ TEST_CASE("Enum") {
 TEST_CASE("BitMask") {
 	using namespace refl;
 	ActionBitmask flags { ActionFlags::running, ActionFlags::smiling };
-	const char* elementName = "flags";
+	const char*   elementName = "flags";
 
 	auto write = [&](OutputArchive& archive) {
 		archive.write(elementName, flags);
@@ -623,7 +629,7 @@ TEST_CASE("Class") {
 	using namespace refl;
 
 	ActionBitmask actionFlags { ActionFlags::running, ActionFlags::smiling };
-	GameObject gameObject;
+	GameObject    gameObject;
 	gameObject.setLives(1000);
 	gameObject.setName("William");
 	gameObject.setActionFlags(actionFlags);
