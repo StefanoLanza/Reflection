@@ -1,4 +1,4 @@
-#include <catch/catch_amalgamated.hpp>
+#include <Catch/catch_amalgamated.hpp>
 
 #include "testClasses.h"
 #include <reflection/reflection.h>
