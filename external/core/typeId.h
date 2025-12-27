@@ -2,6 +2,7 @@
 
 #include <type_traits>
 #include <functional> // hash
+#include <cstdint>
 
 namespace Typhoon {
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstdint>
 #include <core/typeId.h>
 
 namespace Typhoon::Reflection {
