@@ -30,7 +30,7 @@ platforms { "x86", "x64" }
 language "C++"
 location (workspacePath)
 characterset "MBCS"
-flags   { "MultiProcessorCompile", } --"ConformanceMode", }
+flags   { "MultiProcessorCompile", "NoPCH", }
 startproject "UnitTest"
 exceptionhandling "Off"
 cppdialect "c++20"
@@ -115,21 +115,22 @@ project("Core")
 	kind "StaticLib"
 	files "external/core/**.cpp"
 	files "external/core/**.h"
-	includedirs { "./", "external", }
+	includedirs { "external/core/include", "external/core/include/core", }
+	externalincludedirs { "external/core/include", }
 
 project("Reflection")
 	kind "StaticLib"
 	files "src/**.cpp"
 	files "src/**.h"
 	files "include/**.h"
-	externalincludedirs { "./", "include/reflection", "external", }
+	externalincludedirs { "./", "include/reflection", "external", "external/core/include", }
 	links({"Core", "TinyXML"})
 
 if _OPTIONS["with-examples"] then
 	project("Example1")
 		kind "ConsoleApp"
 		files { "examples/example1.cpp", "examples/utils.*", }
-		externalincludedirs { "include", "external", }
+		externalincludedirs { "include", "external/core/include",}
 		links({"Reflection", })
 		filter { filter_gmake }
 			links({"Core", "TinyXML"})
@@ -138,7 +139,7 @@ if _OPTIONS["with-examples"] then
 	project("Example2")
 		kind "ConsoleApp"
 		files { "examples/example2.cpp", "examples/utils.*", }
-		externalincludedirs { "include", "external", }
+		externalincludedirs { "include", "external/core/include",}
 		links({"Reflection", })
 		filter { filter_gmake }
 			links({"Core", "TinyXML"})
@@ -147,7 +148,7 @@ if _OPTIONS["with-examples"] then
 	project("Example3")
 		kind "ConsoleApp"
 		files { "examples/example3.cpp", "examples/utils.*", }
-		externalincludedirs { "include", "external", }
+		externalincludedirs { "include", "external/core/include",}
 		links({"Reflection", })
 		filter { filter_gmake }
 			links({"Core", "TinyXML"})
@@ -156,7 +157,7 @@ if _OPTIONS["with-examples"] then
 	project("Example4")
 		kind "ConsoleApp"
 		files { "examples/example4.cpp", "examples/utils.*", }
-		externalincludedirs { "include", "external",  }
+		externalincludedirs { "include", "external/core/include", }
 		links({"Reflection", })
 		filter { filter_gmake }
 			links({"Core", "TinyXML"})
@@ -165,7 +166,7 @@ if _OPTIONS["with-examples"] then
 	project("Example5")
 		kind "ConsoleApp"
 		files { "examples/example5.cpp", "examples/utils.*", }
-		externalincludedirs { "include", "external",  }
+		externalincludedirs { "include", "external/core/include", }
 		links({"Reflection", })
 		filter { filter_gmake }
 			links({"Core", "TinyXML"})
@@ -182,7 +183,7 @@ if _OPTIONS["with-tests"] then
 	project("UnitTest")
 		kind "ConsoleApp"
 		files "test/**.*"
-		externalincludedirs { "include", "external", }
+		externalincludedirs { "include", "external", "external/core/include",}
 		links({"Reflection", "Catch", })
 		filter { filter_gmake }
 			links({"Core", "TinyXML"})
