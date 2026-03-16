@@ -25,3 +25,6 @@ project("Reflection")
 		uses { "Core" }
 		includedirs { "include", }
 		links { "Reflection" }
+		filter { "action:gmake*" } -- Bug in gmake generation
+			links({"Core", "TinyXML"})
+		filter {}
