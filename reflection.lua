@@ -18,10 +18,10 @@ project("Reflection")
 	files "src/**.h"
 	files "include/**.h"
 	includedirs { "include/reflection", "external", }
-	uses { "Core", "TinyXML", }
 	exceptionhandling "Off"
 	rtti "Off"
+	uses { "Core", "TinyXML", }
 	usage "INTERFACE"
-		uses { "Core", "TinyXML", }
+		uses { "Core" }
 		includedirs { "include", }
 		links { "Reflection" }
