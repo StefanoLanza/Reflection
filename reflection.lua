@@ -22,6 +22,6 @@ project("Reflection")
 	exceptionhandling "Off"
 	rtti "Off"
 	usage "INTERFACE"
-		uses "Core"
+		uses { "Core", "TinyXML", }
 		includedirs { "include", }
 		links { "Reflection" }
