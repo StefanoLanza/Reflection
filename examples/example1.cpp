@@ -5,7 +5,7 @@
 #include <reflection/version.h>
 #include <string>
 
-#include <core/bitMask.h>
+#include <core/flags.h>
 
 #define XML  0
 #define JSON 1
@@ -17,13 +17,13 @@
 #error "No supported archive types"
 #endif
 
-enum class TestFlags : uint32_t {
+enum class TestFlagsEnum : uint32_t {
 	visible = 1,
 	resizeable = 2,
 	moveable = 4,
 };
 
-using TestBitmask = Typhoon::Bitmask<TestFlags>;
+using TestFlags = Typhoon::Flags<TestFlagsEnum>;
 
 enum class TestEnum {
 	left,
@@ -41,7 +41,7 @@ struct Builtins {
 	uint64_t    ui64;
 	std::string str;
 	TestEnum    e;
-	TestBitmask flags;
+	TestFlags   flags;
 };
 
 void        registerUserTypes();
@@ -68,7 +68,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
 void registerUserTypes() {
 	BEGIN_REFLECTION()
 
-	BEGIN_BITMASK(TestBitmask)
+	BEGIN_BITMASK(TestFlags)
 	BITMASK_VALUE(visible)
 	BITMASK_VALUE(resizeable)
 	BITMASK_VALUE(moveable)
@@ -94,7 +94,7 @@ Builtins makeBuiltins() {
 	b.ui64 = 123456789;
 	b.str = "Stefano";
 	b.e = TestEnum::left;
-	b.flags = TestBitmask { TestFlags::visible, TestFlags::resizeable };
+	b.flags = { TestFlagsEnum::visible, TestFlagsEnum::resizeable };
 	return b;
 }
 

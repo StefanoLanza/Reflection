@@ -5,7 +5,6 @@ project("TinyXML")
 	kind "StaticLib"
 	files { path .. "/**.cpp" }
 	files { path .. "/**.h" }
-	includedirs { "TinyXML", }
 	exceptionhandling "Off"
 	rtti "Off"
 	usage "INTERFACE"
@@ -17,7 +16,7 @@ project("Reflection")
 	files "src/**.cpp"
 	files "src/**.h"
 	files "include/**.h"
-	includedirs { "include/reflection", "external", }
+	includedirs { "include/reflection" }
 	exceptionhandling "Off"
 	rtti "Off"
 	uses { "Core", "TinyXML", }

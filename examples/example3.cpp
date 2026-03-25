@@ -5,7 +5,7 @@
 #include <reflection/version.h>
 #include <string>
 
-#include <core/bitMask.h>
+#include <core/flags.h>
 
 #define XML  0
 #define JSON 1
@@ -23,7 +23,7 @@ enum class ActionFlags : uint16_t {
 	smiling = 4,
 };
 
-using ActionBitmask = Typhoon::Bitmask<ActionFlags>;
+using ActionBitmask = Typhoon::Flags<ActionFlags>;
 
 struct Coords {
 	float x;
