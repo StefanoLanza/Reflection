@@ -105,25 +105,13 @@ filter { filter_clang, filter_debug, }
 
 filter {}
 
-project("TinyXML")
-	kind "StaticLib"
-	files "external/TinyXML/**.cpp"
-	files "external/TinyXML/**.h"
-	includedirs { "TinyXML", }
-
 project("Core")
 	kind "StaticLib"
 	files "external/core/**.cpp"
 	files "external/core/**.h"
 	includedirs { "./", "external", }
 
-project("Reflection")
-	kind "StaticLib"
-	files "src/**.cpp"
-	files "src/**.h"
-	files "include/**.h"
-	externalincludedirs { "./", "include/reflection", "external", }
-	links({"Core", "TinyXML"})
+require "Reflection"
 
 if _OPTIONS["with-examples"] then
 	project("Example1")
