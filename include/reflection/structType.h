@@ -1,6 +1,7 @@
 #pragma once
 
 #include "type.h"
+#include <core/podVector.h>
 #include <core/stdAllocator.h>
 
 #include <span>
@@ -20,9 +21,10 @@ public:
 	bool                      inheritsFrom(const StructType* type) const;
 	Property&                 addProperty(Property&& property);
 	std::span<const Property> getProperties() const;
-	const Property*           getProperty(const char* propertyName) const;
+	const Property*           getPropertyByName(const char* propertyName) const;
 
 private:
+	// FIXME podVector
 	using Vector = std::vector<Property, stdAllocator<Property>>;
 
 	const StructType* parentType;

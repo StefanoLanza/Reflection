@@ -104,8 +104,7 @@ std::string writeBuiltins(const Builtins& obj, const char* element) {
 #elif ARCHIVE_TYPE == JSON
 	refl::JSONOutputArchive archive;
 #endif
-	archive.setKey(element);
-	archive.beginObject();
+	archive.beginObject(element);
 	archive.write("b", obj.b);
 	archive.write("i", obj.i);
 	archive.write("f", obj.f);

@@ -38,7 +38,7 @@ std::span<const Property> StructType::getProperties() const {
 	return properties;
 }
 
-const Property* StructType::getProperty(const char* propertyName) const {
+const Property* StructType::getPropertyByName(const char* propertyName) const {
 	assert(propertyName);
 	for (const auto& p : properties) {
 		if (! strcmp(p.getName(), propertyName)) {

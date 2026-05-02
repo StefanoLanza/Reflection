@@ -48,12 +48,22 @@ void JSONOutputArchive::setKey(const char* name) {
 	writer->Key(name);
 }
 
+bool JSONOutputArchive::beginObject(const char* key) {
+	setKey(key);
+	return writer->StartObject();
+}
+
 bool JSONOutputArchive::beginObject() {
 	return writer->StartObject();
 }
 
 void JSONOutputArchive::endObject() {
 	writer->EndObject();
+}
+
+bool JSONOutputArchive::beginArray(const char* key) {
+	setKey(key);
+	return writer->StartArray();
 }
 
 bool JSONOutputArchive::beginArray() {

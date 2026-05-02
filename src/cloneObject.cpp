@@ -21,14 +21,14 @@ namespace Typhoon::Reflection {
 
 namespace {
 
-ErrorCode cloneObjectImpl(DataPtr dstData, ConstDataPtr srcData, const Type& type, LinearAllocator& allocator);
+ErrorCode cloneObjectImpl(DataPtr dstData, ConstDataPtr srcData, const Type& type, ArenaAllocator& allocator);
 void      cloneBuiltin(DataPtr data, ConstDataPtr srcData, const BuiltinType& type);
-void      cloneStruct(DataPtr data, ConstDataPtr srcData, const StructType& structType, const TypeDB& typeDB, LinearAllocator& allocator);
+void      cloneStruct(DataPtr data, ConstDataPtr srcData, const StructType& structType, const TypeDB& typeDB, ArenaAllocator& allocator);
 void      cloneEnum(DataPtr data, ConstDataPtr srcData, const EnumType& type);
 void      cloneBitMask(DataPtr data, ConstDataPtr srcData, const BitMaskType& type);
-void      cloneContainer(DataPtr data, ConstDataPtr srcData, const ContainerType& type, LinearAllocator& allocator);
-void      clonePointer(DataPtr data, ConstDataPtr srcData, const PointerType& type, LinearAllocator& allocator);
-void      cloneReference(DataPtr data, ConstDataPtr srcData, const ReferenceType& type, LinearAllocator& allocator);
+void      cloneContainer(DataPtr data, ConstDataPtr srcData, const ContainerType& type, ArenaAllocator& allocator);
+void      clonePointer(DataPtr data, ConstDataPtr srcData, const PointerType& type, ArenaAllocator& allocator);
+void      cloneReference(DataPtr data, ConstDataPtr srcData, const ReferenceType& type, ArenaAllocator& allocator);
 void      cloneVariant(DataPtr dstData, ConstDataPtr srcData, const TypeDB& typeDB);
 
 } // namespace
@@ -47,7 +47,7 @@ ErrorCode cloneObject(DataPtr dstObject, ConstDataPtr srcObject, const Type& typ
 
 namespace {
 
-ErrorCode cloneObjectImpl(DataPtr dstData, ConstDataPtr srcData, const Type& type, LinearAllocator& allocator) {
+ErrorCode cloneObjectImpl(DataPtr dstData, ConstDataPtr srcData, const Type& type, ArenaAllocator& allocator) {
 	const TypeDB&        typeDB = detail::getTypeDB();
 	const Type::Subclass subclass = type.getSubClass();
 	if (subclass == Type::Subclass::Builtin) {
@@ -77,9 +77,9 @@ ErrorCode cloneObjectImpl(DataPtr dstData, ConstDataPtr srcData, const Type& typ
 	return ErrorCode::ok;
 }
 
-void cloneStruct(DataPtr dstData, ConstDataPtr srcData, const StructType& structType, const TypeDB& typeDB, LinearAllocator& allocator) {
+void cloneStruct(DataPtr dstData, ConstDataPtr srcData, const StructType& structType, const TypeDB& typeDB, ArenaAllocator& allocator) {
 	for (const auto& property : structType.getProperties()) {
-		if (property.getFlags() & Flags::clonable) {
+		if (property.getFlags().isSet(Flag::clonable)) {
 			property.copyValue(dstData, srcData, allocator);
 		}
 	}
@@ -101,7 +101,7 @@ void cloneBitMask(DataPtr data, ConstDataPtr srcData, const BitMaskType& type) {
 	std::memcpy(data, srcData, type.getSize());
 }
 
-void cloneContainer(DataPtr dstContainer, ConstDataPtr srcContainer, const ContainerType& type, LinearAllocator& allocator) {
+void cloneContainer(DataPtr dstContainer, ConstDataPtr srcContainer, const ContainerType& type, ArenaAllocator& allocator) {
 	const Type* key_type = type.getKeyType();
 	const Type* value_type = type.getValueType();
 
@@ -128,7 +128,7 @@ void cloneContainer(DataPtr dstContainer, ConstDataPtr srcContainer, const Conta
 	}
 }
 
-void clonePointer(DataPtr data, ConstDataPtr srcData, const PointerType& type, LinearAllocator& allocator) {
+void clonePointer(DataPtr data, ConstDataPtr srcData, const PointerType& type, ArenaAllocator& allocator) {
 	DataPtr      dstPointer = type.resolvePointer(data);
 	ConstDataPtr srcPointer = type.resolvePointer(srcData);
 	if (dstPointer && srcPointer) {
@@ -136,7 +136,7 @@ void clonePointer(DataPtr data, ConstDataPtr srcData, const PointerType& type, L
 	}
 }
 
-void cloneReference(DataPtr data, ConstDataPtr srcData, const ReferenceType& type, LinearAllocator& allocator) {
+void cloneReference(DataPtr data, ConstDataPtr srcData, const ReferenceType& type, ArenaAllocator& allocator) {
 	DataPtr      dstPointer = *cast<DataPtr>(data);
 	ConstDataPtr srcPointer = *cast<ConstDataPtr>(srcData);
 	assert(dstPointer); // cannot be null
