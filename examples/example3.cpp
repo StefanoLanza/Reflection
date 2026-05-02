@@ -91,7 +91,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
 
 	std::cout << "GameObject.stamina attributes:" << std::endl;
 	const auto& type = static_cast<const refl::StructType&>(refl::getType<GameObject>());
-	for (auto a : type.getProperty("stamina")->getAttributes()) {
+	for (auto a : type.getPropertyByName("stamina")->getAttributes()) {
 		if (auto floatMin = a->tryCast<refl::FloatMin>(); floatMin) {
 			std::cout << "FloatMin. minValue:" << floatMin->getMin() << std::endl;
 		}
