@@ -4,7 +4,7 @@
 
 namespace Typhoon::Reflection {
 
-Property::Property(Setter&& setter_, Getter&& getter_, const char* name, const Type* valueType, Allocator& allocator)
+Property::Property(Setter&& setter_, Getter&& getter_, const char* name, const Type* valueType, ArenaAllocator& allocator)
     : setter { std::move(setter_) }
     , getter { std::move(getter_) }
     , name { name }

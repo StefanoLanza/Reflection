@@ -50,7 +50,7 @@ void writeBuiltin<std::string_view>(ConstDataPtr data, OutputArchive& archive) {
 template <class T>
 void createBuiltin(Context& context, const char* typeName) {
 	auto type = context.scopedAllocator->make<BuiltinType>(typeName, getTypeId<T>(), sizeof(T), alignof(T), detail::buildMethodTable<T>(),
-	                                                       *context.allocator);
+	                                                       *context.arenaAllocator);
 	type->setCustomReader(&readBuiltin<T>);
 	type->setCustomWriter(&writeBuiltin<T>);
 	context.typeDB->registerType(type);
@@ -77,13 +77,13 @@ void registerBuiltinTypes(Context& context) {
 	CREATE_BUILTIN(std::string, context);
 	CREATE_BUILTIN(std::string_view, context);
 
-	auto variantType = context.scopedAllocator->make<VariantType>(*context.allocator);
+	auto variantType = context.scopedAllocator->make<VariantType>(*context.arenaAllocator);
 	context.typeDB->registerType(variantType);
 	context.typeDB->getGlobalNamespace().addType(variantType);
 }
 
-HeapAllocator defaultAllocator;
-Context       defaultContext {};
+MallocAllocator defaultAllocator;
+Context         defaultContext {};
 
 } // namespace
 
@@ -91,29 +91,29 @@ void initReflection() {
 	initReflection(defaultAllocator);
 }
 
-void initReflection(Allocator& allocator) {
+void initReflection(HeapAllocator& allocator) {
 	auto& context = defaultContext;
 	assert(! context.typeDB);
 
-	context.allocator = &allocator;
-	context.pagedAllocator = allocator.construct<PagedAllocator>(allocator, PagedAllocator::defaultPageSize);
-	context.scopedAllocator = allocator.construct<ScopedAllocator>(*context.pagedAllocator);
-	context.typeDB = context.scopedAllocator->make<TypeDB>(allocator, *context.scopedAllocator);
+	context.heapAllocator = &allocator;
+	context.arenaAllocator = allocator.construct<PagedAllocator>(allocator, PagedAllocator::defaultPageSize);
+	context.scopedAllocator = allocator.construct<ScopedAllocator>(*context.arenaAllocator);
+	context.typeDB = context.scopedAllocator->make<TypeDB>(*context.arenaAllocator, *context.scopedAllocator);
 	registerBuiltinTypes(context);
 }
 
 void deinitReflection() {
 	auto& context = defaultContext;
 	assert(context.scopedAllocator);
-	context.allocator->destroy(context.scopedAllocator);
-	context.allocator->destroy(context.pagedAllocator);
+	context.heapAllocator->destroy(context.scopedAllocator);
+	context.heapAllocator->destroy(context.arenaAllocator);
 	context.scopedAllocator = nullptr;
 	context.typeDB = nullptr;
-	context.allocator = nullptr;
+	context.heapAllocator = nullptr;
 }
 
 bool isInitialized() {
-	return defaultContext.allocator != nullptr;
+	return defaultContext.heapAllocator != nullptr;
 }
 
 const Type& getType(TypeId typeID) {

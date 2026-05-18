@@ -42,7 +42,7 @@ Context& getContext();
 		Context&         context = refl::detail::getContext();          \
 		TypeDB&          typeDB_ = *context.typeDB;                     \
 		ScopedAllocator& scopedAllocator_ = *context.scopedAllocator;   \
-		Allocator&       allocator_ = *context.allocator;               \
+		ArenaAllocator&  allocator_ = *context.arenaAllocator;          \
 		Namespace*       currNamespace = &typeDB_.getGlobalNamespace(); \
 		(void)allocator_;
 
@@ -189,7 +189,7 @@ Context& getContext();
 	while (false)
 
 #define PRETTYNAME(name)     setPrettyName((name))
-#define FLAGS(flags, ...)    setFlags(refl::Flags{(flags) __VA_OPT__(,) __VA_ARGS__})
+#define FLAGS(flags, ...)    setFlags(refl::Flags { (flags)__VA_OPT__(, ) __VA_ARGS__ })
 #define SEMANTIC(semantic)   setSemantic((semantic))
 #define ATTRIBUTE(type, ...) addAttribute(scopedAllocator_.make<type>(__VA_ARGS__))
 

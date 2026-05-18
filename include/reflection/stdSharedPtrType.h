@@ -11,14 +11,15 @@ namespace Typhoon::Reflection::detail {
 template <typename T>
 class StdSharedPointerType final : public PointerType {
 public:
-	StdSharedPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType, Allocator& allocator);
+	StdSharedPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType, ArenaAllocator& allocator);
 
 	ConstDataPtr resolvePointer(ConstDataPtr ptr) const override;
 	DataPtr      resolvePointer(DataPtr ptr) const override;
 };
 
 template <typename T>
-inline StdSharedPointerType<T>::StdSharedPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType, Allocator& allocator)
+inline StdSharedPointerType<T>::StdSharedPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType,
+                                                     ArenaAllocator& allocator)
     : PointerType { typeName, typeID, size, alignment, pointedType, allocator } {
 }
 
@@ -49,7 +50,7 @@ struct autoRegisterHelper<std::shared_ptr<T>> {
 		assert(valueType);
 		const char* typeName = decorateTypeName(valueType->getName(), "std::shared_ptr<", ">", *context.scopedAllocator);
 		return context.scopedAllocator->make<StdSharedPointerType<T>>(typeName, getTypeId<PointerType>(), sizeof(PointerType), alignof(PointerType),
-		                                                              valueType, *context.allocator);
+		                                                              valueType, *context.arenaAllocator);
 	}
 };
 

@@ -5,7 +5,7 @@
 #include "dataPtr.h"
 #include "flags.h"
 #include "semantics.h"
-#include <core/podVector.h>
+#include <core/arenaVector.h>
 
 #include <cstdint>
 #include <functional>
@@ -21,7 +21,7 @@ using Setter = std::function<void(DataPtr self, ConstDataPtr value)>; // TODO Da
 
 class Property {
 public:
-	Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, Allocator& allocator);
+	Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, ArenaAllocator& allocator);
 	const char*                       getName() const;
 	const char*                       getPrettyName() const;
 	const Type&                       getValueType() const;
@@ -40,14 +40,14 @@ public:
 	const Attribute* queryAttribute() const;
 
 private:
-	Setter                      setter;
-	Getter                      getter;
-	const char*                 name;
-	const char*                 prettyName;
-	const Type*                 valueType;
-	Flags                       flags;
-	Semantic                    semantic;
-	podVector<const Attribute*> attributes;
+	Setter                        setter;
+	Getter                        getter;
+	const char*                   name;
+	const char*                   prettyName;
+	const Type*                   valueType;
+	Flags                         flags;
+	Semantic                      semantic;
+	ArenaVector<const Attribute*> attributes;
 };
 
 template <class T>

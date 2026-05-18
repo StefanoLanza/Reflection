@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dataPtr.h"
-#include <core/stdAllocator.h>
+#include <core/arenaVector.h>
 #include <core/typeId.h>
 #include <core/uncopyable.h>
 
@@ -127,7 +127,8 @@ public:
 		Variant
 	};
 
-	Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods, Allocator& allocator);
+	Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods,
+	     ArenaAllocator& allocator);
 
 	const char*                       getName() const;
 	TypeId                            getTypeId() const;
@@ -151,18 +152,16 @@ public:
 	std::span<const Attribute* const> getAttributes() const;
 
 private:
-	using AttributeVec = std::vector<const Attribute*, stdAllocator<const Attribute*>>;
-
-	TypeId       typeID;
-	size_t       size;
-	size_t       alignment;
-	Subclass     subClass;
-	const char*  typeName;
-	MethodTable  methods;
-	CustomWriter customWriter;
-	CustomReader customReader;
-	CustomCloner customCloner;
-	AttributeVec attributes;
+	TypeId                        typeID;
+	size_t                        size;
+	size_t                        alignment;
+	Subclass                      subClass;
+	const char*                   typeName;
+	MethodTable                   methods;
+	CustomWriter                  customWriter;
+	CustomReader                  customReader;
+	CustomCloner                  customCloner;
+	ArenaVector<const Attribute*> attributes;
 };
 
 } // namespace Typhoon::Reflection

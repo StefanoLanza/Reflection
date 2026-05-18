@@ -46,7 +46,7 @@ bool readVector(std::vector<T>& vector, const char* vectorName, const InputArchi
 	using container_type = std::vector<T>;
 	const Type&                                      valueType = detail::getTypeDB().getType<T>();
 	constexpr TypeId                                 typeID = getTypeId<container_type>();
-	const detail::StdVectorContainer<container_type> type { nullptr, typeID, &valueType, *detail::getContext().allocator };
+	const detail::StdVectorContainer<container_type> type { nullptr, typeID, &valueType, *detail::getContext().arenaAllocator };
 	return readContainer(&vector, vectorName, type, archive);
 }
 

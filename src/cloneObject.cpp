@@ -40,7 +40,7 @@ ErrorCode cloneObject(DataPtr dstObject, ConstDataPtr srcObject, const Type& typ
 		errorCode = ErrorCode::ok;
 	}
 	else {
-		errorCode = cloneObjectImpl(dstObject, srcObject, type, *detail::getContext().pagedAllocator);
+		errorCode = cloneObjectImpl(dstObject, srcObject, type, *detail::getContext().arenaAllocator);
 	}
 	return errorCode;
 }

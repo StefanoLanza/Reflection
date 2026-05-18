@@ -4,7 +4,7 @@
 namespace Typhoon::Reflection {
 
 EnumType::EnumType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Enumerator enumConstants[], size_t count,
-                   const Type* underlyingType, Allocator& allocator)
+                   const Type* underlyingType, ArenaAllocator& allocator)
     : Type(typeName, typeID, Subclass::Enum, size, alignment, {}, allocator)
     , enumerators(enumConstants)
     , numEnumerators(count)

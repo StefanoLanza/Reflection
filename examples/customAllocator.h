@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <new>
 
-class CustomAllocator final : public Typhoon::Allocator {
+class CustomAllocator final : public Typhoon::HeapAllocator {
 public:
 	void* alloc(size_t size, [[maybe_unused]] size_t alignment) override {
 		totalAlloc += size;

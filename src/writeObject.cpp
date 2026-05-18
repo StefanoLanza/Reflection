@@ -43,7 +43,7 @@ namespace detail {
 
 void writeData(ConstDataPtr data, const Type& type, OutputArchive& archive, const Context& context) {
 	assert(data);
-	writeObjectImpl(data, type, *context.typeDB, archive, *context.pagedAllocator);
+	writeObjectImpl(data, type, *context.typeDB, archive, *context.arenaAllocator);
 }
 
 } // namespace detail

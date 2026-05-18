@@ -52,7 +52,7 @@ namespace detail {
 
 bool readData(DataPtr object, const Type& type, const InputArchive& archive, const Context& context, Semantic semantic) {
 	assert(object);
-	return readObjectImpl(object, type, semantic, *context.typeDB, archive, *context.pagedAllocator);
+	return readObjectImpl(object, type, semantic, *context.typeDB, archive, *context.arenaAllocator);
 }
 
 }
@@ -71,7 +71,7 @@ std::pair<bool, size_t> readArray(DataPtr array, size_t arraySize, TypeId elemen
 		ArchiveIterator iter;
 		while (archive.iterateChild(iter)) {
 			if (count < arraySize) {
-				readObjectImpl(destPtr, *elementType, Semantic::none, typeDB, archive, *detail::getContext().pagedAllocator);
+				readObjectImpl(destPtr, *elementType, Semantic::none, typeDB, archive, *detail::getContext().arenaAllocator);
 			}
 			else {
 				res = false;
@@ -88,7 +88,7 @@ std::pair<bool, size_t> readArray(DataPtr array, size_t arraySize, TypeId elemen
 bool readContainer(DataPtr container, const char* containerName, const ContainerType& type, const InputArchive& archive) {
 	bool res = false;
 	if (archive.beginElement(containerName)) {
-		res = readContainer(container, type, Semantic::none, detail::getTypeDB(), archive, *detail::getContext().pagedAllocator);
+		res = readContainer(container, type, Semantic::none, detail::getTypeDB(), archive, *detail::getContext().arenaAllocator);
 		archive.endElement();
 	}
 	return res;
