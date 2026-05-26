@@ -82,8 +82,8 @@ void registerBuiltinTypes(Context& context) {
 	context.typeDB->getGlobalNamespace().addType(variantType);
 }
 
-C_Allocator defaultAllocator;
-Context     defaultContext {};
+HeapAllocator defaultAllocator;
+Context       defaultContext {};
 
 } // namespace
 
