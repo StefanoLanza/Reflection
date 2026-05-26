@@ -139,6 +139,7 @@ if _OPTIONS["with-tests"] then
 		kind "StaticLib"
 		files { "external/Catch/*.cpp", "external/Catch/*.hpp", } 
 		includedirs { "external/Catch", }
+		warnings "Off"
 
 	project("UnitTest")
 		kind "ConsoleApp"

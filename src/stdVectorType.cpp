@@ -24,7 +24,7 @@ const char* buildTemplateTypeName(const char* typeNames[], const char* prefix, c
 		offs += l + 1;
 	}
 	--offs;
-	memcpy(str + offs, suffix, sl);
+	std::memcpy(str + offs, suffix, sl);
 	offs += sl;
 	str[offs] = 0; // null terminate
 	return str;

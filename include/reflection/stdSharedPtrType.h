@@ -25,20 +25,14 @@ inline StdSharedPointerType<T>::StdSharedPointerType(const char* typeName, TypeI
 
 template <typename T>
 inline ConstDataPtr StdSharedPointerType<T>::resolvePointer(ConstDataPtr data) const {
-	ConstDataPtr pointer = nullptr;
-	const auto&  sharedPtr = *cast<const std::shared_ptr<T>>(data);
-	const T*     srcPtr = sharedPtr.get();
-	std::memcpy(&pointer, &srcPtr, sizeof pointer);
-	return pointer;
+	const auto& sharedPtr = *cast<const std::shared_ptr<T>>(data);
+	return sharedPtr.get();
 }
 
 template <typename T>
 inline DataPtr StdSharedPointerType<T>::resolvePointer(DataPtr data) const {
-	DataPtr  pointer = nullptr;
-	auto&    sharedPtr = *cast<std::shared_ptr<T>>(data);
-	const T* srcPtr = sharedPtr.get();
-	std::memcpy(&pointer, &srcPtr, sizeof pointer);
-	return pointer;
+	auto& sharedPtr = *cast<std::shared_ptr<T>>(data);
+	return sharedPtr.get();
 }
 
 // Specialization for std::shared_ptr

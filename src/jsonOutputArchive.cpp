@@ -4,10 +4,14 @@
 
 #include <cassert>
 #include <fstream>
+
+#pragma warning(push)
+#pragma warning(disable : 5054) // warning C5054: operator '|': deprecated between enumerations of different types
 #include <rapidjson/include/rapidjson/document.h>
 #include <rapidjson/include/rapidjson/prettywriter.h>
 #include <rapidjson/include/rapidjson/rapidjson.h>
 #include <rapidjson/include/rapidjson/stringbuffer.h>
+#pragma warning(pop)
 
 using namespace rapidjson;
 

@@ -229,7 +229,7 @@ bool readContainer(DataPtr data, const Type& type, Semantic semantic, const Type
 }
 
 bool readPointer(DataPtr data, const Type& type, Semantic semantic, const TypeDB& typeDB, const InputArchive& archive, ArenaAllocator& tempAllocator) {
-	const PointerType& pointerType = static_cast<const PointerType&>(type);
+	const auto& pointerType = static_cast<const PointerType&>(type);
 	if (const DataPtr pointer = pointerType.resolvePointer(data); pointer) {
 		return readObjectImpl(pointer, pointerType.getPointedType(), semantic, typeDB, archive, tempAllocator);
 	}

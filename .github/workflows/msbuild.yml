@@ -63,7 +63,7 @@ jobs:
 
     - name: Cache Premake5
       id: cache-premake
-      uses: actions/cache@v3
+      uses: actions/cache@v5
       with:
         path: premake
         key: premake-5.0.0-beta8

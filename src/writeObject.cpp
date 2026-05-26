@@ -153,7 +153,7 @@ void writeContainer(ConstDataPtr data, const Type& type, const TypeDB& typeDB, O
 }
 
 void writePointer(ConstDataPtr data, const Type& type, const TypeDB& typeDB, OutputArchive& archive, ArenaAllocator& tempAllocator) {
-	const PointerType& pointerType = static_cast<const PointerType&>(type);
+	const auto& pointerType = static_cast<const PointerType&>(type);
 	if (ConstDataPtr pointer = pointerType.resolvePointer(data); pointer) {
 		writeObjectImpl(pointer, pointerType.getPointedType(), typeDB, archive, tempAllocator);
 	}

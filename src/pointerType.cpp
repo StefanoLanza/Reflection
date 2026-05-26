@@ -1,6 +1,8 @@
 #include "pointerType.h"
+
 #include <cassert>
 #include <cstring>
+#include <bit>
 
 namespace Typhoon::Reflection {
 
@@ -20,8 +22,8 @@ RawPointerType::RawPointerType(const char* typeName, TypeId typeID, size_t size,
     : PointerType { typeName, typeID, size, alignment, pointedType, allocator } {
 }
 
-ConstDataPtr RawPointerType::resolvePointer(ConstDataPtr data) const {
-	ConstDataPtr pointer = nullptr;
+const void* RawPointerType::resolvePointer(const void* data) const {
+	const void* pointer = nullptr;
 	std::memcpy(&pointer, data, sizeof pointer);
 	return pointer;
 }
