@@ -71,7 +71,7 @@ class StdArrayContainer final : public ContainerType {
 public:
 	using array_type = std::array<T, L>;
 
-	StdArrayContainer(const char* typeName, TypeId typeID, const Type* valueType, Allocator& allocator)
+	StdArrayContainer(const char* typeName, TypeId typeID, const Type* valueType, ArenaAllocator& allocator)
 	    : ContainerType(typeName, typeID, sizeof(array_type), nullptr, valueType, buildMethodTable<array_type>(), allocator) {
 	}
 
@@ -96,7 +96,7 @@ struct autoRegisterHelper<std::array<T, N>> {
 		const Type*      elementType = autoRegisterType<element_type>(context);
 		constexpr TypeId typeID = getTypeId<container_type>();
 		const char*      typeName = decorateTypeName(elementType->getName(), "std::array<", ">", *context.scopedAllocator);
-		return context.scopedAllocator->make<StdArrayContainer<element_type, N>>(typeName, typeID, elementType, *context.allocator);
+		return context.scopedAllocator->make<StdArrayContainer<element_type, N>>(typeName, typeID, elementType, *context.arenaAllocator);
 	}
 };
 

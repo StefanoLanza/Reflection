@@ -78,21 +78,21 @@ public:
 		static_assert(std::is_same_v<std::decay_t<R>, std::decay_t<A>>);
 		using ValueType = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<ValueType>(context);
-		return { wrapSetter(setter), wrapGetter(getter), name, valueType, *context.allocator };
+		return { wrapSetter(setter), wrapGetter(getter), name, valueType, *context.arenaAllocator };
 	}
 
 	template <typename A>
 	static Property makeProperty(const char* name, void (*setter)(C&, A), Context& context) {
 		using ValueType = std::decay_t<A>;
 		const Type* type = autoRegisterType<ValueType>(context);
-		return { wrapSetter(setter), nullptr, name, type, *context.allocator };
+		return { wrapSetter(setter), nullptr, name, type, *context.arenaAllocator };
 	}
 
 	template <typename T, typename A>
 	static Property makeProperty(const char* name, void (*setter)(C&, A), T C::*memberPtr, Context& context) {
 		static_assert(std::is_same_v<T, std::decay_t<A>>);
 		const Type* varType = autoRegisterType<T>(context);
-		return { wrapSetter(setter), wrapGetter(memberPtr), name, varType, *context.allocator };
+		return { wrapSetter(setter), wrapGetter(memberPtr), name, varType, *context.arenaAllocator };
 	}
 
 	template <typename R, typename A>
@@ -100,7 +100,7 @@ public:
 		static_assert(std::is_same_v<std::decay_t<R>, std::decay_t<A>>);
 		using ValueType = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<ValueType>(context);
-		return { wrapSetter(setter), wrapGetter(getter), name, valueType, *context.allocator };
+		return { wrapSetter(setter), wrapGetter(getter), name, valueType, *context.arenaAllocator };
 	}
 
 	template <typename R>
@@ -108,27 +108,27 @@ public:
 		using ValueType = std::decay_t<R>;
 		const Type* A = autoRegisterType<ValueType>(context);
 		assert(A);
-		return { nullptr, wrapGetter(getter), name, A, *context.allocator };
+		return { nullptr, wrapGetter(getter), name, A, *context.arenaAllocator };
 	}
 
 	template <typename R>
 	static Property makeProperty(const char* name, R (C::*getter)() const, Context& context) {
 		using ValueType = std::decay_t<R>;
 		const Type* valueType = autoRegisterType<ValueType>(context);
-		return { nullptr, wrapGetter(getter), name, valueType, *context.allocator };
+		return { nullptr, wrapGetter(getter), name, valueType, *context.arenaAllocator };
 	}
 
 	template <typename A>
 	static Property makeProperty(const char* name, void (C::*setter)(A), Context& context) {
 		using ValueType = std::decay_t<A>;
 		const Type* valueType = autoRegisterType<ValueType>(context);
-		return { wrapSetter(setter), nullptr, name, valueType, *context.allocator };
+		return { wrapSetter(setter), nullptr, name, valueType, *context.arenaAllocator };
 	}
 
 	template <typename T>
 	static Property makeProperty(const char* name, T C::*memberPtr, Context& context) {
 		const Type* varType = autoRegisterType<T>(context);
-		return { wrapSetter(memberPtr), wrapGetter(memberPtr), name, varType, *context.allocator };
+		return { wrapSetter(memberPtr), wrapGetter(memberPtr), name, varType, *context.arenaAllocator };
 	}
 };
 

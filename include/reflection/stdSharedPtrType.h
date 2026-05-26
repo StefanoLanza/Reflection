@@ -11,33 +11,28 @@ namespace Typhoon::Reflection::detail {
 template <typename T>
 class StdSharedPointerType final : public PointerType {
 public:
-	StdSharedPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType, Allocator& allocator);
+	StdSharedPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType, ArenaAllocator& allocator);
 
 	ConstDataPtr resolvePointer(ConstDataPtr ptr) const override;
 	DataPtr      resolvePointer(DataPtr ptr) const override;
 };
 
 template <typename T>
-inline StdSharedPointerType<T>::StdSharedPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType, Allocator& allocator)
+inline StdSharedPointerType<T>::StdSharedPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType,
+                                                     ArenaAllocator& allocator)
     : PointerType { typeName, typeID, size, alignment, pointedType, allocator } {
 }
 
 template <typename T>
 inline ConstDataPtr StdSharedPointerType<T>::resolvePointer(ConstDataPtr data) const {
-	ConstDataPtr pointer = nullptr;
-	const auto&  sharedPtr = *cast<const std::shared_ptr<T>>(data);
-	const T*     srcPtr = sharedPtr.get();
-	std::memcpy(&pointer, &srcPtr, sizeof pointer);
-	return pointer;
+	const auto& sharedPtr = *cast<const std::shared_ptr<T>>(data);
+	return sharedPtr.get();
 }
 
 template <typename T>
 inline DataPtr StdSharedPointerType<T>::resolvePointer(DataPtr data) const {
-	DataPtr  pointer = nullptr;
-	auto&    sharedPtr = *cast<std::shared_ptr<T>>(data);
-	const T* srcPtr = sharedPtr.get();
-	std::memcpy(&pointer, &srcPtr, sizeof pointer);
-	return pointer;
+	auto& sharedPtr = *cast<std::shared_ptr<T>>(data);
+	return sharedPtr.get();
 }
 
 // Specialization for std::shared_ptr
@@ -49,7 +44,7 @@ struct autoRegisterHelper<std::shared_ptr<T>> {
 		assert(valueType);
 		const char* typeName = decorateTypeName(valueType->getName(), "std::shared_ptr<", ">", *context.scopedAllocator);
 		return context.scopedAllocator->make<StdSharedPointerType<T>>(typeName, getTypeId<PointerType>(), sizeof(PointerType), alignof(PointerType),
-		                                                              valueType, *context.allocator);
+		                                                              valueType, *context.arenaAllocator);
 	}
 };
 

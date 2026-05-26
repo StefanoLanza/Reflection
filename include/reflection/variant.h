@@ -12,6 +12,8 @@ namespace Typhoon::Reflection {
 
 class Type;
 
+#pragma warning(push)
+#pragma warning(disable : 4324) // Suppress "structure was padded due to alignment specifier"
 class Variant {
 public:
 	Variant();
@@ -61,6 +63,7 @@ private:
 	std::string                    name;
 	alignas(max_align_t) std::byte storage[64];	
 };
+#pragma warning(pop)
 
 template <class T>
 inline Variant::Variant(T&& value, std::string_view name)

@@ -8,7 +8,7 @@ namespace Typhoon::Reflection {
 
 class ReferenceType : public Type {
 public:
-	ReferenceType(TypeId typeID, const Type* referencedType, bool bIsConst, Allocator& allocator);
+	ReferenceType(TypeId typeID, const Type* referencedType, bool bIsConst, ArenaAllocator& allocator);
 
 	const Type& getReferencedType() const {
 		return *referencedType;

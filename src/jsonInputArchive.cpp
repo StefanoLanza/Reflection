@@ -3,8 +3,12 @@
 #if TY_REFLECTION_JSON
 
 #include <cassert>
+
+#pragma warning(push)
+#pragma warning(disable : 5054) // warning C5054: operator '|': deprecated between enumerations of different types
 #include <rapidjson/include/rapidjson/document.h>
 #include <rapidjson/include/rapidjson/error/en.h>
+#pragma warning(pop)
 
 namespace Typhoon::Reflection {
 
@@ -15,7 +19,7 @@ JSONInputArchive::JSONInputArchive()
 JSONInputArchive::~JSONInputArchive() = default;
 
 ParseResult JSONInputArchive::initialize(const char* buffer) {
-	const rapidjson::ParseResult result = document->Parse<rapidjson::kParseCommentsFlag | rapidjson::kParseTrailingCommasFlag>(buffer);
+	const rapidjson::ParseResult result = document->Parse < rapidjson::kParseCommentsFlag | rapidjson::kParseTrailingCommasFlag > (buffer);
 	if (! result.IsError()) {
 		stack.push(document.get());
 	}

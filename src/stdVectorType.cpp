@@ -15,16 +15,16 @@ const char* buildTemplateTypeName(const char* typeNames[], const char* prefix, c
 	size_t sl = std::strlen(suffix);
 	char*  str = alloc.allocArray<char>(pl + sl + tl + 1);
 	size_t offs = 0;
-	memcpy(str + offs, prefix, pl);
+	std::memcpy(str + offs, prefix, pl);
 	offs += pl;
 	for (int i = 0; typeNames[i]; ++i) {
 		size_t l = strlen(typeNames[i]);
-		memcpy(str + offs, typeNames[i], l);
+		std::memcpy(str + offs, typeNames[i], l);
 		str[offs + l] = ',';
 		offs += l + 1;
 	}
 	--offs;
-	memcpy(str + offs, suffix, sl);
+	std::memcpy(str + offs, suffix, sl);
 	offs += sl;
 	str[offs] = 0; // null terminate
 	return str;
