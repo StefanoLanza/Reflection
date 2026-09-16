@@ -54,20 +54,26 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
+      with:
+          # 'recursive' ensures submodules within submodules are also fetched
+        submodules: recursive
+        # Fetch all history so submodules can find their specific commits
+        fetch-depth: 0
 
     - name: Cache Premake5
-      uses: actions/cache@v4
+      id: cache-premake
+      uses: actions/cache@v5
       with:
         path: premake
-        key: premake-5.0.0-beta7
+        key: premake-5.0.0-beta8
     
     - name: Download Premake (Windows)
       if: runner.os == 'Windows' && steps.cache-premake.outputs.cache-hit != 'true'
       shell: powershell
       run: |
         Invoke-WebRequest `
-          https://github.com/premake/premake-core/releases/download/v5.0.0-beta7/premake-5.0.0-beta7-windows.zip `
+          https://github.com/premake/premake-core/releases/download/v5.0.0-beta8/premake-5.0.0-beta8-windows.zip `
           -OutFile premake.zip
         Expand-Archive premake.zip -Force -DestinationPath premake
         echo "$PWD\premake" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
@@ -75,8 +81,9 @@ jobs:
     - name: Download Premake (Linux)
       if: runner.os == 'Linux' && steps.cache-premake.outputs.cache-hit != 'true'
       run: |
-        curl -L -o premake.tar.gz https://github.com/premake/premake-core/releases/download/v5.0.0-beta7/premake-5.0.0-beta7-linux.tar.gz
+        curl -L -o premake.tar.gz https://github.com/premake/premake-core/releases/download/v5.0.0-beta8/premake-5.0.0-beta8-linux.tar.gz
         tar -xvf premake.tar.gz
+        chmod +x premake5
     
     - name: Set up Dependencies (Linux)
       if: runner.os == 'Linux'
@@ -107,7 +114,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Cache build outputs
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           build
@@ -115,7 +122,7 @@ jobs:
     
     - name: Build solution
       if: runner.os == 'Windows'
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{ github.workspace }}
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.vs_platform }} ${{env.VS_SLN_FILE_PATH}}

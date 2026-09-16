@@ -2,8 +2,8 @@
 
 namespace Typhoon {
 
-class Allocator;
-class LinearAllocator;
+class HeapAllocator;
+class ArenaAllocator;
 class ScopedAllocator;
 
 } // namespace Typhoon
@@ -14,8 +14,8 @@ class TypeDB;
 
 struct Context {
 	TypeDB*          typeDB;
-	Allocator*       allocator;
-	LinearAllocator* pagedAllocator;
+	HeapAllocator*   heapAllocator;
+	ArenaAllocator*  arenaAllocator;
 	ScopedAllocator* scopedAllocator;
 };
 

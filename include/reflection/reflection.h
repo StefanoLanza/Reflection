@@ -29,7 +29,7 @@
 
 namespace Typhoon {
 
-class Allocator;
+class HeapAllocator;
 
 }
 
@@ -45,7 +45,7 @@ void initReflection();
  * @brief  Initialize the reflection library with a custom allocator
  * @param allocator custom allocator
  */
-void initReflection(Allocator& allocator);
+void initReflection(HeapAllocator& allocator);
 
 /**
  * @brief Return true if the library has been initialized, false otherwise

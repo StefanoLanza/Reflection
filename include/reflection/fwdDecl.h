@@ -15,7 +15,6 @@ class BitMaskType;
 class PointerType;
 class ReferenceType;
 enum class Semantic;
-struct Flags;
 class InputArchive;
 class OutputArchive;
 class XMLInputArchive;

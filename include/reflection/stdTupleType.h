@@ -27,7 +27,7 @@ Property tupleElementProperty(const char* name, Context& context) {
 		std::get<index>(*tuple) = *cast<E>(value);
 	};
 
-	return { setter, getter, name, varType, *context.allocator };
+	return { setter, getter, name, varType, *context.arenaAllocator };
 }
 
 template <typename Tuple, size_t ElementIndex>
@@ -54,7 +54,7 @@ struct autoRegisterHelper<std::tuple<Args...>> {
 		// TODO typeName
 		const char* typeName = "std::tuple";
 		auto        tupleType = context.scopedAllocator->make<StructType>(typeName, typeId, sizeof(Tuple), alignof(Tuple), nullptr,
-                                                                   buildMethodTable<Tuple>(), *context.allocator);
+                                                                   buildMethodTable<Tuple>(), *context.arenaAllocator);
 		// Register all elements
 		registerTupleElement<Tuple, 0>(*tupleType, context);
 

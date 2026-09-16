@@ -70,6 +70,11 @@ void XMLOutputArchive::endElement() {
 	currentNode = currentNode->Parent();
 }
 
+bool XMLOutputArchive::beginObject(const char* key) {
+	setKey(key);
+	return beginObject();
+}
+
 bool XMLOutputArchive::beginObject() {
 	beginArrayElement();
 	typeStack.push(Type::object);
@@ -81,6 +86,11 @@ void XMLOutputArchive::endObject() {
 	assert(typeStack.top() == Type::object);
 	typeStack.pop();
 	endElement();
+}
+
+bool XMLOutputArchive::beginArray(const char* key) {
+	setKey(key);
+	return beginArray();
 }
 
 bool XMLOutputArchive::beginArray() {

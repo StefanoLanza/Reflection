@@ -1,10 +1,12 @@
 #include "pointerType.h"
+
 #include <cassert>
 #include <cstring>
+#include <bit>
 
 namespace Typhoon::Reflection {
 
-PointerType::PointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType, Allocator& allocator)
+PointerType::PointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType, ArenaAllocator& allocator)
     : Type { typeName, typeID, Subclass::Pointer, size, alignment, {}, allocator }
     , pointedType { pointedType } {
 	assert(pointedType);
@@ -16,12 +18,12 @@ const Type& PointerType::getPointedType() const {
 
 namespace detail {
 
-RawPointerType::RawPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType, Allocator& allocator)
+RawPointerType::RawPointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType, ArenaAllocator& allocator)
     : PointerType { typeName, typeID, size, alignment, pointedType, allocator } {
 }
 
-ConstDataPtr RawPointerType::resolvePointer(ConstDataPtr data) const {
-	ConstDataPtr pointer = nullptr;
+const void* RawPointerType::resolvePointer(const void* data) const {
+	const void* pointer = nullptr;
 	std::memcpy(&pointer, data, sizeof pointer);
 	return pointer;
 }

@@ -128,8 +128,10 @@ public:
 	virtual bool        saveToFile(const char* filename) = 0;
 	virtual std::string saveToString() = 0;
 	virtual void        setKey(const char* key) = 0;
+	virtual bool        beginObject(const char* key) = 0;
 	virtual bool        beginObject() = 0;
 	virtual void        endObject() = 0;
+	virtual bool        beginArray(const char* key) = 0;
 	virtual bool        beginArray() = 0;
 	virtual void        endArray() = 0;
 	virtual void        write(bool value) = 0;

@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-#include <core/stdAllocator.h>
+#include <core/arenaVector.h>
 
 #include <cstddef> // size_t
 #include <span>
@@ -14,7 +14,7 @@ class Type;
 
 class Namespace {
 public:
-	Namespace(const char* name, Allocator& allocator);
+	Namespace(const char* name, ArenaAllocator& allocator);
 	~Namespace();
 
 	static constexpr char* global = nullptr;
@@ -28,11 +28,9 @@ public:
 	void                         addType(const Type* type);
 
 private:
-	using TypeVector = std::vector<const Type*, stdAllocator<const Type*>>;
-	using NamespaceVector = std::vector<Namespace*, stdAllocator<Namespace*>>;
-	const char*     name;
-	NamespaceVector nestedNamespaces;
-	TypeVector      types;
+	const char*              name;
+	ArenaVector<Namespace*>  nestedNamespaces;
+	ArenaVector<const Type*> types;
 };
 
 } // namespace Typhoon::Reflection

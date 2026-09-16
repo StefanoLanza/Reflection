@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/bitMask.h>
+#include <core/flags.h>
 #include <reflection/fwdDecl.h>
 
 #include <array>
@@ -12,7 +12,7 @@ enum class ActionFlags : uint16_t {
 	smiling = 0x4,
 };
 
-using ActionBitmask = Typhoon::Bitmask<ActionFlags>;
+using ActionBitmask = Typhoon::Flags<ActionFlags>;
 
 enum class SeasonType {
 	spring,

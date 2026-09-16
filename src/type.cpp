@@ -2,14 +2,14 @@
 
 namespace Typhoon::Reflection {
 
-Type::Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods, Allocator& allocator)
+Type::Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods, ArenaAllocator& allocator)
     : typeID(typeId)
     , size(size)
     , alignment(alignment)
     , subClass(subClass)
     , typeName(typeName)
     , methods(methods)
-    , attributes(stdAllocator<const Attribute*>(allocator)) {
+    , attributes(allocator) {
 }
 
 const char* Type::getName() const {
