@@ -104,7 +104,7 @@ Context& getContext();
 #define FIELD(field) FIELD_RENAMED(field, #field)
 
 #define PROPERTY(name, getter, setter) \
-	structType->addProperty(detail::ClassUtil<class_>::makeProperty(name, &class_::setter, &class_::getter, context))
+	structType->addProperty(refl::detail::ClassUtil<class_>::makeProperty(name, &class_::setter, &class_::getter, context))
 
 #define GETTER(name, getter) structType->addProperty(refl::detail::ClassUtil<class_>::makeProperty(name, &class_::getter, context))
 
