@@ -95,9 +95,8 @@ struct autoRegisterHelper<std::vector<T>> {
 		using ContainerType = std::vector<T>;
 		// AutoRegister valueType (it might be a pointer or container etc)
 		const Type*      valueType = autoRegisterType<ValueType>(context);
-		constexpr TypeId typeID = getTypeId<ContainerType>();
 		const char*      typeName = decorateTypeName(valueType->getName(), "std::vector<", ">", *context.scopedAllocator);
-		return context.scopedAllocator->make<StdVectorContainer<ContainerType>>(typeName, typeID, valueType, *context.arenaAllocator);
+		return context.scopedAllocator->make<StdVectorContainer<ContainerType>>(typeName, typeId_v<ContainerType>, valueType, *context.arenaAllocator);
 	}
 };
 

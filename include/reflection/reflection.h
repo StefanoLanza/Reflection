@@ -87,7 +87,7 @@ const Namespace& getGlobalNamespace();
 
 template <class T>
 const Type& getType() {
-	return getType(getTypeId<T>());
+	return getType(typeId_v<T>);
 }
 
 } // namespace Typhoon::Reflection

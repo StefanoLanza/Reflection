@@ -37,7 +37,7 @@ public:
 
 	template <class T>
 	const Type* tryGetType() const {
-		return tryGetType(getTypeId<T>());
+		return tryGetType(typeId_v<T>);
 	}
 
 private:

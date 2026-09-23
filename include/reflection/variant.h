@@ -77,26 +77,26 @@ inline void Variant::set(T&& value) {
 	using ValueType = std::decay_t<T>;
 	static_assert(sizeof(ValueType) <= sizeof(storage));
 	static_assert(std::is_copy_constructible_v<ValueType>);
-	if (typeId == Typhoon::getTypeId<ValueType>()) {
+	if (typeId == Typhoon::typeId_v<ValueType>) {
 		*reinterpret_cast<ValueType*>(&storage) = std::forward<T>(value);
 	}
 	else {
 		destruct();
 		new (&storage) ValueType { std::forward<T>(value) };
-		typeId = Typhoon::getTypeId<ValueType>();
+		typeId = Typhoon::typeId_v<ValueType>;
 	}
 }
 
 template <class T>
 inline const T& Variant::get() const {
-	assert(typeId == Typhoon::getTypeId<T>());
+	assert(typeId == Typhoon::typeId_v<T>);
 	return *reinterpret_cast<const T*>(&storage);
 }
 
 template <class T>
 inline bool Variant::tryGet(T* valuePtr) const {
 	assert(valuePtr);
-	if (typeId == Typhoon::getTypeId<T>()) {
+	if (typeId == Typhoon::typeId_v<T>) {
 		*valuePtr = *reinterpret_cast<const T*>(&storage);
 		return true;
 	}

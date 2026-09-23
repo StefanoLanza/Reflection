@@ -38,7 +38,7 @@ struct AutoRegisterHelper<_Ty&>
 		const Type* valueType = AutoRegisterType<non_const_type>(typeDB, allocator);
 		assert(valueType);
 		constexpr bool isConst = std::is_const_v<_Ty>;
-		static const ReferenceType type{ getTypeId<reference_type>(), valueType, isConst };
+		static const ReferenceType type{ typeId_v<reference_type>, valueType, isConst };
 		RegisterTypeInfo(&type, typeDB);
 		return &typeInfo;
 	}

@@ -102,10 +102,9 @@ struct autoRegisterHelper<std::map<_Kty, T>> {
 		using ContainerType = std::map<_Kty, T>;
 		const Type*      keyType = autoRegisterType<KeyType>(context);
 		const Type*      mappedType = autoRegisterType<MappedType>(context);
-		constexpr TypeId typeID = getTypeId<ContainerType>();
 		const char*      innerTypeNames[] = { keyType->getName(), mappedType->getName(), nullptr };
 		const char*      typeName = buildTemplateTypeName(innerTypeNames, "std::map<", ">", *context.scopedAllocator);
-		return context.scopedAllocator->make<StdMapContainer<ContainerType>>(typeName, typeID, keyType, mappedType, *context.arenaAllocator);
+		return context.scopedAllocator->make<StdMapContainer<ContainerType>>(typeName, typeId_v<ContainerType>, keyType, mappedType, *context.arenaAllocator);
 	}
 };
 

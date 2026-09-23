@@ -68,13 +68,13 @@ Context& getContext();
 #define BEGIN_BASE_CLASS(class)                                                                                                                   \
 	do {                                                                                                                                          \
 		using class_ = class;                                                                                                                     \
-		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::typeId_v<class_>, sizeof(class_), alignof(class_), nullptr, \
 		                                                          MethodTable {}, allocator_);
 
 #define BEGIN_STRUCT(class)                                                                                                                       \
 	do {                                                                                                                                          \
 		using class_ = class;                                                                                                                     \
-		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::typeId_v<class_>, sizeof(class_), alignof(class_), nullptr, \
 		                                                          refl::detail::buildMethodTable<class_>(), allocator_);                          \
 		do {                                                                                                                                      \
 	} while (0)
@@ -82,7 +82,7 @@ Context& getContext();
 #define BEGIN_CLASS(class)                                                                                                                        \
 	do {                                                                                                                                          \
 		using class_ = class;                                                                                                                     \
-		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), nullptr, \
+		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::typeId_v<class_>, sizeof(class_), alignof(class_), nullptr, \
 		                                                          refl::detail::buildMethodTable<class_>(), allocator_);                          \
 		do {                                                                                                                                      \
 	} while (0)
@@ -94,7 +94,7 @@ Context& getContext();
 		static_assert(std::is_base_of_v<parentClass, class>, #parentClass " is not a base class of " #class);                            \
 		const StructType& parentType = static_cast<const StructType&>(typeDB_.getType<parentClass>());                                   \
 		assert(parentType.getSubClass() == Type::Subclass::Struct);                                                                      \
-		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::getTypeId<class_>(), sizeof(class_), alignof(class_), \
+		const auto structType = scopedAllocator_.make<StructType>(#class, Typhoon::typeId_v<class_>, sizeof(class_), alignof(class_), \
 		                                                          &parentType, refl::detail::buildMethodTable<class_>(), allocator_);    \
 		do {                                                                                                                             \
 	} while (0)
@@ -162,7 +162,7 @@ Context& getContext();
 	;                                                                                                                                           \
                                                                                                                                                 \
 	const Type& underlyingType = typeDB_.getType<std::underlying_type_t<enumClass_>>();                                                         \
-	const auto  enumType = scopedAllocator_.make<EnumType>(enumName, Typhoon::getTypeId<enumClass_>(), sizeof(enumClass_), alignof(enumClass_), \
+	const auto  enumType = scopedAllocator_.make<EnumType>(enumName, Typhoon::typeId_v<enumClass_>, sizeof(enumClass_), alignof(enumClass_), \
 	                                                       enumerators, std::size(enumerators), &underlyingType, allocator_);                   \
 	typeDB_.registerType(enumType);                                                                                                             \
 	currNamespace->addType(enumType);                                                                                                           \
@@ -182,7 +182,7 @@ Context& getContext();
 	;                                                                                                                                                \
 	const Type& underlyingType = typeDB_.getType<bitMaskStruct_::ValueType>();                                                                       \
 	const auto  bitmaskType =                                                                                                                        \
-	    scopedAllocator_.make<BitMaskType>(typeName, getTypeId<bitMaskStruct_>(), &underlyingType, enumerators, std::size(enumerators), allocator_); \
+	    scopedAllocator_.make<BitMaskType>(typeName, typeId_v<bitMaskStruct_>, &underlyingType, enumerators, std::size(enumerators), allocator_); \
 	typeDB_.registerType(bitmaskType);                                                                                                               \
 	currNamespace->addType(bitmaskType);                                                                                                             \
 	}                                                                                                                                                \

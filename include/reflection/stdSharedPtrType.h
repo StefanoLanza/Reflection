@@ -43,7 +43,7 @@ struct autoRegisterHelper<std::shared_ptr<T>> {
 		const Type* valueType = autoRegisterType<T>(context);
 		assert(valueType);
 		const char* typeName = decorateTypeName(valueType->getName(), "std::shared_ptr<", ">", *context.scopedAllocator);
-		return context.scopedAllocator->make<StdSharedPointerType<T>>(typeName, getTypeId<PointerType>(), sizeof(PointerType), alignof(PointerType),
+		return context.scopedAllocator->make<StdSharedPointerType<T>>(typeName, typeId_v<PointerType>, sizeof(PointerType), alignof(PointerType),
 		                                                              valueType, *context.arenaAllocator);
 	}
 };

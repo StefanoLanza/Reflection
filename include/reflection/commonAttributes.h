@@ -6,7 +6,7 @@ namespace Typhoon::Reflection {
 class FloatMin final : public Attribute {
 public:
 	FloatMin(float minValue)
-	    : Attribute { Typhoon::getTypeId<FloatMin>(), AttributeTargets::Property | AttributeTargets::Field }
+	    : Attribute { Typhoon::typeId_v<FloatMin>, AttributeTargets::Property | AttributeTargets::Field }
 	    , min { minValue } {
 	}
 
@@ -21,7 +21,7 @@ private:
 class FloatMax final : public Attribute {
 public:
 	FloatMax(float maxValue)
-	    : Attribute { Typhoon::getTypeId<FloatMax>(), AttributeTargets::Property | AttributeTargets::Field }
+	    : Attribute { Typhoon::typeId_v<FloatMax>, AttributeTargets::Property | AttributeTargets::Field }
 	    , max { maxValue } {
 	}
 
