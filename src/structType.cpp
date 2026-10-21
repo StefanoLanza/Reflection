@@ -29,6 +29,11 @@ bool StructType::inheritsFrom(const StructType* type) const {
 }
 
 Property& StructType::addProperty(Property&& property) {
+#if _DEBUG
+	for (const auto& p : properties) {
+		assert(strcmp(p.getName(), property.getName()));
+	}
+#endif
 	properties.push_back(std::move(property));
 	return properties.back();
 }
