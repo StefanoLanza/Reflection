@@ -34,8 +34,8 @@ public:
 
 class ContainerType : public Type {
 public:
-	ContainerType(const char* typeName, TypeId typeID, size_t size, const Type* keyType, const Type* valueType, const MethodTable& methods,
-	              ArenaAllocator& allocator);
+	ContainerType(const char* typeName, TypeId typeID, size_t size, const Type* keyType, const Type* valueType, const Traits& traits,
+	              const MethodTable& methods, ArenaAllocator& allocator);
 	virtual ~ContainerType() = default;
 
 	const Type* getKeyType() const {

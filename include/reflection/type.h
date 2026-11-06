@@ -29,6 +29,15 @@ struct MethodTable {
 	EqualityOperator   equalityOperator;
 };
 
+struct Traits {
+	bool defaultConstructible;
+	bool copyConstructible;
+	bool copyAssignable;
+	bool moveConstructible;
+	bool moveAssignable;
+	bool equalityComparable;
+};
+
 namespace detail {
 
 template <typename Type>
@@ -123,6 +132,14 @@ inline MethodTable buildMethodTable() {
 	};
 }
 
+template <typename Type>
+inline Traits buildTraits() {
+	return {
+		std::is_default_constructible_v<Type>, std::is_copy_constructible_v<Type>, std::is_copy_assignable_v<Type>,
+		std::is_move_constructible_v<Type>,    std::is_move_assignable_v<Type>,    has_equal_to<Type>::value,
+	};
+}
+
 } // namespace detail
 
 class InputArchive;
@@ -147,7 +164,7 @@ public:
 		Variant
 	};
 
-	Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods,
+	Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const Traits& traits, const MethodTable& methods,
 	     ArenaAllocator& allocator);
 
 	const char*                       getName() const;
@@ -155,6 +172,7 @@ public:
 	size_t                            getSize() const;
 	size_t                            getAlignment() const;
 	Subclass                          getSubClass() const;
+	const Traits                      getTraits() const;
 	bool                              constructObject(DataPtr object) const;
 	void                              destructObject(DataPtr object) const;
 	bool                              copyConstructObject(DataPtr object, ConstDataPtr src) const;
@@ -176,6 +194,7 @@ private:
 	size_t                        size;
 	size_t                        alignment;
 	Subclass                      subClass;
+	Traits                        traits;
 	const char*                   typeName;
 	MethodTable                   methods;
 	CustomWriter                  customWriter;

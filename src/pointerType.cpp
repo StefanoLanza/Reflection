@@ -7,7 +7,7 @@
 namespace Typhoon::Reflection {
 
 PointerType::PointerType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Type* pointedType, ArenaAllocator& allocator)
-    : Type { typeName, typeID, Subclass::Pointer, size, alignment, {}, allocator }
+	: Type { typeName, typeID, Subclass::Pointer, size, alignment, {}, {}, allocator }
     , pointedType { pointedType } {
 	assert(pointedType);
 }

@@ -19,13 +19,13 @@ template <class first_type, class second_type>
 struct autoRegisterHelper<std::pair<first_type, second_type>> {
 	static const Type* autoRegister(Context& context) {
 		using PairType = std::pair<first_type, second_type>;
-		const Type*      firstType = autoRegisterType<first_type>(context);
-		const Type*      secondType = autoRegisterType<second_type>(context);
-		const char*      innerTypeNames[] = { firstType->getName(), secondType->getName(), nullptr };
-		const char*      typeName = buildTemplateTypeName(innerTypeNames, "std::pair<", ">", *context.scopedAllocator);
+		const Type* firstType = autoRegisterType<first_type>(context);
+		const Type* secondType = autoRegisterType<second_type>(context);
+		const char* innerTypeNames[] = { firstType->getName(), secondType->getName(), nullptr };
+		const char* typeName = buildTemplateTypeName(innerTypeNames, "std::pair<", ">", *context.scopedAllocator);
 
 		auto type = context.scopedAllocator->make<StructType>(typeName, typeId_v<PairType>, sizeof(PairType), alignof(PairType), nullptr,
-		                                                      buildMethodTable<PairType>(), *context.arenaAllocator);
+		                                                      buildTraits<PairType>, buildMethodTable<PairType>(), *context.arenaAllocator);
 		type->addProperty(ClassUtil<PairType>::makeProperty("first", &PairType::first, context));
 		type->addProperty(ClassUtil<PairType>::makeProperty("second", &PairType::second, context));
 		return type;

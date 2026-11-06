@@ -2,12 +2,13 @@
 
 namespace Typhoon::Reflection {
 
-Type::Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods,
+Type::Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const Traits& traits, const MethodTable& methods,
            ArenaAllocator& allocator)
     : typeID(typeId)
     , size(size)
     , alignment(alignment)
     , subClass(subClass)
+    , traits(traits)
     , typeName(typeName)
     , methods(methods)
     , attributes(allocator) {
@@ -33,6 +34,10 @@ Type::Subclass Type::getSubClass() const {
 	return subClass;
 }
 
+const Traits Type::getTraits() const {
+	return traits;
+}
+
 bool Type::constructObject(DataPtr object) const {
 	return methods.defaultConstructor(object);
 }
@@ -48,6 +53,7 @@ void Type::destructObject(DataPtr object) const {
 bool Type::copyObject(DataPtr a, ConstDataPtr b) const {
 	return methods.copyAssignment(a, b);
 }
+
 bool Type::moveConstructObject(DataPtr object, DataPtr src) const {
 	return methods.moveConstructor(object, src);
 }

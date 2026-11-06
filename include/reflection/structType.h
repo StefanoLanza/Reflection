@@ -5,16 +5,13 @@
 #include <core/arenaVector.h>
 
 #include <span>
-#include <vector>
 
 namespace Typhoon::Reflection {
 
-class Property;
-
 class StructType final : public Type {
 public:
-	StructType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const MethodTable& methods,
-	           ArenaAllocator& allocator);
+	StructType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const Traits& traits,
+	           const MethodTable& methods, ArenaAllocator& allocator);
 
 	const StructType*         getParentType() const;
 	bool                      inheritsFrom(const StructType* type) const;

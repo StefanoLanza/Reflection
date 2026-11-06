@@ -72,7 +72,8 @@ public:
 	using array_type = std::array<T, L>;
 
 	StdArrayContainer(const char* typeName, TypeId typeID, const Type* valueType, ArenaAllocator& allocator)
-	    : ContainerType(typeName, typeID, sizeof(array_type), nullptr, valueType, buildMethodTable<array_type>(), allocator) {
+	    : ContainerType { typeName, typeID, sizeof(array_type), nullptr, valueType, buildTraits<array_type>(), buildMethodTable<array_type>(),
+		                  allocator } {
 	}
 
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
@@ -93,9 +94,10 @@ struct autoRegisterHelper<std::array<T, N>> {
 	static const Type* autoRegister(Context& context) {
 		using element_type = T;
 		using container_type = std::array<T, N>;
-		const Type*      elementType = autoRegisterType<element_type>(context);
-		const char*      typeName = decorateTypeName(elementType->getName(), "std::array<", ">", *context.scopedAllocator);
-		return context.scopedAllocator->make<StdArrayContainer<element_type, N>>(typeName, typeId_v<container_type>, elementType, *context.arenaAllocator);
+		const Type* elementType = autoRegisterType<element_type>(context);
+		const char* typeName = decorateTypeName(elementType->getName(), "std::array<", ">", *context.scopedAllocator);
+		return context.scopedAllocator->make<StdArrayContainer<element_type, N>>(typeName, typeId_v<container_type>, elementType,
+		                                                                         *context.arenaAllocator);
 	}
 };
 

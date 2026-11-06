@@ -1,12 +1,11 @@
 #include "structType.h"
 #include "attribute.h"
-#include <core/allocator.h>
 
 namespace Typhoon::Reflection {
 
-StructType::StructType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const MethodTable& methods,
-                       ArenaAllocator& allocator)
-    : Type { typeName, typeID, Subclass::Struct, size, alignment, methods, allocator }
+StructType::StructType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const Traits& traits,
+                       const MethodTable& methods, ArenaAllocator& allocator)
+    : Type { typeName, typeID, Subclass::Struct, size, alignment, traits, methods, allocator }
     , parentType(parentType)
     , properties(allocator) {
 }
