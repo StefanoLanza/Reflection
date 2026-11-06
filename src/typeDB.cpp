@@ -16,11 +16,11 @@ const char* decorateTypeName(std::string_view typeName, std::string_view prefix,
 	size_t sl = suffix.size();
 	char*  str = allocator.allocArray<char>(pl + sl + tl + 1);
 	size_t offs = 0;
-	memcpy(str + offs, prefix.data(), pl);
+	std::memcpy(str + offs, prefix.data(), pl);
 	offs += pl;
-	memcpy(str + offs, typeName.data(), tl);
+	std::memcpy(str + offs, typeName.data(), tl);
 	offs += tl;
-	memcpy(str + offs, suffix.data(), sl);
+	std::memcpy(str + offs, suffix.data(), sl);
 	offs += sl;
 	str[offs] = 0; // null terminate
 	return str;
@@ -28,8 +28,8 @@ const char* decorateTypeName(std::string_view typeName, std::string_view prefix,
 
 } // namespace detail
 
-TypeDB::TypeDB(Allocator& allocator, ScopedAllocator& scopedAllocator)
-    : types { stdAllocator<const Type*>(allocator) }
+TypeDB::TypeDB(ArenaAllocator& allocator, ScopedAllocator& scopedAllocator)
+    : types { allocator }
     , globalNamespace { scopedAllocator.make<Namespace>(nullptr, allocator) } {
 }
 

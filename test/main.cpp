@@ -494,6 +494,50 @@ TEST_CASE("std::tuple") {
 	}
 }
 
+TEST_CASE("raw ptr") {
+	using namespace refl;
+	const auto  material = new Material { "material", Color { 255, 0, 0 } };
+	const char* elementName = "material";
+
+	auto write = [&](OutputArchive& archive) {
+		archive.write(elementName, material);
+		return archive.saveToString();
+	};
+
+	auto read = [&](InputArchive& archive) {
+		auto inMaterial = new Material;
+		REQUIRE(archive.read(elementName, inMaterial));
+		CHECK(*inMaterial == *material);
+	};
+
+#if TY_REFLECTION_XML
+	SECTION("XML serialization") {
+		XMLOutputArchive outArchive;
+		std::string      content = write(outArchive);
+		XMLInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+#endif
+
+#if TY_REFLECTION_JSON
+	SECTION("JSON serialization") {
+		JSONOutputArchive outArchive;
+		std::string       content = write(outArchive);
+		JSONInputArchive  inArchive;
+		REQUIRE(inArchive.initialize(content.data()));
+		read(inArchive);
+	}
+#endif
+
+	SECTION("Clone") {
+		auto clonedMaterial = new Material;
+		cloneObject(&clonedMaterial, material);
+		CHECK(*clonedMaterial == *material);
+	}
+}
+
+
 TEST_CASE("std::unique_ptr") {
 	using namespace refl;
 	const auto  material = std::make_unique<Material>(Material { "material", Color { 255, 0, 0 } });

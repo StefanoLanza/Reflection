@@ -4,8 +4,8 @@
 namespace Typhoon::Reflection {
 
 EnumType::EnumType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const Enumerator enumConstants[], size_t count,
-                   const Type* underlyingType, Allocator& allocator)
-    : Type(typeName, typeID, Subclass::Enum, size, alignment, {}, allocator)
+                   const Type* underlyingType, const Traits& traits, const MethodTable& methods, ArenaAllocator& allocator)
+    : Type(typeName, typeID, Subclass::Enum, size, alignment, traits, methods, allocator)
     , enumerators(enumConstants)
     , numEnumerators(count)
     , underlyingType(underlyingType) {
@@ -13,7 +13,7 @@ EnumType::EnumType(const char* typeName, TypeId typeID, size_t size, size_t alig
 }
 
 std::span<const Enumerator> EnumType::getEnumerators() const {
-	return {enumerators, numEnumerators};
+	return { enumerators, numEnumerators };
 }
 
 const Enumerator* EnumType::findEnumeratorByValue(ConstDataPtr value, size_t valueSize) const {

@@ -6,7 +6,7 @@ namespace Typhoon::Reflection {
 
 class VariantType : public Type {
 public:
-	explicit VariantType(Allocator& allocator);
+	explicit VariantType(ArenaAllocator& allocator);
 };
 
 } // namespace Typhoon::Reflection

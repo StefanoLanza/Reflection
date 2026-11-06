@@ -3,8 +3,15 @@
 
 namespace Typhoon::Reflection {
 
-VariantType::VariantType(Allocator& allocator)
-    : Type("Variant", Typhoon::getTypeId<Variant>(), Subclass::Variant, sizeof(Variant), alignof(Variant), detail::buildMethodTable<Variant>(), allocator) {
+VariantType::VariantType(ArenaAllocator& allocator)
+    : Type { "Variant",
+	         Typhoon::typeId_v<Variant>,
+	         Subclass::Variant,
+	         sizeof(Variant),
+	         alignof(Variant),
+	         detail::buildTraits<Variant>(),
+	         detail::buildMethodTable<Variant>(),
+	         allocator } {
 }
 
 } // namespace Typhoon::Reflection

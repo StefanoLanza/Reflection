@@ -1,18 +1,14 @@
 #include "structType.h"
 #include "attribute.h"
-#include "property.h"
-#include <core/allocator.h>
 
 namespace Typhoon::Reflection {
 
-StructType::StructType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const MethodTable& methods,
-                       Allocator& allocator)
-    : Type { typeName, typeID, Subclass::Struct, size, alignment, methods, allocator }
+StructType::StructType(const char* typeName, TypeId typeID, size_t size, size_t alignment, const StructType* parentType, const Traits& traits,
+                       const MethodTable& methods, ArenaAllocator& allocator)
+    : Type { typeName, typeID, Subclass::Struct, size, alignment, traits, methods, allocator }
     , parentType(parentType)
-    , properties(stdAllocator<Property>(allocator)) {
+    , properties(allocator) {
 }
-
-StructType::~StructType() = default;
 
 const StructType* StructType::getParentType() const {
 	return parentType;
@@ -30,6 +26,11 @@ bool StructType::inheritsFrom(const StructType* type) const {
 }
 
 Property& StructType::addProperty(Property&& property) {
+#if _DEBUG
+	for (const auto& p : properties) {
+		assert(strcmp(p.getName(), property.getName()));
+	}
+#endif
 	properties.push_back(std::move(property));
 	return properties.back();
 }
@@ -38,7 +39,7 @@ std::span<const Property> StructType::getProperties() const {
 	return properties;
 }
 
-const Property* StructType::getProperty(const char* propertyName) const {
+const Property* StructType::getPropertyByName(const char* propertyName) const {
 	assert(propertyName);
 	for (const auto& p : properties) {
 		if (! strcmp(p.getName(), propertyName)) {

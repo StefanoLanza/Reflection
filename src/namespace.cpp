@@ -4,10 +4,10 @@
 
 namespace Typhoon::Reflection {
 
-Namespace::Namespace(const char* name, Allocator& allocator)
+Namespace::Namespace(const char* name, ArenaAllocator& allocator)
     : name(name)
-    , nestedNamespaces(stdAllocator<Namespace*>(allocator))
-    , types(stdAllocator<const Type*>(allocator)) {
+    , nestedNamespaces(allocator)
+    , types(allocator) {
 }
 
 Namespace::~Namespace() = default;

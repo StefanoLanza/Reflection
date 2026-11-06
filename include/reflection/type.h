@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dataPtr.h"
-#include <core/stdAllocator.h>
+#include <core/arenaVector.h>
 #include <core/typeId.h>
 #include <core/uncopyable.h>
 
@@ -11,31 +11,44 @@
 
 namespace Typhoon::Reflection {
 
-using Constructor = void (*)(DataPtr);
+using DefaultConstructor = bool (*)(DataPtr);
 using Destructor = void (*)(DataPtr);
-using CopyConstructor = void (*)(DataPtr, ConstDataPtr b);
-using CopyAssignment = void (*)(DataPtr, ConstDataPtr b);
-using MoveConstructor = void (*)(DataPtr, DataPtr b);
-using MoveAssignment = void (*)(DataPtr, DataPtr b);
+using CopyConstructor = bool (*)(DataPtr, ConstDataPtr b);
+using CopyAssignment = bool (*)(DataPtr, ConstDataPtr b);
+using MoveConstructor = bool (*)(DataPtr, DataPtr b);
+using MoveAssignment = bool (*)(DataPtr, DataPtr b);
 using EqualityOperator = bool (*)(ConstDataPtr, ConstDataPtr b);
 
 struct MethodTable {
-	Constructor      defaultConstructor;
-	Destructor       destructor;
-	CopyConstructor  copyConstructor;
-	CopyAssignment   copyAssignment;
-	MoveConstructor  moveConstructor;
-	MoveAssignment   moveAssignment;
-	EqualityOperator equalityOperator;
+	DefaultConstructor defaultConstructor;
+	Destructor         destructor;
+	CopyConstructor    copyConstructor;
+	CopyAssignment     copyAssignment;
+	MoveConstructor    moveConstructor;
+	MoveAssignment     moveAssignment;
+	EqualityOperator   equalityOperator;
+};
+
+struct Traits {
+	bool defaultConstructible;
+	bool copyConstructible;
+	bool copyAssignable;
+	bool moveConstructible;
+	bool moveAssignable;
+	bool equalityComparable;
 };
 
 namespace detail {
 
 template <typename Type>
-inline void defaultConstruct([[maybe_unused]] DataPtr object) {
+inline bool defaultConstruct([[maybe_unused]] DataPtr object) {
 	// Use placement new to call the constructor
 	if constexpr (std::is_default_constructible_v<Type>) {
 		new (object) Type;
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
@@ -48,34 +61,50 @@ inline void destruct([[maybe_unused]] DataPtr object) {
 }
 
 template <typename Type>
-inline void copyConstruct([[maybe_unused]] DataPtr object, [[maybe_unused]] ConstDataPtr rhs) {
+inline bool copyConstruct([[maybe_unused]] DataPtr object, [[maybe_unused]] ConstDataPtr rhs) {
 	// Warning: is_copy_constructible_v returns true in some cases like vector<unique_ptr>
 	if constexpr (std::is_copy_constructible_v<Type>) {
 		// Use placement new to call the copy constructor
 		new (object) Type { *static_cast<const Type*>(rhs) };
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
 template <typename Type>
-inline void copyAssign([[maybe_unused]] DataPtr a, [[maybe_unused]] ConstDataPtr b) {
+inline bool copyAssign([[maybe_unused]] DataPtr a, [[maybe_unused]] ConstDataPtr b) {
 	// Warning: is_copy_assignable_v returns true in some cases like vector<unique_ptr>
 	if constexpr (std::is_copy_assignable_v<Type>) {
 		*static_cast<Type*>(a) = *static_cast<const Type*>(b);
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
 template <typename Type>
-inline void moveConstruct([[maybe_unused]] DataPtr object, [[maybe_unused]] DataPtr rhs) {
+inline bool moveConstruct([[maybe_unused]] DataPtr object, [[maybe_unused]] DataPtr rhs) {
 	if constexpr (std::is_move_constructible_v<Type>) {
 		// Use placement new to call the move constructor
 		new (object) Type { std::move(*static_cast<Type*>(rhs)) };
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
 template <typename Type>
-inline void moveAssign([[maybe_unused]] DataPtr a, [[maybe_unused]] DataPtr b) {
+inline bool moveAssign([[maybe_unused]] DataPtr a, [[maybe_unused]] DataPtr b) {
 	if constexpr (std::is_move_assignable_v<Type>) {
 		*static_cast<Type*>(a) = std::move(*static_cast<Type*>(b));
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
@@ -103,6 +132,14 @@ inline MethodTable buildMethodTable() {
 	};
 }
 
+template <typename Type>
+inline Traits buildTraits() {
+	return {
+		std::is_default_constructible_v<Type>, std::is_copy_constructible_v<Type>, std::is_copy_assignable_v<Type>,
+		std::is_move_constructible_v<Type>,    std::is_move_assignable_v<Type>,    has_equal_to<Type>::value,
+	};
+}
+
 } // namespace detail
 
 class InputArchive;
@@ -127,19 +164,21 @@ public:
 		Variant
 	};
 
-	Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods, Allocator& allocator);
+	Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const Traits& traits, const MethodTable& methods,
+	     ArenaAllocator& allocator);
 
 	const char*                       getName() const;
 	TypeId                            getTypeId() const;
 	size_t                            getSize() const;
 	size_t                            getAlignment() const;
 	Subclass                          getSubClass() const;
-	void                              constructObject(DataPtr object) const;
+	const Traits                      getTraits() const;
+	bool                              constructObject(DataPtr object) const;
 	void                              destructObject(DataPtr object) const;
-	void                              copyConstructObject(DataPtr object, ConstDataPtr src) const;
-	void                              copyObject(DataPtr a, ConstDataPtr b) const;
-	void                              moveConstructObject(DataPtr object, DataPtr src) const;
-	void                              moveObject(DataPtr a, DataPtr b) const;
+	bool                              copyConstructObject(DataPtr object, ConstDataPtr src) const;
+	bool                              copyObject(DataPtr a, ConstDataPtr b) const;
+	bool                              moveConstructObject(DataPtr object, DataPtr src) const;
+	bool                              moveObject(DataPtr a, DataPtr b) const;
 	bool                              compareObjects(ConstDataPtr a, ConstDataPtr b) const;
 	void                              setCustomWriter(CustomWriter saver);
 	const CustomWriter&               getCustomWriter() const;
@@ -151,18 +190,17 @@ public:
 	std::span<const Attribute* const> getAttributes() const;
 
 private:
-	using AttributeVec = std::vector<const Attribute*, stdAllocator<const Attribute*>>;
-
-	TypeId       typeID;
-	size_t       size;
-	size_t       alignment;
-	Subclass     subClass;
-	const char*  typeName;
-	MethodTable  methods;
-	CustomWriter customWriter;
-	CustomReader customReader;
-	CustomCloner customCloner;
-	AttributeVec attributes;
+	TypeId                        typeID;
+	size_t                        size;
+	size_t                        alignment;
+	Subclass                      subClass;
+	Traits                        traits;
+	const char*                   typeName;
+	MethodTable                   methods;
+	CustomWriter                  customWriter;
+	CustomReader                  customReader;
+	CustomCloner                  customCloner;
+	ArenaVector<const Attribute*> attributes;
 };
 
 } // namespace Typhoon::Reflection

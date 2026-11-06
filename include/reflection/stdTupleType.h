@@ -27,12 +27,14 @@ Property tupleElementProperty(const char* name, Context& context) {
 		std::get<index>(*tuple) = *cast<E>(value);
 	};
 
-	return { setter, getter, name, varType, *context.allocator };
+	return { setter, getter, name, varType, *context.arenaAllocator };
 }
 
 template <typename Tuple, size_t ElementIndex>
 void registerTupleElement(StructType& tupleType, Context& context) {
-	static const char* elementName[] = { "element0", "element1", "element2", "element3", "element4", "element5", "element6", "element7" };
+	static const char* elementName[] = {
+		"element0", "element1", "element2", "element3", "element4", "element5", "element6", "element7",
+	};
 	static_assert(std::tuple_size_v<Tuple> <= std::size(elementName));
 
 	tupleType.addProperty(tupleElementProperty<Tuple, ElementIndex>(elementName[ElementIndex], context));
@@ -49,12 +51,10 @@ template <typename... Args>
 struct autoRegisterHelper<std::tuple<Args...>> {
 	static const Type* autoRegister(Context& context) {
 		using Tuple = std::tuple<Args...>;
-
-		constexpr TypeId typeId = getTypeId<Tuple>();
-		// TODO typeName
+		// TODO complete typeName
 		const char* typeName = "std::tuple";
-		auto        tupleType = context.scopedAllocator->make<StructType>(typeName, typeId, sizeof(Tuple), alignof(Tuple), nullptr,
-                                                                   buildMethodTable<Tuple>(), *context.allocator);
+		auto        tupleType = context.scopedAllocator->make<StructType>(typeName, typeId_v<Tuple>, sizeof(Tuple), alignof(Tuple), nullptr,
+		                                                                  buildTraits<Tuple>(), buildMethodTable<Tuple>(), *context.arenaAllocator);
 		// Register all elements
 		registerTupleElement<Tuple, 0>(*tupleType, context);
 
