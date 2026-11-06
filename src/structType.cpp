@@ -11,8 +11,6 @@ StructType::StructType(const char* typeName, TypeId typeID, size_t size, size_t 
     , properties(allocator) {
 }
 
-StructType::~StructType() = default;
-
 const StructType* StructType::getParentType() const {
 	return parentType;
 }

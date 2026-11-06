@@ -11,31 +11,35 @@
 
 namespace Typhoon::Reflection {
 
-using Constructor = void (*)(DataPtr);
+using DefaultConstructor = bool (*)(DataPtr);
 using Destructor = void (*)(DataPtr);
-using CopyConstructor = void (*)(DataPtr, ConstDataPtr b);
-using CopyAssignment = void (*)(DataPtr, ConstDataPtr b);
-using MoveConstructor = void (*)(DataPtr, DataPtr b);
-using MoveAssignment = void (*)(DataPtr, DataPtr b);
+using CopyConstructor = bool (*)(DataPtr, ConstDataPtr b);
+using CopyAssignment = bool (*)(DataPtr, ConstDataPtr b);
+using MoveConstructor = bool (*)(DataPtr, DataPtr b);
+using MoveAssignment = bool (*)(DataPtr, DataPtr b);
 using EqualityOperator = bool (*)(ConstDataPtr, ConstDataPtr b);
 
 struct MethodTable {
-	Constructor      defaultConstructor;
-	Destructor       destructor;
-	CopyConstructor  copyConstructor;
-	CopyAssignment   copyAssignment;
-	MoveConstructor  moveConstructor;
-	MoveAssignment   moveAssignment;
-	EqualityOperator equalityOperator;
+	DefaultConstructor defaultConstructor;
+	Destructor         destructor;
+	CopyConstructor    copyConstructor;
+	CopyAssignment     copyAssignment;
+	MoveConstructor    moveConstructor;
+	MoveAssignment     moveAssignment;
+	EqualityOperator   equalityOperator;
 };
 
 namespace detail {
 
 template <typename Type>
-inline void defaultConstruct([[maybe_unused]] DataPtr object) {
+inline bool defaultConstruct([[maybe_unused]] DataPtr object) {
 	// Use placement new to call the constructor
 	if constexpr (std::is_default_constructible_v<Type>) {
 		new (object) Type;
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
@@ -48,34 +52,50 @@ inline void destruct([[maybe_unused]] DataPtr object) {
 }
 
 template <typename Type>
-inline void copyConstruct([[maybe_unused]] DataPtr object, [[maybe_unused]] ConstDataPtr rhs) {
+inline bool copyConstruct([[maybe_unused]] DataPtr object, [[maybe_unused]] ConstDataPtr rhs) {
 	// Warning: is_copy_constructible_v returns true in some cases like vector<unique_ptr>
 	if constexpr (std::is_copy_constructible_v<Type>) {
 		// Use placement new to call the copy constructor
 		new (object) Type { *static_cast<const Type*>(rhs) };
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
 template <typename Type>
-inline void copyAssign([[maybe_unused]] DataPtr a, [[maybe_unused]] ConstDataPtr b) {
+inline bool copyAssign([[maybe_unused]] DataPtr a, [[maybe_unused]] ConstDataPtr b) {
 	// Warning: is_copy_assignable_v returns true in some cases like vector<unique_ptr>
 	if constexpr (std::is_copy_assignable_v<Type>) {
 		*static_cast<Type*>(a) = *static_cast<const Type*>(b);
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
 template <typename Type>
-inline void moveConstruct([[maybe_unused]] DataPtr object, [[maybe_unused]] DataPtr rhs) {
+inline bool moveConstruct([[maybe_unused]] DataPtr object, [[maybe_unused]] DataPtr rhs) {
 	if constexpr (std::is_move_constructible_v<Type>) {
 		// Use placement new to call the move constructor
 		new (object) Type { std::move(*static_cast<Type*>(rhs)) };
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
 template <typename Type>
-inline void moveAssign([[maybe_unused]] DataPtr a, [[maybe_unused]] DataPtr b) {
+inline bool moveAssign([[maybe_unused]] DataPtr a, [[maybe_unused]] DataPtr b) {
 	if constexpr (std::is_move_assignable_v<Type>) {
 		*static_cast<Type*>(a) = std::move(*static_cast<Type*>(b));
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
@@ -135,12 +155,12 @@ public:
 	size_t                            getSize() const;
 	size_t                            getAlignment() const;
 	Subclass                          getSubClass() const;
-	void                              constructObject(DataPtr object) const;
+	bool                              constructObject(DataPtr object) const;
 	void                              destructObject(DataPtr object) const;
-	void                              copyConstructObject(DataPtr object, ConstDataPtr src) const;
-	void                              copyObject(DataPtr a, ConstDataPtr b) const;
-	void                              moveConstructObject(DataPtr object, DataPtr src) const;
-	void                              moveObject(DataPtr a, DataPtr b) const;
+	bool                              copyConstructObject(DataPtr object, ConstDataPtr src) const;
+	bool                              copyObject(DataPtr a, ConstDataPtr b) const;
+	bool                              moveConstructObject(DataPtr object, DataPtr src) const;
+	bool                              moveObject(DataPtr a, DataPtr b) const;
 	bool                              compareObjects(ConstDataPtr a, ConstDataPtr b) const;
 	void                              setCustomWriter(CustomWriter saver);
 	const CustomWriter&               getCustomWriter() const;
