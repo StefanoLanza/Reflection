@@ -68,7 +68,8 @@ template <typename TYPE, size_t LENGTH>
 class ArrayContainer : public ContainerType {
 public:
 	ArrayContainer(const char* typeName, TypeId typeID, const Type* valueType, ArenaAllocator& allocator)
-	    : ContainerType(typeName, typeID, sizeof(TYPE) * LENGTH, nullptr, valueType, {}, allocator) {
+	    : ContainerType(typeName, typeID, sizeof(TYPE) * LENGTH, nullptr, valueType, buildTraits<ArrayType>(), buildMethodTable<ArrayType>(),
+	                    allocator) {
 	}
 
 	ReadIterator* newReadIterator(ConstDataPtr container, ScopedAllocator& allocator) const override {
@@ -80,6 +81,7 @@ public:
 	}
 
 private:
+	using ArrayType = TYPE[LENGTH];
 	using ReadIteratorType = ArrayReadIterator<TYPE, LENGTH>;
 	using WriteIteratorType = ArrayWriteIterator<TYPE, LENGTH>;
 };
@@ -90,8 +92,8 @@ struct autoRegisterHelper<T[N]> {
 	static const Type* autoRegister(Context& context) {
 		using ElementType = T;
 		using ContainerType = T[N];
-		const Type*      elementType = autoRegisterType<ElementType>(context);
-		const char*      typeName = decorateTypeName(elementType->getName(), "", "[]", *context.scopedAllocator);
+		const Type* elementType = autoRegisterType<ElementType>(context);
+		const char* typeName = decorateTypeName(elementType->getName(), "", "[]", *context.scopedAllocator);
 		return context.scopedAllocator->make<ArrayContainer<ElementType, N>>(typeName, typeId_v<ContainerType>, elementType, *context.arenaAllocator);
 	}
 };

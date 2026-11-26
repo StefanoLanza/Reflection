@@ -42,8 +42,10 @@ OutputArchive::OutputArchive()
 
 void OutputArchive::write(const char* key, const void* data, TypeId typeId) {
 	assert(data);
-	setKey(key);
-	write(data, typeId);
+	if (auto type = context.typeDB->tryGetType(typeId); type) {
+		setKey(key);
+		detail::writeData(data, *type, *this, context);
+	}
 }
 
 void OutputArchive::write(const void* data, TypeId typeId) {

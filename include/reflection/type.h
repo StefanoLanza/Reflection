@@ -117,7 +117,24 @@ struct has_equal_to<T, decltype(std::declval<T>() == std::declval<T>())> : std::
 
 template <typename Type>
 inline bool equalityOperator([[maybe_unused]] ConstDataPtr a, [[maybe_unused]] ConstDataPtr b) {
-	if constexpr (has_equal_to<Type>::value) {
+	if constexpr (std::is_array_v<Type>) {
+		using ElementType = std::remove_extent_t<Type>;
+		constexpr size_t LENGTH = std::extent_v<Type>;
+		if constexpr (has_equal_to<ElementType>::value) {
+			const auto* lhs = static_cast<const Type*>(a);
+			const auto* rhs = static_cast<const Type*>(b);
+			for (size_t i = 0; i < LENGTH; ++i) {
+				if (! ((*lhs)[i] == (*rhs)[i])) {
+					return false;
+				}
+			}
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	else if constexpr (has_equal_to<Type>::value) {
 		return *static_cast<const Type*>(a) == *static_cast<const Type*>(b);
 	}
 	else {
