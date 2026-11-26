@@ -29,7 +29,7 @@ const T& deref(ConstDataPtr ptr) {
 
 template <class T>
 T* safeCast(DataPtr ptr, TypeId typeId) {
-	if (getTypeId<T> == typeId) {
+	if (typeId_v<T> == typeId) {
 		return static_cast<T*>(ptr);
 	}
 	return nullptr;
@@ -37,7 +37,7 @@ T* safeCast(DataPtr ptr, TypeId typeId) {
 
 template <class T>
 const T* safeCast(ConstDataPtr ptr, TypeId typeId) {
-	if (getTypeId<T> == typeId) {
+	if (typeId_v<T> == typeId) {
 		return static_cast<const T*>(ptr);
 	}
 	return nullptr;

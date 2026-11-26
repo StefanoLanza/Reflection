@@ -3,8 +3,9 @@
 #include "attribute.h"
 #include "config.h"
 #include "dataPtr.h"
+#include "flags.h"
 #include "semantics.h"
-#include <core/stdAllocator.h>
+#include <core/arenaVector.h>
 
 #include <cstdint>
 #include <functional>
@@ -20,18 +21,18 @@ using Setter = std::function<void(DataPtr self, ConstDataPtr value)>; // TODO Da
 
 class Property {
 public:
-	Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, Allocator& allocator);
+	Property(Setter&& setter, Getter&& getter, const char* name, const Type* valueType, ArenaAllocator& allocator);
 	const char*                       getName() const;
 	const char*                       getPrettyName() const;
 	const Type&                       getValueType() const;
-	uint32_t                          getFlags() const;
+	Flags                             getFlags() const;
 	Semantic                          getSemantic() const;
 	Property&                         setPrettyName(const char* str);
-	Property&                         setFlags(uint32_t flags);
+	Property&                         setFlags(Flags flags);
 	Property&                         setSemantic(Semantic semantic);
 	void                              setValue(DataPtr self, ConstDataPtr value) const;
 	void                              getValue(ConstDataPtr self, DataPtr value) const;
-	void                              copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator& alloc) const;
+	void                              copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, ArenaAllocator& alloc) const;
 	Property&                         addAttribute(const Attribute* attribute);
 	std::span<const Attribute* const> getAttributes() const;
 
@@ -39,16 +40,14 @@ public:
 	const Attribute* queryAttribute() const;
 
 private:
-	using AttributeVec = std::vector<const Attribute*, stdAllocator<const Attribute*>>;
-
-	Setter       setter;
-	Getter       getter;
-	const char*  name;
-	const char*  prettyName;
-	const Type*  valueType;
-	uint32_t     flags;
-	Semantic     semantic;
-	AttributeVec attributes;
+	Setter                        setter;
+	Getter                        getter;
+	const char*                   name;
+	const char*                   prettyName;
+	const Type*                   valueType;
+	Flags                         flags;
+	Semantic                      semantic;
+	ArenaVector<const Attribute*> attributes;
 };
 
 template <class T>

@@ -5,7 +5,7 @@
 #include <reflection/version.h>
 #include <string>
 
-#include <core/bitMask.h>
+#include <core/flags.h>
 
 #define XML  0
 #define JSON 1
@@ -23,7 +23,7 @@ enum class ActionFlags : uint16_t {
 	smiling = 4,
 };
 
-using ActionBitmask = Typhoon::Bitmask<ActionFlags>;
+using ActionBitmask = Typhoon::Flags<ActionFlags>;
 
 struct Coords {
 	float x;
@@ -91,7 +91,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
 
 	std::cout << "GameObject.stamina attributes:" << std::endl;
 	const auto& type = static_cast<const refl::StructType&>(refl::getType<GameObject>());
-	for (auto a : type.getProperty("stamina")->getAttributes()) {
+	for (auto a : type.getPropertyByName("stamina")->getAttributes()) {
 		if (auto floatMin = a->tryCast<refl::FloatMin>(); floatMin) {
 			std::cout << "FloatMin. minValue:" << floatMin->getMin() << std::endl;
 		}

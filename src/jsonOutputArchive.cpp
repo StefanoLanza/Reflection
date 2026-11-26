@@ -4,10 +4,14 @@
 
 #include <cassert>
 #include <fstream>
+
+#pragma warning(push)
+#pragma warning(disable : 5054) // warning C5054: operator '|': deprecated between enumerations of different types
 #include <rapidjson/include/rapidjson/document.h>
 #include <rapidjson/include/rapidjson/prettywriter.h>
 #include <rapidjson/include/rapidjson/rapidjson.h>
 #include <rapidjson/include/rapidjson/stringbuffer.h>
+#pragma warning(pop)
 
 using namespace rapidjson;
 
@@ -48,12 +52,22 @@ void JSONOutputArchive::setKey(const char* name) {
 	writer->Key(name);
 }
 
+bool JSONOutputArchive::beginObject(const char* key) {
+	setKey(key);
+	return writer->StartObject();
+}
+
 bool JSONOutputArchive::beginObject() {
 	return writer->StartObject();
 }
 
 void JSONOutputArchive::endObject() {
 	writer->EndObject();
+}
+
+bool JSONOutputArchive::beginArray(const char* key) {
+	setKey(key);
+	return writer->StartArray();
 }
 
 bool JSONOutputArchive::beginArray() {

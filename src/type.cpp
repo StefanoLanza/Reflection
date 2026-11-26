@@ -2,14 +2,16 @@
 
 namespace Typhoon::Reflection {
 
-Type::Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const MethodTable& methods, Allocator& allocator)
+Type::Type(const char* typeName, TypeId typeId, Subclass subClass, size_t size, size_t alignment, const Traits& traits, const MethodTable& methods,
+           ArenaAllocator& allocator)
     : typeID(typeId)
     , size(size)
     , alignment(alignment)
     , subClass(subClass)
+    , traits(traits)
     , typeName(typeName)
     , methods(methods)
-    , attributes(stdAllocator<const Attribute*>(allocator)) {
+    , attributes(allocator) {
 }
 
 const char* Type::getName() const {
@@ -32,40 +34,32 @@ Type::Subclass Type::getSubClass() const {
 	return subClass;
 }
 
-void Type::constructObject(DataPtr object) const {
-	if (methods.defaultConstructor) {
-		methods.defaultConstructor(object);
-	}
+const Traits Type::getTraits() const {
+	return traits;
 }
 
-void Type::copyConstructObject(DataPtr object, ConstDataPtr src) const {
-	if (methods.copyConstructor) {
-		methods.copyConstructor(object, src);
-	}
+bool Type::constructObject(DataPtr object) const {
+	return methods.defaultConstructor(object);
+}
+
+bool Type::copyConstructObject(DataPtr object, ConstDataPtr src) const {
+	return methods.copyConstructor(object, src);
 }
 
 void Type::destructObject(DataPtr object) const {
-	if (methods.destructor) {
-		methods.destructor(object);
-	}
+	methods.destructor(object);
 }
 
-void Type::copyObject(DataPtr a, ConstDataPtr b) const {
-	if (methods.copyAssignment) {
-		methods.copyAssignment(a, b);
-	}
+bool Type::copyObject(DataPtr a, ConstDataPtr b) const {
+	return methods.copyAssignment(a, b);
 }
 
-void Type::moveConstructObject(DataPtr object, DataPtr src) const {
-	if (methods.moveConstructor) {
-		methods.moveConstructor(object, src);
-	}
+bool Type::moveConstructObject(DataPtr object, DataPtr src) const {
+	return methods.moveConstructor(object, src);
 }
 
-void Type::moveObject(DataPtr a, DataPtr b) const {
-	if (methods.moveAssignment) {
-		methods.moveAssignment(a, b);
-	}
+bool Type::moveObject(DataPtr a, DataPtr b) const {
+	return methods.moveAssignment(a, b);
 }
 
 bool Type::compareObjects(ConstDataPtr a, ConstDataPtr b) const {

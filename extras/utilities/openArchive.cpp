@@ -1,4 +1,4 @@
-#include "openXMLArchive.h"
+#include "openArchive.h"
 #include <cassert>
 #include <IO/fileServer.h>
 #include <IO/fileUtil.h>

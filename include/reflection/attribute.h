@@ -44,7 +44,7 @@ private:
 
 template <class T>
 inline const T* Attribute::tryCast() const {
-	if (Typhoon::getTypeId<T>() == typeId) {
+	if (Typhoon::typeId_v<T> == typeId) {
 		return static_cast<const T*>(this);
 	}
 	return nullptr;
@@ -52,7 +52,7 @@ inline const T* Attribute::tryCast() const {
 
 template <class T>
 inline const T& Attribute::cast() const {
-	assert(Typhoon::getTypeId<T>() == typeId);
+	assert(Typhoon::typeId_v<T> == typeId);
 	return static_cast<const T&>(*this);
 }
 

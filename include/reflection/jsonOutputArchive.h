@@ -13,14 +13,16 @@ namespace Typhoon::Reflection {
 
 class JSONOutputArchive final : public OutputArchive {
 public:
-	JSONOutputArchive(bool openRoot=true);
+	JSONOutputArchive(bool openRoot = true);
 	~JSONOutputArchive();
 
 	bool        saveToFile(const char* filename) override;
 	std::string saveToString() override;
 	void        setKey(const char* name) override;
+	bool        beginObject(const char* key) override;
 	bool        beginObject() override;
 	void        endObject() override;
+	bool        beginArray(const char* key) override;
 	bool        beginArray() override;
 	void        endArray() override;
 	void        writeAttribute(const char* name, bool value) override;

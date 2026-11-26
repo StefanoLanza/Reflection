@@ -1,19 +1,29 @@
 require "external/core/core"
 
 project("TinyXML")
+	local path = "external/TinyXML"
 	kind "StaticLib"
-	files "external/TinyXML/**.cpp"
-	files "external/TinyXML/**.h"
-	includedirs { "TinyXML", }
+	files { path .. "/**.cpp" }
+	files { path .. "/**.h" }
+	exceptionhandling "Off"
+	rtti "Off"
 	usage "INTERFACE"
-		includedirs { "./" }
+		includedirs { "external", }
+		links { "TinyXML" }
 
 project("Reflection")
 	kind "StaticLib"
 	files "src/**.cpp"
 	files "src/**.h"
 	files "include/**.h"
-	externalincludedirs { "./", "include/reflection", "external", }
-	uses {"Core", "TinyXML", }
+	includedirs { "include/reflection" }
+	exceptionhandling "Off"
+	rtti "Off"
+	uses { "Core", "TinyXML", }
 	usage "INTERFACE"
-		includedirs { "include/reflection" }
+		uses { "Core" }
+		includedirs { "include", }
+		links { "Reflection" }
+		filter { "action:gmake*" } -- Bug in gmake generation
+			links({"Core", "TinyXML"})
+		filter {}

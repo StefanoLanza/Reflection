@@ -1,30 +1,29 @@
 #include "property.h"
-#include "flags.h"
 #include "type.h"
 #include <cassert>
 
 namespace Typhoon::Reflection {
 
-Property::Property(Setter&& setter_, Getter&& getter_, const char* name, const Type* valueType, Allocator& allocator)
+Property::Property(Setter&& setter_, Getter&& getter_, const char* name, const Type* valueType, ArenaAllocator& allocator)
     : setter { std::move(setter_) }
     , getter { std::move(getter_) }
     , name { name }
     , prettyName { name }
     , valueType { valueType }
-    , flags { Flags::all }
+    , flags { Flag::all }
     , semantic { Semantic::none }
-    , attributes { stdAllocator<const Attribute*>(allocator) } {
+    , attributes { allocator } {
 	assert(valueType);
 	// Override flags
 	if (! setter) {
-		flags &= ~Flags::readable;
-		flags &= ~Flags::edit;
-		flags &= ~Flags::clonable;
+		flags.unset(Flag::readable);
+		flags.unset(Flag::edit);
+		flags.unset(Flag::clonable);
 	}
 	if (! getter) {
-		flags &= ~Flags::writeable;
-		flags &= ~Flags::clonable;
-		flags &= ~Flags::view;
+		flags.unset(Flag::writeable);
+		flags.unset(Flag::clonable);
+		flags.unset(Flag::view);
 	}
 }
 
@@ -40,7 +39,7 @@ const Type& Property::getValueType() const {
 	return *valueType;
 }
 
-uint32_t Property::getFlags() const {
+Flags Property::getFlags() const {
 	return flags;
 }
 
@@ -54,7 +53,7 @@ Property& Property::setPrettyName(const char* str) {
 	return *this;
 }
 
-Property& Property::setFlags(uint32_t value) {
+Property& Property::setFlags(Flags value) {
 	flags = value;
 	return *this;
 }
@@ -74,7 +73,7 @@ void Property::getValue(ConstDataPtr self, DataPtr value) const {
 	getter(self, value);
 }
 
-void Property::copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator& alloc) const {
+void Property::copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, ArenaAllocator& alloc) const {
 	assert(setter);
 	assert(getter);
 	void* allocOffs = alloc.getOffset();
@@ -84,7 +83,7 @@ void Property::copyValue(DataPtr dstSelf, ConstDataPtr srcSelf, LinearAllocator&
 		setter(dstSelf, value);
 		valueType->destructObject(temporary);
 	}
-	alloc.rewind(allocOffs);
+	alloc.reset(allocOffs);
 }
 
 Property& Property::addAttribute(const Attribute* attribute) {

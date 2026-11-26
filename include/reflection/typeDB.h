@@ -4,7 +4,7 @@
 
 #include "context.h"
 #include "type.h"
-#include <core/stdAllocator.h>
+#include <core/arenaVector.h>
 #include <core/uncopyable.h>
 
 #include <cassert>
@@ -21,7 +21,7 @@ class Namespace;
 
 class TypeDB : Uncopyable {
 public:
-	TypeDB(Allocator& allocator, ScopedAllocator& scopedAllocator);
+	TypeDB(ArenaAllocator& allocator, ScopedAllocator& scopedAllocator);
 
 	void       registerType(const Type* type);
 	Namespace& getGlobalNamespace() const;
@@ -37,12 +37,12 @@ public:
 
 	template <class T>
 	const Type* tryGetType() const {
-		return tryGetType(getTypeId<T>());
+		return tryGetType(typeId_v<T>);
 	}
 
 private:
-	std::vector<const Type*, stdAllocator<const Type*>> types;
-	Namespace*                                          globalNamespace;
+	ArenaVector<const Type*> types;
+	Namespace*               globalNamespace;
 };
 
 struct Context;
